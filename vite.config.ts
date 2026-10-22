@@ -16,6 +16,18 @@ const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').repl
  * from the one config. The HTML pages carry `%SITE_*%` placeholders; the manifest is generated whole.
  */
 function sitePages(site: Site, deploy: Deploy): Plugin {
+  // THE PRIVACY PAGE SAYS WHAT RUNS (the live check, 2026-10-22: it described PostHog as running
+  // and Cloudflare as "may", the reverse of the live site). Written from the deploy's own settings.
+  const cf = deploy.cfBeacon || site.cfBeacon
+  const analyticsHtml = [
+    cf
+      ? `<p>We count visits with <b>Cloudflare Web Analytics</b>: a page-view counter that sets no cookies and stores nothing on your device. It records the page address, where the visit came from, the kind of browser and device, the country, and how fast the page loaded, and shows us totals, never a person.</p>`
+      : '',
+    deploy.posthogKey
+      ? `<p>To learn whether people reach the first spin and finish a series, the game also sends a handful of anonymous events (for example: the game was opened, the first spin happened, a series finished, a share button was pressed) to <b>PostHog</b>, hosted in the EU. Each event carries the page address, where the visit came from (for example the <code>ref</code> or <code>s</code> tag on a shared link), the kind of browser and device, and the game's own facts (level, result). PostHog runs in its cookieless mode: no cookies, no local storage, no identifier on your device; it derives a short-lived anonymous count on its own servers, builds no profile of you, and we never identify you. These events are kept for up to 12 months.</p>`
+      : '',
+    !cf && !deploy.posthogKey ? '<p>The game sends no analytics at all.</p>' : '',
+  ].join('\n      ')
   const vars: Record<string, string> = {
     SITE_NAME: site.name,
     SITE_SHORT: site.shortName,
@@ -28,6 +40,7 @@ function sitePages(site: Site, deploy: Deploy): Plugin {
     OG_TITLE: site.ogTitle,
     OG_IMAGE: `${site.url}og-image.png`,
     OG_ALT: site.ogImageAlt,
+    HTML_ANALYTICS: analyticsHtml,
   }
   // the manifest's start_url and scope follow the base: './' serves from any folder (GitHub Pages'
   // /Game7/), '/' from a domain's root (P3)
@@ -59,10 +72,6 @@ function sitePages(site: Site, deploy: Deploy): Plugin {
     null,
     2,
   )
-  // Cloudflare Web Analytics: a cookieless page-view count, only when a token is configured
-  const beacon = deploy.cfBeacon
-    ? `<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='${JSON.stringify({ token: deploy.cfBeacon })}'></script>`
-    : ''
   let outDir = 'dist'
   return {
     name: 'site-pages',
@@ -71,7 +80,11 @@ function sitePages(site: Site, deploy: Deploy): Plugin {
     },
     transformIndexHtml: {
       order: 'pre',
-      handler: (html) => html.replace(/%(SITE_[A-Z_]+|OG_[A-Z_]+)%/g, (m, k: string) => (k in vars ? esc(vars[k]) : m)).replace('<!--CF_BEACON-->', beacon),
+      // HTML_* values are written raw (markup this file builds); every other value is escaped
+      handler: (html) =>
+        html
+          .replace(/%(SITE_[A-Z_]+|OG_[A-Z_]+|HTML_[A-Z_]+)%/g, (m, k: string) => (k in vars ? (k.startsWith('HTML_') ? vars[k] : esc(vars[k])) : m))
+          .replace('<!--CF_BEACON-->', ''),
     },
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
@@ -82,6 +95,31 @@ function sitePages(site: Site, deploy: Deploy): Plugin {
     },
     generateBundle() {
       this.emitFile({ type: 'asset', fileName: 'manifest.webmanifest', source: manifest })
+      /* A REAL "NOT FOUND" (the live check, 2026-10-22): with no 404.html the host answered every
+         unknown path with the game itself and a 200 — /favicon.ico, /robots.txt, a missing bundle
+         (which the worker then kept for a year as that bundle). With this page the host answers 404,
+         and a creator's /c/<handle> link is rewritten to the game in public/_redirects. */
+      const home = deploy.base === './' ? site.url : deploy.base
+      this.emitFile({
+        type: 'asset',
+        fileName: '404.html',
+        source: `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Not here · ${esc(site.name)}</title><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:${site.themeColor};color:#f6f4ef;font:16px/1.5 system-ui,sans-serif;text-align:center}a{color:#f0b323}</style></head><body><main><h1>Nothing here</h1><p><a href="${esc(home)}">Play ${esc(site.name)} →</a></p></main></body></html>
+`,
+      })
+      this.emitFile({ type: 'asset', fileName: 'robots.txt', source: `User-agent: *
+Allow: /
+Sitemap: ${site.url}sitemap.xml
+` })
+      this.emitFile({
+        type: 'asset',
+        fileName: 'sitemap.xml',
+        source: `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>${site.url}</loc></url>
+  <url><loc>${site.url}privacy/</loc></url>
+</urlset>
+`,
+      })
     },
     /**
      * THE AI POSTERS, BEHIND A FLAG. `VITE_MOMENTS=0` leaves the iconic-moments pictures and the

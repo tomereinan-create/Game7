@@ -42,20 +42,23 @@
       <p>Your campaigns, club name, stars and settings are kept in this browser's local storage on your device. They are never sent to us. Clearing your browser data deletes them. A <b>save code</b> is your progress written out as text so you can move it to another browser yourself; anyone you give a save code to can load that progress.</p>
 
       <h2>Analytics</h2>
-      <p>To learn whether people reach the first spin and finish a series, the game sends a handful of anonymous events (for example: the game was opened, the first spin happened, a series finished, a share button was pressed) to <b>PostHog</b>, hosted in the EU. Each event carries the page address, where the visit came from (for example the <code>ref</code> or <code>s</code> tag on a shared link), the kind of browser and device, and the game's own facts (level, result). We run PostHog in its cookieless mode: no cookies, no local storage, and no identifier is stored on your device. PostHog derives a short-lived anonymous count from the connection on its own servers; it does not build a profile of you and we never identify you. Analytics events are kept for up to 12 months.</p>
-      <p>We may also use <b>Cloudflare Web Analytics</b>, a cookieless page-view counter.</p>
-      <p>Your save data is never read for analytics. If your browser sends Global Privacy Control or Do Not Track, no analytics are sent.</p>
+      %HTML_ANALYTICS%
+      <p>Your save data is never read for analytics. If your browser sends Global Privacy Control or Do Not Track, or you switch analytics off below, none of the above is loaded or sent.</p>
+
       <div class="opt">
         <p style="margin-top: 0">Analytics in this browser: <b id="state">on</b></p>
         <button id="toggle" type="button" aria-pressed="false">Turn analytics off</button>
         <p class="muted" style="margin-bottom: 0">Turning them off keeps one small "off" setting in this browser so the choice is remembered.</p>
       </div>
 
+      <h2>Hosting and fonts</h2>
+      <p>The game is served by <b>Cloudflare</b>, which handles your connection (and so your IP address) to deliver the pages, as any web host does. Everything the game needs — its code, its pictures and its fonts — comes from this site itself; apart from the Cloudflare counter above, no other company is contacted to draw the page.</p>
+
       <h2>Children</h2>
       <p>The game is made for a general audience. It asks for no name, email or other personal information, and it shows no ads.</p>
 
       <h2>Your rights and contact</h2>
-      <p>Because we hold no account or personal profile, there is usually nothing we can look up about you. If you have a question or a request about your data, contact us<span id="contact"></span>.</p>
+      <p>Because we hold no account or personal profile, there is usually nothing we can look up about you. If you have a question or a request about your data, write to <a href="mailto:%SITE_CONTACT%">%SITE_CONTACT%</a>.</p>
 
       <footer>
         <p class="muted">%SITE_DISCLAIMER%</p>
@@ -64,14 +67,6 @@
     <script>
       ;(function () {
         var KEY = 'game7.analytics'
-        var contact = '%SITE_CONTACT%'
-        if (contact && contact.indexOf('%') !== 0) {
-          var a = document.createElement('a')
-          a.href = 'mailto:' + contact
-          a.textContent = contact
-          var c = document.getElementById('contact')
-          c.append(' at ', a)
-        }
         var state = document.getElementById('state')
         var btn = document.getElementById('toggle')
         function read() {

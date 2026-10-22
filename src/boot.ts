@@ -56,6 +56,35 @@ if (CREATOR) {
 }
 
 /**
+ * THE WAY OUT OF CREATOR MODE (the live check, 2026-10-22: no screen of it had one, and in the
+ * installed app — no address bar, no back button — a creator run was a dead end, since a reload
+ * keeps ?creator=1). Never inside the filmed 9:16 frame: the Escape key; a press held for a second
+ * and a half on the frame's top-left corner, which nothing is drawn on; and, on a screen with room
+ * around the frame, a small "Exit" in the black margin. All lead to the game's own front door.
+ */
+const exitCreator = () => {
+  const home = new URL(import.meta.env.BASE_URL, location.href).href
+  try {
+    ;(window.top ?? window).location.href = home
+  } catch {
+    location.href = home
+  }
+}
+if (CREATOR) {
+  addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') exitCreator()
+  })
+  let hold = 0
+  addEventListener('pointerdown', (e) => {
+    if (e.clientX > 56 || e.clientY > 56) return
+    window.clearTimeout(hold)
+    hold = window.setTimeout(exitCreator, 1500)
+  })
+  for (const ev of ['pointerup', 'pointercancel', 'pointerleave'])
+    addEventListener(ev, () => window.clearTimeout(hold))
+}
+
+/**
  * THE EXACT 9:16 FRAME. A creator page is always laid out in a 432x768 phone viewport, so a run
  * looks the same on any screen that films it. When the window is not that viewport (a phone is
  * taller than 9:16; a 1080x1920 OBS browser source is 2.5x it), the page becomes a black stage
@@ -76,12 +105,21 @@ export function mountHere(): boolean {
   f.width = String(FRAME.w)
   f.height = String(FRAME.h)
   f.style.cssText = `position:fixed;left:50%;top:50%;width:${FRAME.w}px;height:${FRAME.h}px;border:0;transform-origin:50% 50%;background:#000`
+  // the margin's own way out — shown only where the frame leaves room for it, never over the frame
+  const exit = document.createElement('button')
+  exit.textContent = 'Exit creator mode'
+  exit.setAttribute('aria-label', 'Exit creator mode')
+  exit.style.cssText =
+    'position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 8px);transform:translateX(-50%);z-index:2;padding:8px 14px;border-radius:999px;border:1px solid #3a342c;background:#000;color:#a39a91;font:500 12px/1 system-ui,sans-serif;letter-spacing:.06em;cursor:pointer'
+  exit.addEventListener('click', exitCreator)
   const fit = () => {
     const k = Math.min(innerWidth / FRAME.w, innerHeight / FRAME.h)
     f.style.transform = `translate(-50%, -50%) scale(${k})`
+    exit.style.display = innerHeight - FRAME.h * k >= 2 * 44 ? 'block' : 'none'
   }
   fit()
   addEventListener('resize', fit)
   document.getElementById('root')?.replaceWith(f)
+  document.body.appendChild(exit)
   return false
 }

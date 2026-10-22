@@ -164,8 +164,8 @@ export function buildTicker(
   const finalThem = final ? final.them : won ? s!.lose : s!.win
 
   const g = gameBoxes(us, them, lines, finalUs, finalThem, rng, ctx?.us, ctx?.them)
-  const usL = splitBox(us, g.us, ctx?.us, rng)
-  const themL = splitBox(them, g.them, ctx?.them, rng)
+  const usL = splitBox(us, g.us, ctx?.us, rng, lines)
+  const themL = splitBox(them, g.them, ctx?.them, rng, lines)
 
   const ourEv = eventsFor('us', usL, themL, rng)
   const theirEv = eventsFor('them', themL, usL, rng)

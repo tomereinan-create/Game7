@@ -12,6 +12,15 @@
  */
 const CACHE = 'game7'
 const SHELL = new URL('index.html', self.location).href
+/** The worker's own folder: '/' on the domain, '/Game7/' on the old address. */
+const SCOPE_PATH = new URL('./', self.location).pathname
+/**
+ * THE GAME'S OWN ADDRESSES — the only navigations that are the app shell. The live check
+ * (2026-10-22) found every navigation treated as the shell, so opening /privacy/ stored the privacy
+ * page as index.html, wiped the bundles as "a new build", and an offline launch then showed Privacy
+ * instead of the game. A creator's short link (/c/<handle>) is the game too.
+ */
+const isApp = (path) => path === SCOPE_PATH || path === SCOPE_PATH + 'index.html' || path.startsWith(SCOPE_PATH + 'c/')
 
 self.addEventListener('install', () => self.skipWaiting())
 
@@ -32,8 +41,8 @@ self.addEventListener('fetch', (e) => {
 
   const url = new URL(req.url)
   const shell =
-    req.mode === 'navigate' ||
-    (url.origin === self.location.origin && url.href.replace(/\/$/, '/index.html') === SHELL)
+    url.origin === self.location.origin &&
+    ((req.mode === 'navigate' && isApp(url.pathname)) || url.href.replace(/\/$/, '/index.html') === SHELL)
 
   // Only the hashed build output is immutable. Anything else on this origin — a dev server's
   // /src/ modules and /@vite/ client, an un-hashed JSON — must come from the network first, or a
@@ -113,7 +122,10 @@ async function fromCache(req) {
   // turn a perfectly good 200 into a network error. The write is AWAITED here on purpose, unlike in
   // fromNetworkThenCache: these are the hashed bundles, they are small, and cache-first only means
   // anything if the copy is in hand before the next request for the same name arrives.
-  if (res.ok || res.type === 'opaque') {
+  // a page where a bundle should be is a missing file answered with HTML (a host's fallback page):
+  // never keep it under the bundle's immutable name
+  const html = (res.headers.get('content-type') || '').includes('text/html')
+  if ((res.ok && !html) || res.type === 'opaque') {
     try {
       const cache = await caches.open(CACHE)
       await cache.put(req, res.clone())

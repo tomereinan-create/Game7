@@ -514,13 +514,12 @@ export function staffLesson(ctx: { bal: number; earned: number; branches: Branch
  * the plain fact that the tutorial does not print them.
  */
 const WHERE: Record<NodeId, (r: number) => string[]> = {
+  /* EXACT RATINGS PRINTS WHAT IT BOUGHT, IN EVERY MODE (his report, 2026-10-22: the node was dead in
+     user mode — "everything it unlocks only shows in Scout mode"). The blindfold is about verdicts on
+     YOUR choices; this node buys a look at THEIR five, so its numbers show here too. */
   scout_ratings: (r) => [
-    `On the draft, in the opponent's column: ${['their card shows exact axis numbers', 'their five break out into rows, man by man', 'any of their men opens his full attribute sheet on the card'][r - 1]}.`,
-    `This node buys ratings, and ${BLIND.charAt(0).toLowerCase()}${BLIND.slice(1)}`,
-  ],
-  scout_reads: (r) => [
-    `${['Their hunt orientation, steal target and where their anchor hides', 'Their defensive board against your five — who picks up whom'][r - 1]}: a read on what they will try to do to you, before you draft.`,
-    `These are scout reads, and ${BLIND.charAt(0).toLowerCase()}${BLIND.slice(1)}`,
+    `On the draft, in the opponent's column: ${['their card shows exact axis numbers', 'their five break out into rows, man by man — OVR, OFF, DEF', 'any of their men opens his full attribute sheet on the card'][r - 1]}.`,
+    'These numbers are about their five, not a verdict on yours, so this node shows them in every mode — the tutorial included.',
   ],
   scout_wheel: (r) => [
     r === 1 ? 'On the draft, the wheel card names the next landing before you spin.' : 'And the wheel card shows the roster the next landing brings — the men you would be choosing from.',
@@ -534,7 +533,7 @@ const WHERE: Record<NodeId, (r: number) => string[]> = {
   coach_optimal: (r) => [
     r === 1
       ? 'On every night from here: your defensive assignments go from naive to optimal — the anchor hides on their worst shooter, the rest sort themselves. Nothing to press; it is how your five defends now.'
-      : 'Rank 2 prices the assignment on the draft, in points of spread.',
+      : 'Rank 2 prices the assignment on the draft, in points of margin.',
     ...(r === 2 ? [`That price is a number, and ${BLIND.charAt(0).toLowerCase()}${BLIND.slice(1)}`] : []),
   ],
   coach_manual: (r) => [

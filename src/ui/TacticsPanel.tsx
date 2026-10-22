@@ -16,7 +16,7 @@ export function tacticsWorth(tactics: Tactics, playbook: number, five: Player[],
   return tacticsParts(gateTactics(tactics, playbook), five, theirs).reduce((a, x) => a + x.pts, 0)
 }
 /** …said the way both card heads say it. */
-export const worthLine = (w: number) => `worth ${w >= 0 ? '+' : '−'}${Math.abs(w).toFixed(1)} pts of spread`
+export const worthLine = (w: number) => `worth ${w >= 0 ? '+' : '−'}${Math.abs(w).toFixed(1)} pts of margin`
 
 /**
  * THE CALLS THEMSELVES — the rows of the plan, lifted out of My team so a second screen can hold

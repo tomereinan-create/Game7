@@ -38,6 +38,12 @@ export interface Site {
   disclaimer: string
   /** A contact address for the privacy page, or '' to leave the line out. */
   contact: string
+  /**
+   * The Cloudflare Web Analytics site token (public: it is printed in every page that counts). The
+   * game loads the beacon itself, behind the same switches as every other measurement — the privacy
+   * page's off switch, Global Privacy Control, Do Not Track, creator mode. VITE_CF_BEACON overrides.
+   */
+  cfBeacon: string
 }
 
 const NAME = 'Game 7'
@@ -57,7 +63,9 @@ export const SITE: Site = {
   themeColor: '#0b0a09',
   disclaimer:
     'Not affiliated with or endorsed by the NBA, NBPA, NBRPA, any team or player. Stats via Basketball-Reference.com and NBA.com.',
-  contact: '',
+  // forwarded by Cloudflare Email Routing once it is set up (see the launch-gate notes)
+  contact: 'hello@game7draft.com',
+  cfBeacon: '7c6a23624ac24a65ab230f9af09a5364',
 }
 
 /**

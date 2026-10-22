@@ -213,7 +213,9 @@ describe('the lessons are built off the state', () => {
   })
 
   it('a node that buys numbers says the tutorial does not print them', () => {
-    expect(unlockLesson('scout_ratings', 1).steps[1].body.join(' ')).toContain('Scout mode')
+    // Exact ratings is the exception since 2026-10-22: its numbers are about THEIR five, and it
+    // shows them in every mode (his report: the node was dead in user mode)
+    expect(unlockLesson('scout_ratings', 1).steps[1].body.join(' ')).toContain('every mode')
     expect(unlockLesson('coach_sigma', 1).steps[1].body.join(' ')).toContain('Scout mode')
     // and one that buys a door does not
     expect(unlockLesson('fo_spin', 1).steps[1].body.join(' ')).not.toContain('Scout mode')

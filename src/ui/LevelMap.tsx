@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useLayout } from './useLayout'
 import { ROUNDS } from '../config'
 import type { Opponent } from '../engine/types'
@@ -567,6 +567,23 @@ export function LevelMap({
    * only narrow.
    */
   const trailRef = useRef<HTMLDivElement>(null)
+  /**
+   * THE NOTES STAND ON THE TICKET'S REAL TOP (the live check, 2026-10-22: on a desk the star badge
+   * lay across the NEXT ticket's label and number). The anchor below assumed the ticket is centred on
+   * its row point, but tonight's ticket carries its dials under it, so its middle sits ~40px higher,
+   * and a later rule had flipped the stack to hang DOWN from the anchor. The stack's foot is put 14px
+   * above the ticket as drawn, measured after every render — whatever the dials, the width or the
+   * scale — and the stylesheet hangs it upward again.
+   */
+  const notesRef = useRef<HTMLDivElement>(null)
+  useLayoutEffect(() => {
+    const n = notesRef.current
+    const host = n?.offsetParent as HTMLElement | null
+    const t = host?.querySelector<HTMLElement>('.node.now .ticket')
+    if (!n || !host || !t) return
+    const top = t.getBoundingClientRect().top - host.getBoundingClientRect().top + host.scrollTop - 14
+    if (Number.isFinite(top) && Math.abs(parseFloat(n.style.top) - top) > 0.5) n.style.top = `${top}px`
+  })
   const [colW, setColW] = useState(W)
   useLayout(() => {
     const measure = () => setColW(trailRef.current?.getBoundingClientRect().width || W)
@@ -1034,6 +1051,7 @@ export function LevelMap({
            */}
           {cur && (spendable || (teamNote && onMyTeam)) ? (
             <div
+              ref={notesRef}
               className="node-notes"
               /**
                * ABOVE THE TICKET, NOT ON IT — his ruling, 2026-09-30: "Make the sub and star icon

@@ -96,6 +96,11 @@ export interface StatLine {
   fgp?: number
   tpp?: number
   ftp?: number
+  /** Attempts per game — field goals, threes, free throws — and the two-point percentage. */
+  fga?: number
+  tpa?: number
+  fta?: number
+  twop?: number
   ts?: number
   per?: number
   ws?: number

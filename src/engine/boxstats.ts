@@ -110,15 +110,28 @@ export interface Shape {
 export function shapeOf(five: Player[], lines: Record<string, StatLine | null>, ctx?: BoxCtx): Shape {
   const n = five.length || 1
   const fouldraw = sum(five.map((p) => p.attrs.fouldraw)) / n
-  const ftp = sum(five.map((p) => frac(lines[p.name]?.ftp, 0.76))) / n
-  // outside vs paint+mid, usage weighted: the lineup's scoring diet
+  /**
+   * THE FIVE'S OWN SHOOTING (2026-10-22, the box-score report). The team line is the five men's
+   * real season diets added up — each man weighted by how often he shot per minute, since all five
+   * play the same minutes here — so the line has as many threes as these men took and makes them at
+   * their own rate, and the trips to the line are shot at the rate of whoever takes them (a five
+   * whose centre takes a third of them shoots his 52% on that third). The players' split then hands
+   * each man his own share at his own percentage, without a team-wide surplus of threes landing on
+   * the shooters. The attribute reads below stay as the fallback for a five with no lines.
+   */
+  const diets = five.map((p) => dietOf(p, lines[p.name]))
+  const v3 = sum(diets.map((d) => d.rate * d.f3))
+  const v2 = sum(diets.map((d) => d.rate * d.f2))
+  const vf = sum(diets.map((d) => d.rate * d.fft))
+  const ftp = vf > 0 ? sum(diets.map((d) => d.rate * d.fft * d.pft)) / vf : sum(five.map((p) => frac(lines[p.name]?.ftp, 0.76))) / n
+  // outside vs paint+mid, usage weighted: the lineup's scoring diet (the fallback)
   const out = wmean(five, (p) => p.attrs['3pt'])
   const inside = wmean(five, (p) => (p.attrs.rim + p.attrs.mid) / 2)
-  const diet = out / Math.max(1, out + inside)
-  const outShare = lerp(0.25, 0.48, (diet - 0.3) / 0.4)
+  const mix = out / Math.max(1, out + inside)
+  const outShare = v3 + v2 > 0 ? v3 / (v3 + v2) : lerp(0.25, 0.48, (mix - 0.3) / 0.4)
   // the 3pt rating scale hardened (^1.15) in recal_13, moving every rating down ~3 points; the
   // anchor shifts with it so the same shooting team still makes the same real percentage
-  const tpp = lerp(0.32, 0.41, (out - 27) / 60)
+  const tpp = v3 > 0 ? clamp(sum(diets.map((d) => d.rate * d.f3 * d.p3)) / v3, 0.25, 0.45) : lerp(0.32, 0.41, (out - 27) / 60)
   const drb = lerp(0.68, 0.78, (sum(five.map((p) => p.attrs.drb)) / n - 30) / 50)
   const orb = lerp(0.2, 0.32, (sum(five.map((p) => p.attrs.orb)) / n - 30) / 50)
   const ballsec = wmean(five, (p) => p.attrs.ballsec)
@@ -146,7 +159,7 @@ export function shapeOf(five: Player[], lines: Record<string, StatLine | null>, 
   return {
     fouldraw: fouldraw + fdShift,
     ftp,
-    outShare: clamp(outShare + outShift, 0.18, 0.55),
+    outShare: clamp(outShare + outShift, 0.02, 0.55),
     tpp,
     // THE CRASH FOLLOWS THE DIAL (recal_61): the glass totals move with the call
     drb: clamp(drb + (ctx?.crashDef ? 0.05 : 0), 0.68, 0.85),
@@ -317,39 +330,145 @@ export function apportion(total: number, weights: number[], rng?: Rng): number[]
 }
 
 /**
- * Split a team line into player lines: scoring by reconciled usage and the
- * shot's kind (threes by outside, twos by paint+mid, free throws by fouls
- * drawn), rebounds by orb/drb, assists by playmaking, steals by perimeter
+ * `apportion` with a ceiling per man: integer shares of `total`, in proportion to `weights`, never
+ * more than `caps[i]` for anyone — the makes of a shot type, which no man may have more of than his
+ * own attempts. Water-filled first (a man who would pass his ceiling is held at it and his overflow
+ * is shared among the rest, in the same proportions), then integerised by the same sampled
+ * largest-remainder rule, so a man's average over a series is his true share and the column still
+ * sums to `total` exactly.
+ */
+export function apportionCapped(total: number, weights: number[], caps: number[], rng?: Rng): number[] {
+  const n = weights.length
+  const room = Math.max(0, sum(caps))
+  const want = Math.min(total, room)
+  const x: number[] = new Array(n).fill(0)
+  const free = weights.map((w, i) => caps[i] > 0 && w > 0)
+  let left = want
+  for (let iter = 0; iter <= n && left > 1e-9; iter++) {
+    const W = sum(weights.map((w, i) => (free[i] ? w : 0)))
+    if (W <= 0) break
+    const share = weights.map((w, i) => (free[i] ? (left * w) / W : 0))
+    const over = share.map((v, i) => free[i] && x[i] + v >= caps[i])
+    if (!over.some(Boolean)) {
+      for (let i = 0; i < n; i++) x[i] += share[i]
+      left = 0
+      break
+    }
+    for (let i = 0; i < n; i++)
+      if (over[i]) {
+        left -= caps[i] - x[i]
+        x[i] = caps[i]
+        free[i] = false
+      }
+  }
+  // whatever is still unplaced (only possible when every man with room had no weight) goes by room
+  if (left > 1e-9) {
+    const r = caps.map((c, i) => Math.max(0, c - x[i]))
+    const R = sum(r)
+    for (let i = 0; i < n && R > 0; i++) x[i] += (left * r[i]) / R
+  }
+  const out = apportion(want, x, rng)
+  // a sampled leftover can land on a man already at his ceiling: hand it to one with room
+  for (let i = 0; i < n; i++)
+    while (out[i] > caps[i]) {
+      const j = out.findIndex((v, k) => v < caps[k])
+      if (j < 0) break
+      out[i]--
+      out[j]++
+    }
+  return out
+}
+
+/**
+ * HOW EACH MAN REALLY SHOT (2026-10-22, his box-score report: "Same percentage for everyone"; "Two
+ * pointers punish one-zone scorers"; "Big men take threes"). Off his own season line: what share of
+ * his true shooting attempts (FGA + 0.44 FTA) were threes, twos and trips to the line, and his own
+ * rate on each. The box gives a man his own diet and his own percentages from this — Shaq '00 his
+ * 52% at the line and nearly no threes, Nash '06 his 92% — where it used to hand every man the
+ * team's percentage and weight twos by rim + mid, which starved a one-zone scorer.
+ *
+ * A card with no line (none today: every card has one) falls back on its attributes for the diet
+ * and on league-typical rates.
+ */
+export interface Diet {
+  /** Shares of his true shooting attempts: threes, twos, free throws (FTA, not 0.44 FTA). */
+  f3: number
+  f2: number
+  fft: number
+  /** His rates, 0..1. */
+  p3: number
+  p2: number
+  pft: number
+  /**
+   * How often he SHOT, per minute on the floor (true shooting attempts / minutes). Not his usage
+   * rate: USG% counts his turnovers too, so it makes a passer like Nash '06 (22.7 usage, 14.9 shots
+   * a night) look like a bigger shooter than Marion '06 (21.5 usage, 18.5 shots).
+   */
+  rate: number
+}
+export function dietOf(p: Player, line: StatLine | null | undefined): Diet {
+  const fga = line?.fga
+  const tpa = line?.tpa
+  const fta = line?.fta
+  if (line && fga != null && tpa != null && fta != null && fga + 0.44 * fta > 0.5) {
+    const tsa = fga + 0.44 * fta
+    return {
+      rate: line.mpg && line.mpg > 3 ? tsa / line.mpg : 0.02 * p.attrs.usg_raw,
+      f3: tpa / tsa,
+      f2: Math.max(0, fga - tpa) / tsa,
+      fft: fta / tsa,
+      p3: frac(line.tpp, 0.33),
+      p2: frac(line.twop ?? line.fgp, 0.49),
+      pft: frac(line.ftp, 0.75),
+    }
+  }
+  const f3 = 0.4 * clamp((p.attrs['3pt'] - 20) / 79, 0, 1)
+  const fft = 0.15 + 0.3 * (p.attrs.fouldraw / 99)
+  return { f3, f2: Math.max(0.1, 1 - f3 - 0.44 * fft), fft, p3: 0.34, p2: 0.49, pft: frac(line?.ftp, 0.75), rate: 0.02 * p.attrs.usg_raw }
+}
+
+/**
+ * Split a team line into player lines: shooting by reconciled usage and each
+ * man's own season diet and rates (`dietOf`), rebounds by orb/drb, assists by playmaking, steals by perimeter
  * disruption, blocks by rim protection, turnovers by usage × insecurity.
  * Integer shares apportioned after the split, so every column sums to the
  * team total exactly and each player's points balance his own ledger.
  */
-export function splitBox(five: Player[], box: TeamBox, ctx?: BoxCtx, rng?: Rng): PlayerBox[] {
+export function splitBox(five: Player[], box: TeamBox, ctx?: BoxCtx, rng?: Rng, lines?: Record<string, StatLine | null>): PlayerBox[] {
   // THE r59 REALLOCATION IS THE LINE: the forced shares (main scorer +8, the rest scaled) carry
-  // straight into the shot weights, so the chosen man's volume rises on the sheet exactly as the
-  // margin priced it — and his BRICK factor (the repricing off his own curve) weights his
-  // misses, so a bad pick is visible: volume up, percentage down. THE PAIRING EDGES decide who
-  // eats whom: a positive edge scores more and misses less, a locked-down man the reverse —
-  // the same centered numbers the board shows.
+  // straight into the shot volumes, so the chosen man's volume rises on the sheet exactly as the
+  // margin priced it — and his BRICK factor (the repricing off his own curve) lowers his rate, so a
+  // bad pick is visible: volume up, percentage down. THE PAIRING EDGES decide who eats whom: a
+  // positive edge shoots better, a locked-down man worse — the same centered numbers the board shows.
   const usg = ctx?.usg ?? teamOffense(five).lines.map((l) => l.usg)
   const edge = (i: number) => 1 + 0.06 * (ctx?.edges?.[i] ?? 0)
-  const missEdge = (i: number) => 1 - 0.04 * (ctx?.edges?.[i] ?? 0)
+  const missEdge = (i: number) => Math.max(0.5, 1 - 0.04 * (ctx?.edges?.[i] ?? 0))
   const brickOf = (i: number) => (i === ctx?.scorerIdx ? 1 + 3 * (ctx?.brick ?? 0) : 1)
+  /** How much better or worse than his own rate he shoots tonight: the edge and the brick. */
+  const form = (i: number) => edge(i) / missEdge(i) / brickOf(i)
   const w = (f: (p: Player, i: number) => number) => five.map((p, i) => Math.max(0.01, f(p, i)))
+  /**
+   * EACH MAN'S OWN SHOOTING (the 2026-10-22 report, see `dietOf`). VOLUME is how often he shot per
+   * minute, scaled by his usage in this five (the r59 reallocation included), times his own diet — what
+   * share of his shots were threes, twos, free throws — so the attempts of each kind go to the men
+   * who really took them. MAKES then follow his own rate on each kind: a column's makes are shared
+   * in proportion to attempts x his percentage, so every man keeps his own percentage relative to
+   * his teammates while the column still adds up to the night's total, and nobody makes more than
+   * he took (`apportionCapped`). The points are the team's, untouched: PTS == the score.
+   */
+  const diet = five.map((p) => dietOf(p, lines?.[p.name]))
+  // his shots per minute, moved by what THIS five does with him: the engine's usage for him here
+  // (the r59 reallocation included) against his own season usage
+  // (x100 so the weights sit on the scale the 0.01 floor in `w` was set for)
+  const vol = five.map((p, i) => 100 * diet[i].rate * (usg[i] / Math.max(1, p.attrs.usg_raw)))
   // MOTION spreads the threes across all five — the weight exponent flattens
   const spread = ctx?.style === 'motion' ? 0.75 : 1
-  const tpm = apportion(box.tpm, w((p, i) => Math.pow(usg[i] * p.attrs['3pt'], spread) * edge(i)), rng)
-  // HOISTED, and it must stay hoisted: this used to call apportion INSIDE the map, once per player,
-  // and take element i of the i-th call. With the deterministic split every call returned the same
-  // array so the sum still balanced by luck; the moment the leftover became a random draw (A10) the
-  // five calls disagreed and the lines stopped summing to the team box. One call, one allocation.
-  const tpMiss = apportion(box.tpa - box.tpm, w((p, i) => Math.pow(usg[i] * p.attrs['3pt'], spread) * missEdge(i) * brickOf(i)), rng)
-  const tpa = tpm.map((m, i) => m + tpMiss[i])
-  const ftm = apportion(box.ftm, w((p, i) => usg[i] * p.attrs.fouldraw), rng)
-  const ftMiss = apportion(box.fta - box.ftm, w((p, i) => usg[i] * p.attrs.fouldraw), rng)
-  const fta = ftm.map((m, i) => m + ftMiss[i])
-  const twoM = apportion(box.fgm - box.tpm, w((p, i) => usg[i] * (p.attrs.rim + p.attrs.mid) * edge(i)), rng)
-  const twoMiss = apportion(box.fga - box.fgm - (box.tpa - box.tpm), w((p, i) => usg[i] * (p.attrs.rim + p.attrs.mid) * missEdge(i) * brickOf(i)), rng)
+  const tpa = apportion(box.tpa, w((_, i) => Math.pow(vol[i] * diet[i].f3, spread)), rng)
+  const tpm = apportionCapped(box.tpm, w((_, i) => tpa[i] * diet[i].p3 * form(i)), tpa, rng)
+  const twoA = apportion(box.fga - box.tpa, w((_, i) => vol[i] * diet[i].f2), rng)
+  const twoM = apportionCapped(box.fgm - box.tpm, w((_, i) => twoA[i] * diet[i].p2 * form(i)), twoA, rng)
+  const fta = apportion(box.fta, w((_, i) => vol[i] * diet[i].fft), rng)
+  const ftm = apportionCapped(box.ftm, w((_, i) => fta[i] * diet[i].pft), fta, rng)
   /**
    * A9 (2026-09-09): `orb + drb` swallowed the guards' share. The raw attributes run 4 to 83 across
    * a five, a 20:1 ratio, where the men's real rebound lines are nearer 4:1 — everyone collects
@@ -379,7 +498,7 @@ export function splitBox(five: Player[], box: TeamBox, ctx?: BoxCtx, rng?: Rng):
     name: p.name,
     pts: 2 * twoM[i] + 3 * tpm[i] + ftm[i],
     fgm: twoM[i] + tpm[i],
-    fga: twoM[i] + tpm[i] + twoMiss[i] + (tpa[i] - tpm[i]),
+    fga: twoA[i] + tpa[i],
     tpm: tpm[i],
     tpa: tpa[i],
     ftm: ftm[i],
@@ -444,8 +563,8 @@ export function seriesBox(
     const g = gameBoxes(five, theirFive, lines, scores[i].us, scores[i].them, rng, ctx?.us, ctx?.them)
     us.push(g.us)
     them.push(g.them)
-    usP.push(splitBox(five, g.us, ctx?.us, rng))
-    themP.push(splitBox(theirFive, g.them, ctx?.them, rng))
+    usP.push(splitBox(five, g.us, ctx?.us, rng, lines))
+    themP.push(splitBox(theirFive, g.them, ctx?.them, rng, lines))
   })
   const avgP = (xs: PlayerBox[][], team: Player[]): PlayerBox[] =>
     team.map((p, i) => {

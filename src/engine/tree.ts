@@ -20,7 +20,6 @@ import type { Player } from './types'
 export type Branch = 'Scout' | 'Front office' | 'Coach' | 'Salary' | 'Survival'
 export type NodeId =
   | 'scout_ratings'
-  | 'scout_reads'
   | 'scout_wheel'
   | 'fo_spin'
   | 'fo_respin'
@@ -72,17 +71,13 @@ export const NODES: Node[] = [
       'And any of their men opens his full attribute sheet, right there on the card.',
     ],
   },
+  /* MATCHUP READS IS GONE (his report, 2026-10-22: "nothing in the code uses it. It costs 2 stars
+     for no effect, and you have to buy it to reach Sight seeing"). Its block left the draft on his
+     ruling of 2026-08-30 and the node stayed behind as a toll. Sight seeing hangs off Exact ratings
+     now, and a save that owned it gets the stars back: `migrate` drops a node it does not know and
+     recounts `spent` from what is left. */
   {
-    id: 'scout_reads', branch: 'Scout', depth: 1, ranks: 2, requires: 'scout_ratings',
-    name: 'Matchup reads',
-    blurb: 'What they will try to do to you, before you draft.',
-    rankBlurbs: [
-      'Their hunt orientation, steal target and anchor hiding spot.',
-      'Their defensive board against your five: who picks up whom.',
-    ],
-  },
-  {
-    id: 'scout_wheel', branch: 'Scout', depth: 2, ranks: 2, requires: 'scout_reads',
+    id: 'scout_wheel', branch: 'Scout', depth: 1, ranks: 2, requires: 'scout_ratings',
     name: 'Sight seeing',
     blurb: 'Know your next spin before you take it.',
     rankBlurbs: ['The next landing, before you spin.', 'And the roster it brings — the men you would be choosing from.'],
@@ -120,7 +115,7 @@ export const NODES: Node[] = [
     blurb: 'Defensive assignments stop being naive.',
     rankBlurbs: [
       'Assignments go from naive to optimal: the anchor hides on their worst shooter.',
-      'And the draft screen prices it — what the assignment is worth, in points of spread.',
+      'And the draft screen prices it — what the assignment is worth, in points of margin.',
     ],
   },
   {

@@ -261,6 +261,7 @@ export function Draft({
   autoSpin = false,
   autoplay = false,
   creator = false,
+  onPicks,
 }: {
   opponent: Opponent
   seed: number
@@ -337,6 +338,8 @@ export function Draft({
    * dock hidden that bar is also the one control — it spins, drafts the lit man, and tips off.
    */
   creator?: boolean
+  /** How many men are on the board — App guards its Home button with it (the live check, 2026-10-22). */
+  onPicks?: (n: number) => void
 }) {
   // Death match starts with last level's five already placed; a normal draft starts empty.
   // The carried five arrives in SLOT ORDER (PG to C) — the order My team shows and the player can
@@ -1246,6 +1249,11 @@ export function Draft({
       window.setTimeout(() => onSim(five, assignment, toWin), 2500),
     )
   }
+  useEffect(() => {
+    onPicks?.(picks.length)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [picks.length])
+
   /* P5: the funnel's third step — a five drafted in full (a death match's carried five does not count) */
   useEffect(() => {
     if (full && !carry && !creator) track('draft_complete', { level: opponent.round, salary, death })
@@ -1707,7 +1715,11 @@ export function Draft({
             {`vs you: OFF ${theirs.off.toFixed(1)} · DRTG ${theirs.drtg.toFixed(1)} · NET ${theirs.net > 0 ? '+' : ''}${theirs.net.toFixed(1)}`}
           </div>
         ) : null}
-        {!user && has('scout_ratings') ? (
+        {/* EXACT RATINGS SHOWS WHAT IT BOUGHT IN EVERY MODE (his report, 2026-10-22: "everything it
+            unlocks only shows in Scout mode ... the opponent panel shows names with no numbers").
+            The blindfold is about verdicts on YOUR choices; these are numbers about their five,
+            bought with stars, the way Custom and Vs friend already show ratings in user mode. */}
+        {has('scout_ratings') ? (
           <div className="opp-line">
             {`Inside ${Math.round(theirs.in)} · Outside ${Math.round(theirs.out)} · Interior D ${Math.round(theirs.id)} · Perimeter D ${Math.round(theirs.pd)}`}
           </div>
@@ -1729,7 +1741,7 @@ export function Draft({
             club={teamColor(opponent.ab)}
             spots={opponent.players.map((p, i) => ({
               p,
-              tag: `${opponent.positions?.[i] ?? POSITIONS[i]}${!user && rank(wallet, 'scout_ratings') >= 2 ? ` · ${p.ovr}` : ''}`,
+              tag: `${opponent.positions?.[i] ?? POSITIONS[i]}${rank(wallet, 'scout_ratings') >= 2 ? ` · ${p.ovr}` : ''}`,
               onTap: () => openCard(p),
             }))}
           />
@@ -1744,15 +1756,13 @@ export function Draft({
                   onClick={() => setOppOpen((o) => (o === p.name ? null : p.name))}
                 >
                   <span className="oppman-name">{p.name}</span>
-                  {user ? null : (
                   <span className="oppman-nums">
                     <i>{p.ovr}</i>
                     <i>{p.o_ovr}</i>
                     <i>{p.d_ovr}</i>
                   </span>
-                  )}
                 </button>
-                {oppOpen === p.name ? <DetailGrid p={p} mode={user ? 'stats' : undefined} /> : null}
+                {oppOpen === p.name ? <DetailGrid p={p} /> : null}
               </div>
             ))}
             <div className="oppmen-cap">
@@ -2063,7 +2073,7 @@ export function Draft({
             {assignWorth >= 0 ? '+' : '−'}
             {Math.abs(assignWorth).toFixed(1)}
           </b>
-          <i>points of spread against a naive board</i>
+          <i>points of margin against a naive board</i>
         </div>
       ) : null}
       {full && !user ? <MatchupPanel mine={five} theirs={opponent.players} myName={teamName} theirName={opponent.team} assignment={assignment} /> : null}
@@ -2085,18 +2095,13 @@ export function Draft({
           <div className="odds-grid">
             <div>
               <b className={chance.spread >= 0 ? 'you' : 'them'}>
-                {chance.spread >= 0 ? '−' : '+'}
-                {Math.abs(chance.spread).toFixed(1)}
+                +{Math.abs(chance.spread).toFixed(1)}
               </b>
-              {/* WHOSE LINE IT IS (his report, 2026-09-09: he read the headline as sign-flipped
-                  because it prints −6.8 while the decomposition below reads +6.8). It is not
-                  flipped — this is the book convention, where the FAVOURITE lays the points, and
-                  it agrees with everything else on the card: Φ(+6.8/σ) is the same 75% the game
-                  cell prints. What it never said was WHOSE 6.8 it is, and a bare "Spread" over a
-                  minus sign is exactly the reading he made. Naming the side turns it into the line
-                  a book would post — SLC −6.8 — which can only be read one way. His ruling: keep
-                  the convention, label it properly. */}
-              <i>Spread · {chance.spread >= 0 ? (teamAb ?? teamCode(teamName)) : (opponent.ab ?? teamCode(opponent.team))}</i>
+              {/* NO SPORTSBOOK LINE (the live check, 2026-10-22, under the no-betting-look rule): this
+                  was "−5.5 SPREAD · SYD", the book's own notation. It is the projected margin now,
+                  named by the side it favours — "+5.5 MARGIN · SYD" — the same number, read the same
+                  one way his 2026-09-09 ruling asked for (whose 5.5 it is), with no betting word. */}
+              <i>Margin · {chance.spread >= 0 ? (teamAb ?? teamCode(teamName)) : (opponent.ab ?? teamCode(opponent.team))}</i>
             </div>
             <div>
               <b className={chance.game >= 0.5 ? 'you' : 'them'}>{(100 * chance.game).toFixed(0)}%</b>

@@ -11001,3 +11001,98 @@ body.creator .shr-open { display: none; }
 }
 .ch-called.right { background: #4ea3ff; color: #0b0a09; }
 .ch-called.wrong { background: #f08a24; color: #0b0a09; }
+
+/* CUSTOM'S LAYOUT (his report, 2026-10-22: "Custom mode's layout is broken").
+   1. THE TEAM CARDS. A picked man's row is the database row (`.row.dr`): name, a 132px stat column,
+      the remove button. The card's rows have no stats — that middle cell is an empty span — and on a
+      desk the two cards sit side by side in the 560px column, so the empty column kept its 132px and
+      the NAME got what was left: 40px, "R…", "K…", "OVR …". The empty cell goes and the name takes
+      the row. */
+.cu-side .row.dr { grid-template-columns: minmax(0, 1fr) 32px; }
+.cu-side .row.dr > span:empty { display: none; }
+.cu-side .row.dr .who b { white-space: normal; overflow-wrap: anywhere; }
+/* 2. THE RESULT. Custom lives in `.page-zoom` — the phone column, zoomed up on a desk — and its
+      result screen is the same <Series> the campaign settles on, whose desk layout lays the night
+      across the WINDOW in three columns and scales its own type. Inside the 560px column those three
+      columns were 184-211px wide: the 4-2 broke over two lines, the duel numbers ran into the score,
+      and the top man's line spilled out of its card; on his 3840 desk it was zoomed twice. While the
+      result is up, the column lets go and the night gets the window, as it does in the campaign. The
+      same for Vs friend and 1v1 bid, whose result is the same screen. */
+@media (min-width: 900px) {
+  body:has(.page-zoom .result) #root { max-width: none; }
+  .page-zoom:has(.result) { max-width: none; }
+}
+@media (min-width: 1600px) {
+  .page-zoom:has(.result) { zoom: 1; max-width: none; }
+}
+/* and the side's name field takes the head's width rather than 60% of it ("'00 Los Angeles Lake") */
+.cu-side .card-head { gap: 8px; }
+.cu-side .cu-name { flex: 1 1 auto; width: auto; min-width: 0; text-overflow: ellipsis; }
+
+/* THE LIVE CHECK (2026-10-22) — the blocker. The Add-to-Home-Screen toast stood at the top-right
+   corner, its close button under the Home and map buttons (z 80 over its 70), so "Not now" was a tap
+   on Home. It sits below the two buttons now, and Home asks before it drops a draft (App.tsx). */
+.g7-toast { top: calc(env(safe-area-inset-top, 0px) + 66px); }
+@media (min-width: 900px) { .g7-toast { top: calc(env(safe-area-inset-top, 0px) + 78px); } }
+.home-fab.armed { border-color: var(--them, #ef4a63); color: var(--them, #ef4a63); }
+.home-arm {
+  position: fixed;
+  z-index: 81;
+  top: calc(env(safe-area-inset-top, 0px) + 60px);
+  right: 10px;
+  max-width: min(260px, calc(100vw - 20px));
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--them, #ef4a63);
+  background: var(--surface-2, #1b1712);
+  color: var(--ink, #f6f4ef);
+  font: 600 13px/1.3 var(--sans);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.5);
+  pointer-events: none;
+}
+@media (min-width: 900px) { .home-arm { top: calc(env(safe-area-inset-top, 0px) + 72px); } }
+
+/* LIVE CHECK #7 — THE FRONT DOOR AT TABLET WIDTH. The identity row (ball, wordmark, two counters,
+   the three mode chips, Friends) is a no-wrap row of things that do not shrink, and it only wrapped
+   below 640px: from 640 to 899 it ran 35-70px past the window, the page panned sideways and Friends
+   sat off the edge (768px: 805 wide). The phone's two-line row now holds up to the desk layout. */
+@media (min-width: 640px) and (max-width: 899px) {
+  .fd-id { flex-wrap: wrap; row-gap: calc(var(--fd-u) * 0.5); }
+  .fd-id > .ball7,
+  .fd-word,
+  .fd-modes,
+  .fd-friend { order: 1; }
+  .fd-modes { margin-left: auto; }
+  .fd-idbr { display: block; order: 2; flex: 0 0 100%; height: 0; }
+  .fd-div,
+  .fd-badge,
+  .fd-stat { order: 3; }
+}
+
+/* LIVE CHECK #8 — THE WHEEL'S HOLD BUTTONS ON A PHONE. Below 900px they were the caption's own 8px
+   text in --line-3 on the panel (2.13:1), on a 25x12 target, and read as a disabled label. A pill
+   you can read and a hit area a thumb can find (the ::after grows it without moving the caption). */
+@media (max-width: 899px) {
+  .reel-hold {
+    position: relative;
+    padding: 3px 8px;
+    border: 1px solid var(--line-3);
+    border-radius: 999px;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--ink-2, #ddd5c7);
+  }
+  .reel-hold::after { content: ''; position: absolute; inset: -12px -10px; }
+  .reel.held .reel-hold { border-color: var(--you); color: var(--you); }
+}
+
+/* LIVE CHECK #9 — THE TROPHY TOAST STANDS ABOVE THE DOCK, AND TAKES NO TAPS. It sat on NEXT LEVEL /
+   BACK TO THE MAP for five seconds and swallowed the tap meant for them (z 90 over the dock's 20). */
+.ach-toasts {
+  bottom: calc(var(--foot, 0px) + var(--dock, 0px) + 12px + env(safe-area-inset-bottom, 0px));
+  pointer-events: none;
+}
+
+/* LIVE CHECK #10 — the star / sub notes hang UP from their anchor, which LevelMap now measures off
+   the ticket as drawn (the rule at the head of the map block said so; this later one had said 0). */
+.node-notes { transform: translate(-50%, -100%); }

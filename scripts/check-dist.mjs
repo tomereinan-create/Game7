@@ -16,7 +16,7 @@ for (const page of ['index.html', 'privacy/index.html']) {
   const p = join(dist, page)
   if (!existsSync(p)) fail.push(`missing ${page}`)
   else {
-    const left = readFileSync(p, 'utf8').match(/%(SITE|OG)_[A-Z_]+%/g)
+    const left = readFileSync(p, 'utf8').match(/%(SITE|OG|HTML)_[A-Z_]+%/g)
     if (left) fail.push(`${page}: placeholders not written: ${[...new Set(left)].join(', ')}`)
   }
 }

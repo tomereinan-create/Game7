@@ -268,7 +268,7 @@ const A2HS = 'game7.a2hs'
  * cannot add to the Home Screen; the escape button comes first there). The Home Screen app starts
  * with empty storage, so the same tap copies the save code it will ask for.
  */
-export function IosHint() {
+export function IosHint({ quiet = false }: { quiet?: boolean }) {
   const [shown, setShown] = useState(false)
   const [open, setOpen] = useState(false)
   const [copied, setCopied] = useState(false)
@@ -284,7 +284,9 @@ export function IosHint() {
       window.clearTimeout(t)
     }
   }, [])
-  if (!shown) return null
+  // due, but a draft or a series is on the screen: it waits for the next screen between nights
+  // (the live check, 2026-10-22: it used to land mid-draft, under the Home button)
+  if (!shown || (quiet && !open)) return null
   const done = () => {
     setFlag(A2HS, 'done')
     setShown(false)
