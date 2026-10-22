@@ -1,6 +1,6 @@
 import { ROUNDS } from '../config'
 import { DEFAULT_TACTICS, gateTactics, reconcileTactics, type Tactics } from '../engine/tactics'
-import { migrate, playbookRank, type NodeId } from '../engine/tree'
+import { checkpointLevel, livesBought, migrate, playbookRank, price, rank, respec, type NodeId } from '../engine/tree'
 import type { CoachId } from '../engine/types'
 import type { Kit } from '../ui/teamColors'
 import { teamCode } from '../engine/names'
@@ -285,18 +285,58 @@ const fresh = (): Progress => ({
  * A death-match loss. An extra life absorbs it and the run continues; otherwise THE RUN ENDS AND
  * EVERYTHING RESETS — his ruling, in his words: "Make sure that when losing a campaign everything
  * resets". It used to keep the stars earned before the checkpoint AND the whole staff tree, which is
- * why a "new" run arrived with tactics he had never bought in it. Now a death returns a fresh
- * campaign: no stars, no nodes, nothing spent, no five, no plan. Only who he is (coach, team) and
- * the count of deaths survive, because neither is progress.
+ * why a "new" run arrived with tactics he had never bought in it. A death returns a fresh campaign:
+ * no nodes, no five, no plan, no wear, no lives. Who he is (coach, team) and the count of deaths
+ * survive, because neither is progress.
  *
- * Consequence, recorded rather than hidden: the Survival branch's CHECKPOINT node existed to save
- * the stars past a death, and a death no longer spares any — so that node buys nothing under this
- * rule. Extra lives still work; they are spent inside a run. Flagged for him.
+ * THE ONE EXCEPTION IS THE SAVING POINT (2026-10-22, his report: "Saving point does nothing").
+ * Buying it promises "a lost run restarts there, not at one", and until now nothing read it — a
+ * death went straight to level 1, so the node took the stars and gave nothing back. Now a run that
+ * dies AT OR PAST its checkpoint restarts ON it:
+ *   · the stars of every level below the checkpoint stay (they are the ground it promised), and
+ *     so does the run's record;
+ *   · the Saving point itself stays bought, paid for out of those stars, so the next death is
+ *     caught at the same rung — "Half the ladder can never be taken from you";
+ *   · everything else goes exactly as before: every other node refunded, the five, the plan, the
+ *     wear and the lives gone. The tactics he had never bought cannot come back this way.
+ * A run that dies BELOW its checkpoint never reached the ground it protects, so it resets in full.
  */
 export function die(p: Progress): Progress {
   if (p.lives > 0) return { ...p, lives: p.lives - 1 }
+  const at = checkpointLevel(p)
+  const frontier = currentLevel(p) ?? ROUNDS + 1
   // the club outlives the run by living outside it now, so there is nothing to carry here
-  return { ...fresh(), coach: p.coach, deaths: p.deaths + 1 }
+  const reset = { ...fresh(), coach: p.coach, deaths: p.deaths + 1 }
+  if (!at || frontier < at) return reset
+  const save = rank(p, 'surv_save')
+  return {
+    ...reset,
+    stars: p.stars.map((s, i) => (i < at - 1 ? s : 0)),
+    nodes: { surv_save: save },
+    spent: save * price('surv_save'),
+    checkpoint: at,
+    record: p.record ?? reset.record,
+  }
+}
+
+/**
+ * THE SURVIVAL BRANCH TAKES EFFECT THE MOMENT IT IS BOUGHT — and only what was just bought. Lives
+ * used to be SET to the Extra life rank on every purchase in the death match, so a life lost
+ * earlier in the run came back the moment ANY node was bought (his report: "Lives refill"). Now a
+ * purchase adds exactly the lives its rank added, which is one for an Extra life and none for
+ * anything else; the lives already spent stay spent.
+ */
+export function afterBuy(before: Progress, after: Progress): Progress {
+  return { ...after, lives: before.lives + livesBought(after) - livesBought(before), checkpoint: checkpointLevel(after) }
+}
+
+/**
+ * A RESPEC IN THE DEATH MATCH hands back the stars of the Extra life ranks, so it takes back the
+ * lives they bought that are still in hand — otherwise respec-and-rebuy would mint a life every
+ * time. The checkpoint goes with its node.
+ */
+export function afterRespec(p: Progress): Progress {
+  return { ...respec(p), lives: Math.max(0, p.lives - livesBought(p)), checkpoint: 0 }
 }
 
 /**

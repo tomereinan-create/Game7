@@ -8,7 +8,7 @@ import type { Tactics } from './engine/tactics'
 import CAMPAIGNS from './data/campaigns.json'
 import { canBetter, simSeries, starsFor } from './engine/resolver'
 import { boxContext, reconcileTactics } from './engine/tactics'
-import { balance, benchHeal, buy, capBonus, checkpointLevel, duraBoost, earned, livesBought, paceMastery, playbookRank, rank, respec, subsPerRound, type Branch } from './engine/tree'
+import { balance, benchHeal, buy, capBonus, duraBoost, earned, paceMastery, playbookRank, rank, respec, subsPerRound, type Branch } from './engine/tree'
 import { teach, teachOnce, tutorialLock, useLesson, useTutor } from './state/tutorial'
 import { Coach } from './ui/Coach'
 import { auctionLesson, customLesson, eraLesson, ladderLesson, lifeLesson, mapLesson, myTeamLesson, runOverLesson, spendLesson, staffLesson, teamLesson, trophyLesson, unlockLesson, versusLesson } from './ui/lessons'
@@ -20,6 +20,8 @@ import type { Lineup, Opponent, Player, SeriesResult } from './engine/types'
 import type { BoxCtx } from './engine/boxstats'
 import {
   advanceTo,
+  afterBuy,
+  afterRespec,
   callsPlan,
   clubCode,
   planFor,
@@ -537,7 +539,9 @@ function Game() {
     // `lives` is the extra lives; the coach counts the way the heart does — those plus the one in play
     if (death && tutorial && !result.won) {
       const lives = prog.lives
-      held.current.lesson = () => teach(lives > 0 ? lifeLesson(lives) : runOverLesson())
+      // a run caught by its Saving point restarts on that rung, and the coach says so
+      const restart = currentLevel(settled) ?? 1
+      held.current.lesson = () => teach(lives > 0 ? lifeLesson(lives) : runOverLesson(restart))
     }
     setPending({
       five,
@@ -863,14 +867,15 @@ function Game() {
           onBuy={(id) => {
             const next = buy(prog, id)
             if (!next) return
-            // Survival nodes take effect the moment they are bought: a life bought is a life in hand,
-            // and a checkpoint bought is ground you can no longer lose.
-            commit(cm, death ? { ...next, lives: livesBought(next), checkpoint: checkpointLevel(next) } : next)
+            // Survival nodes take effect the moment they are bought: a life bought is a life in hand
+            // (and a life already lost stays lost), and a checkpoint bought is ground you can no
+            // longer lose. See `afterBuy`.
+            commit(cm, death ? afterBuy(prog, next) : next)
             // THE UNLOCK IS EXPLAINED THE MOMENT IT IS BOUGHT (tutorial mode, his ruling: "Everytime
             // you unlock a new feature its explained as well"). One lesson per rank of every node.
             if (tutorial) teach(unlockLesson(id, rank(next, id)))
           }}
-          onRespec={() => commit(cm, respec(prog))}
+          onRespec={() => commit(cm, death ? afterRespec(prog) : respec(prog))}
           onBack={() => setStaff(false)}
         />
       </>

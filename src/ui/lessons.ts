@@ -615,7 +615,7 @@ export function lifeLesson(livesLeft: number): Lesson {
     steps: [{ body: [`That loss cost a life; the run goes on with ${plural(livesLeft, 'life', 'lives')} left — the heart on the map counts them. Extra lives come from the Survival branch of the staff tree.`] }],
   }
 }
-export function runOverLesson(): Lesson {
+export function runOverLesson(restartAt = 1): Lesson {
   return {
     id: 'death.over',
     kicker: 'Tutorial · The Death match',
@@ -623,7 +623,9 @@ export function runOverLesson(): Lesson {
     steps: [
       {
         body: [
-          'A loss with no life left ends the run: every star, every node and the five go with it, and the ladder starts again at one. The Survival branch of the staff tree sells extra lives — the first star of the next run is well spent there.',
+          restartAt > 1
+            ? `A loss with no life left ends the run — but the Saving point caught it. Every star below level ${restartAt} stays, and so does the Saving point; the other nodes, the five and the plan go, and the run starts again at level ${restartAt}.`
+            : 'A loss with no life left ends the run: every star, every node and the five go with it, and the ladder starts again at one. The Survival branch of the staff tree sells extra lives — the first star of the next run is well spent there.',
         ],
       },
     ],
