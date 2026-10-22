@@ -1,3 +1,4 @@
+import { decompose } from '../engine/resolver'
 import type { Lineup, SeriesResult } from '../engine/types'
 
 /**
@@ -61,12 +62,35 @@ export function encodeChallenge(c: Challenge): string {
   return enc(JSON.stringify(c))
 }
 
+/**
+ * THE BOUNDS A REAL NIGHT LIVES IN (the live check, 2026-10-22: a hand-made code with g=1e308 froze
+ * the tab — Game 7's tape loops once per made basket — g=1000 played Game 7 at 12–354, and nine 1e308s
+ * printed "7.25e+307" chips). Measured over the pool: every packed number sits inside 0..141 or
+ * -12..31, the most lopsided five against the least is a 31-point spread, and the noise is 10 times
+ * a plan's 0.94..1.08 (the slow death-match night is 10.8). Each bound is about twice the real one.
+ */
+const MAX_VALUE = 500
+const MAX_SPREAD = 60
+const SIGMA_RANGE = [5, 20] as const
+
 export function decodeChallenge(code: string): Challenge | null {
   try {
     const c = JSON.parse(dec(decodeURIComponent(code))) as Challenge
-    const side = (x: ChallengeSide) => x && typeof x.n === 'string' && typeof x.ab === 'string' && Array.isArray(x.p) && x.p.length === 5 && x.p.every((n) => typeof n === 'string')
-    if (c.v !== 1 || !side(c.a) || !side(c.b) || !Array.isArray(c.m) || !Array.isArray(c.t) || c.m.length !== 9 || c.t.length !== 9) return null
-    if (!(c.s > 0) || !(c.g > 0) || !(c.w >= 1 && c.w <= 4)) return null
+    const side = (x: ChallengeSide) =>
+      x &&
+      typeof x.n === 'string' &&
+      x.n.length <= 60 &&
+      typeof x.ab === 'string' &&
+      x.ab.length <= 5 &&
+      Array.isArray(x.p) &&
+      x.p.length === 5 &&
+      x.p.every((n) => typeof n === 'string') &&
+      (x.y === undefined || (Number.isInteger(x.y) && x.y > 1900 && x.y < 2200))
+    const lineup = (a: unknown) => Array.isArray(a) && a.length === 9 && a.every((x) => typeof x === 'number' && Number.isFinite(x) && Math.abs(x) <= MAX_VALUE)
+    if (c.v !== 1 || !side(c.a) || !side(c.b) || !lineup(c.m) || !lineup(c.t)) return null
+    if (!Number.isInteger(c.s) || c.s <= 0 || c.s > 0xffffffff || !Number.isInteger(c.w) || c.w < 1 || c.w > 4) return null
+    if (typeof c.g !== 'number' || !(c.g >= SIGMA_RANGE[0] && c.g <= SIGMA_RANGE[1])) return null
+    if (Math.abs(decompose(unpackLineup(c.m), unpackLineup(c.t)).total) > MAX_SPREAD) return null
     return c
   } catch {
     return null
