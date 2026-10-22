@@ -4,7 +4,7 @@ import { teamCode } from '../engine/names'
 import { seriesNote } from '../engine/notes'
 import { makeRng } from '../engine/rng'
 import { starsFor } from '../engine/resolver'
-import { buildTicker } from '../engine/ticker'
+import { buildTicker, tapeSeed } from '../engine/ticker'
 import type { Lineup, Opponent, Player, SeriesResult } from '../engine/types'
 import { LINES } from './Stat'
 import { seriesBox, type BoxCtx, type PlayerBox, type SeriesBox } from '../engine/boxstats'
@@ -15,6 +15,7 @@ import type { Skin } from './LevelMap'
 import { useUserMode } from '../state/viewmode'
 import { useLesson } from '../state/tutorial'
 import { mapDoorLesson } from './lessons'
+import { ShareButton } from './ShareSheet'
 
 /** Whether this machine has asked for less motion. The draft reads it the same way. */
 const reduceMotion = () => {
@@ -355,8 +356,8 @@ export function Series({
         // tactical context the box scores consume.
         t =
           g === 6
-            ? buildTicker(game.margin, five, opponent.players, makeRng(seed ^ 0x5bf03635), LINES, boxCtx ?? undefined)
-            : buildTicker(game.margin, five, opponent.players, makeRng((seed ^ 0x5bf03635 ^ Math.imul(0x9e3779b9, g + 1)) >>> 0), LINES, boxCtx ?? undefined, { us: game.us, them: game.them })
+            ? buildTicker(game.margin, five, opponent.players, makeRng(tapeSeed(seed, g)), LINES, boxCtx ?? undefined)
+            : buildTicker(game.margin, five, opponent.players, makeRng(tapeSeed(seed, g)), LINES, boxCtx ?? undefined, { us: game.us, them: game.them })
         cache.set(g, t)
       }
       return t
@@ -775,6 +776,13 @@ export function Series({
                   {'★'.repeat(starsFor(result))}
                   <span>{'★'.repeat(3 - starsFor(result))}</span>
                 </div>
+              ) : null}
+              {/* THE SHARE CARD (P10): only once the series has spoken, so it never gives away a
+                  result the strip has not landed yet. Game 7's score is the tape's, as on the strip. */}
+              {settled ? (
+                <ShareButton
+                  input={{ opponent, five, mine, theirs, teamName, teamAb: myAb, result, sigma, seed, exhibition, kicker, scores: scoresOf(result, tape ? { us: tape.us, them: tape.them } : null) }}
+                />
               ) : null}
             </div>
 

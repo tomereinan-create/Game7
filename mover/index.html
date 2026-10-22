@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>%SITE_NAME% has moved</title>
+    <meta name="robots" content="noindex" />
+    <link rel="canonical" href="%TARGET%" />
+    <noscript><meta http-equiv="refresh" content="0;url=%TARGET%" /></noscript>
+    <style>
+      :root { color-scheme: dark; }
+      body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: %SITE_THEME%; color: #f2ece0; font: 16px/1.5 system-ui, -apple-system, 'Segoe UI', sans-serif; text-align: center; }
+      main { padding: 24px 16px; max-width: 520px; }
+      h1 { font-size: 26px; margin: 0 0 8px; }
+      a { color: #f0b323; }
+      .muted { color: #a59d90; font-size: 13px; margin-top: 32px; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>%SITE_NAME% has moved</h1>
+      <p>Taking you and your progress to <a id="go" href="%TARGET%">%TARGET_PRINTED%</a>…</p>
+      <p class="muted">%SITE_DISCLAIMER%</p>
+    </main>
+    <script>
+      %MOVER_JS%
+    </script>
+  </body>
+</html>

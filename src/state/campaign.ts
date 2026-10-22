@@ -259,6 +259,8 @@ export function resetTutorialSaves() {
   }
 }
 
+/** A new ladder, never saved — for a run that keeps nothing (a challenge's "your turn", P11). */
+export const freshProgress = (): Progress => fresh()
 const fresh = (): Progress => ({
   coach: null,
   stars: Array.from({ length: ROUNDS }, () => 0),
@@ -411,6 +413,10 @@ export function saveProgress(m: CampaignMode, p: Progress) {
  */
 export function starsFromUrl(all: Record<CampaignMode, Progress>): boolean {
   if (typeof window === 'undefined') return false
+  // P4 (launch gate): a developer's door, and only a developer's. On the public site `?stars=0`
+  // in a pasted link would wipe every ladder's stars, so it is honoured on the dev server and on
+  // this machine (the localhost build he plays) and ignored everywhere else.
+  if (!import.meta.env.DEV && !/^(localhost|127\.0\.0\.1|\[::1\])$/.test(window.location.hostname)) return false
   const raw = new URLSearchParams(window.location.search).get('stars')
   if (raw === null) return false
   const n = Math.max(0, Math.min(3, Math.round(Number(raw))))

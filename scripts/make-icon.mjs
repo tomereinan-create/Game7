@@ -38,3 +38,6 @@ write('game7.ico', Buffer.concat([dir, ico]))
 write('public/icon-192.png', ball(192))
 write('public/icon-512.png', ball(512))
 write('public/icon-maskable-512.png', ball(512, { fill: 190 / 256, bg: NIGHT }))
+// iOS's Home Screen icon (P4): opaque, because iOS paints a transparent corner black, at the 180px
+// iOS asks for, with the ball pulled in from the edge the way its rounded mask wants
+write('public/apple-touch-icon.png', ball(180, { fill: 150 / 180, bg: NIGHT }))

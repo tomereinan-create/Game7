@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from 'react'
+import { track, trackOnce } from '../analytics'
+import { FIRST_SPIN } from '../state/install'
 import { plateUrl } from './moments'
 import SALARIES from '../data/salaries.json'
 import { WHEEL, type TeamSeason } from '../data/wheel'
@@ -8,20 +10,20 @@ import { teamCode } from '../engine/names'
 import { useLayout } from './useLayout'
 import { eligible, POSITIONS, type Pos } from '../engine/positions'
 import { canMoveSlot, moveSlot } from '../engine/slots'
-import { odds } from '../engine/odds'
+import { night, odds } from '../engine/odds'
 import { Analysis } from './Analysis'
 import { Ask } from './Ask'
 import { useCard } from './CardSheet'
 import { CourtFive, type Side } from './CourtFive'
 import { ChipRow } from './ChipRow'
 import { isRateable, naiveAssignment, solveBoard, type Assignment } from '../engine/offense'
-import { aiTempo, DEFAULT_TACTICS, gateTactics, pace, reconcileTactics, styleFit, STYLES, tacticsMod, type Tactics } from '../engine/tactics'
+import { DEFAULT_TACTICS, gateTactics, reconcileTactics, styleFit, STYLES, type Tactics } from '../engine/tactics'
 import { capBonus, duraBoost, owned, paceMastery, playbookRank, rank, respinSeason, type NodeId } from '../engine/tree'
 import { WEAR_OUT, type Progress } from '../state/campaign'
 import { Matchups } from './Matchups'
 import { TacticsCalls, tacticsWorth, worthLine } from './TacticsPanel'
 import { MatchupPanel, TeamDials } from './MatchupPanel'
-import { applyMod, compile, meanMargin } from '../engine/resolver'
+import { compile, meanMargin } from '../engine/resolver'
 import { makeRng } from '../engine/rng'
 import type { Opponent, Player } from '../engine/types'
 import { DetailGrid, LINES, Mini, StatHead } from './Stat'
@@ -225,6 +227,10 @@ function widenRoster(t: TeamSeason, mode: Wide): string[] {
 // Boston read the same as every other. `teamCode` is the one rule, in names.ts, and it reads the
 // city: SLC. Written `ab`s still win wherever the wheel has one.
 /** Whether this machine has asked for less motion. Read at press time, not cached. */
+/** Creator mode's hands-free pacing, in ms: before the first spin, between spins, reading a landed
+ *  roster, holding the lit man before he is drafted, and holding the full five before the floor. */
+const AUTO_MS = { first: 900, spin: 600, read: 1500, pick: 800, sim: 1800 }
+
 const reduceMotion = () => {
   try {
     return window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -252,6 +258,9 @@ export function Draft({
   onBack,
   onRoster,
   onMyTeam,
+  autoSpin = false,
+  autoplay = false,
+  creator = false,
 }: {
   opponent: Opponent
   seed: number
@@ -311,6 +320,23 @@ export function Draft({
    * instead of myteam."
    */
   onMyTeam?: () => void
+  /**
+   * THE FIRST SPIN SPINS ITSELF (P1, the launch gate). A visitor who came from a video pressed one
+   * button on the front door to get here; the wheel they came for goes round on arrival rather than
+   * waiting for a second press on a button at the foot of the screen.
+   */
+  autoSpin?: boolean
+  /**
+   * CREATOR MODE'S HANDS-FREE RUN (P6): spin, take the best man the wheel offers at an open ring,
+   * spin again, and take the floor when the five is full — every step on a timer a camera can follow.
+   * The wheel is seeded, so the same seed films the same run every time.
+   */
+  autoplay?: boolean
+  /**
+   * CREATOR MODE (P6): the win chance rides a bar across the top of the 9:16 frame, and with the
+   * dock hidden that bar is also the one control — it spins, drafts the lit man, and tips off.
+   */
+  creator?: boolean
 }) {
   // Death match starts with last level's five already placed; a normal draft starts empty.
   // The carried five arrives in SLOT ORDER (PG to C) — the order My team shows and the player can
@@ -755,9 +781,6 @@ export function Draft({
     const by = need > 0 ? Math.min(need, Math.max(0, spare)) : spare < 0 ? spare : 0
     if (by) list.scrollBy({ top: by, behavior: reduceMotion() ? 'auto' : 'smooth' })
   }, [info])
-  // PACE (recal_57): the AI answers the tempo call off the surpluses; the readout below shows both.
-  const pc = plan && five.length ? pace(plan.tempo, aiTempo(opponent.players, five, false), five, opponent.players, paceMastery(wallet)) : null
-  const sigma = pc ? SIGMA * pc.sigmaMult : SIGMA
   const open = POSITIONS.filter((x) => !slots[x])
   // Defense is a pairing: both ratings are against the other five, and change as you draft.
   const full = picks.length === DRAFT_SIZE
@@ -780,6 +803,12 @@ export function Draft({
   const overCap = (name: string) => salary && ((capPct(name) ?? 0) > budget + 1e-9 || unpriced(name))
   // Defensive assignment: naive until the Coach node; the board (if owned) overrides with the player's own map.
   const assignment: Assignment = full && board && has('coach_manual') ? board : has('coach_optimal') ? 'optimal' : 'naive'
+  // PACE (recal_57): the AI answers the tempo call off the surpluses; the readout below shows both.
+  // The card prices the night the sim plays: odds.ts `night`, the call App.tsx sims with (P8 — it
+  // used to assume the AI was never the underdog, and so never answered a wash night slow).
+  const nt = five.length ? night(five, opponent.players, assignment, plan, paceMastery(wallet)) : null
+  const pc = nt?.pc ?? null
+  const sigma = nt?.sigma ?? SIGMA
   /**
    * THE SAME BOARD, AS FIVE PAIRINGS, for the tip-off's nameplates. `assignment` is what the sim
    * is handed and it may be a WORD — 'optimal' is a board the engine solves at sim time, not a map
@@ -848,7 +877,7 @@ export function Draft({
   )
   useLesson('board', boardOpen && full, () => boardLesson(rank(wallet, 'coach_manual') >= 2))
   const theirs = useMemo(() => compile(opponent.players, five.length ? five : undefined), [opponent, five])
-  const mine = five.length ? (plan ? applyMod(compile(five, opponent.players, assignment), { ...tacticsMod(plan, five, opponent.players), bonus: (tacticsMod(plan, five, opponent.players).bonus ?? 0) + (pc?.margin ?? 0) }) : compile(five, opponent.players, assignment)) : null
+  const mine = nt ? nt.mine : null
   const chance = full && mine ? odds(mine, theirs, sigma, toWin) : null
   /** Matchup coaching rank 2: what the board you are playing is worth against a naive one. */
   const assignWorth = useMemo(() => {
@@ -890,6 +919,10 @@ export function Draft({
       setDead(true)
       return
     }
+    // the funnel's second step (P5): once per visit, whichever draft it happens in
+    trackOnce('first_spin', { level: opponent.round, auto: autoSpin || autoplay })
+    // P9: the iOS Add-to-Home-Screen hint waits for this moment (src/ui/Escape.tsx)
+    if (!creator) window.dispatchEvent(new Event(FIRST_SPIN))
     setSel(null)
     setSlot(null)
     setInfo(null)
@@ -1213,6 +1246,50 @@ export function Draft({
       window.setTimeout(() => onSim(five, assignment, toWin), 2500),
     )
   }
+  /* P5: the funnel's third step — a five drafted in full (a death match's carried five does not count) */
+  useEffect(() => {
+    if (full && !carry && !creator) track('draft_complete', { level: opponent.round, salary, death })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [full])
+
+  /* THE FIRST SPIN SPINS ITSELF (P1) — once, on arrival. The draft is keyed per attempt, so this
+     mounts once per wheel; the timer gives the screen a beat to paint before the reels go. */
+  useEffect(() => {
+    if (!autoSpin || autoplay) return
+    const t = window.setTimeout(() => spin(), 650)
+    return () => window.clearTimeout(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  /* ON A PHONE THE REELS LEAD THE COLUMN (P1, see the launch-gate block in the stylesheet), and a
+     spin pulls them back into view when the page was scrolled down to read the opponent. */
+  useEffect(() => {
+    if (!spinning || window.innerWidth >= 900) return
+    sheet.current?.querySelector('.wheel-card')?.scrollIntoView({ block: 'start', behavior: reduceMotion() ? 'auto' : 'smooth' })
+  }, [spinning])
+
+  /* CREATOR MODE'S HANDS-FREE RUN (P6). One step per state change: spin; let the landed roster be
+     read; light the best man the five can still take (the highest overall at an open ring); draft
+     him; spin again; and take the floor once the five is full. Deterministic for a given seed —
+     the wheel's draw and this choice are both pure functions of what is on the board. */
+  useEffect(() => {
+    if (!autoplay || dead || shooting) return
+    let t = 0
+    if (full) t = window.setTimeout(takeTheFloor, AUTO_MS.sim)
+    else if (spinning) return
+    else if (!spun) t = window.setTimeout(() => spin(), picks.length ? AUTO_MS.spin : AUTO_MS.first)
+    else if (!sel) {
+      const best = roster.filter((p) => draftable(p.name)).sort((a, b) => b.ovr - a.ovr || a.name.localeCompare(b.name))[0]
+      if (best)
+        t = window.setTimeout(() => {
+          setSel(best.name)
+          setSlot(posOf(best.name).find((x) => open.includes(x)) ?? null)
+        }, AUTO_MS.read)
+    } else if (slot) t = window.setTimeout(() => commit(slot), AUTO_MS.pick)
+    return () => window.clearTimeout(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoplay, dead, shooting, full, spinning, spun, sel, slot])
+
   const dock = () => {
     // A worn-out man cannot take the floor, and the change lives in MY TEAM on the map — the
     // draft only holds the door until he has been replaced there.
@@ -1551,6 +1628,25 @@ export function Draft({
           is the painted room; `.room-plate.st-*` in styles.css paints the panels, the reels and
           the roster to match. A desk only. */}
       <div className={`room-plate st st-${death ? 'steel' : salary ? 'walnut' : 'arena'}`} aria-hidden style={{ '--plate': plateUrl(`draft-${death ? 'steel' : salary ? 'walnut' : 'arena'}.jpg`) } as CSSProperties} />
+      {creator ? (
+        <button
+          className={`cr-hud${chance ? ' on' : ''}`}
+          disabled={autoplay || shooting || spinning}
+          onClick={() => (full ? takeTheFloor() : sel && slot ? commit(slot) : !spun ? spin() : undefined)}
+        >
+          <span className="cr-vs">
+            <i>vs</i>
+            <b>
+              {opponent.team}
+              {opponent.season ? ` '${String(opponent.season).slice(2)}` : ''}
+            </b>
+          </span>
+          <span className="cr-wc">
+            <b>{chance ? `${Math.round(100 * chance.series)}%` : `${picks.length}/${DRAFT_SIZE}`}</b>
+            <i>{chance ? 'win chance' : 'drafted'}</i>
+          </span>
+        </button>
+      ) : null}
       <div ref={sheet} className={`draft${salary ? ' cap' : ''}${full && !display ? ' set' : ''}${user && full && !display ? ' solo' : ''}`}>
       {/* THE OPPONENT'S COLUMN, GONE IN USER MODE ONCE THE FIVE IS SET (his ruling, above). It is
           how you scout who you are playing WHILE you draft, so it stands untouched until the fifth
@@ -1974,7 +2070,8 @@ export function Draft({
       {chance && !user ? (
         <div className="card odds">
           <div className="card-head">
-            <span className="label">Before you sim</span>
+            {/* P2 (launch gate): the card says what its numbers are — the win chance, never "odds" */}
+            <span className="label">Win chance</span>
             {/* ONE DECIMAL, because it is a reading and not the number itself. A pace call multiplies
                 SIGMA by 0.94 or 1.08 and the card printed the float raw — "noise σ 9.399999999999999"
                 on a 375px phone. Only the death match could reach a pace call before this pass, so

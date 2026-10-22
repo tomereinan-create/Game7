@@ -1,16 +1,128 @@
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
+import { existsSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
+import { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { deployFor, siteFor, type Deploy, type Site } from './src/site'
 
-export default defineConfig({
-  plugins: [react()],
-  base: './',
-  // PORT is honoured when the environment sets one, so a second session can bring up its own dev
-  // server for verification without taking the port another session is already serving on. An
-  // explicit `--port` on the command line still wins over this.
-  server: { host: true, port: process.env.PORT ? Number(process.env.PORT) : undefined },
-  test: {
-    environment: 'node',
-    include: ['tests/**/*.test.ts'],
-    testTimeout: 120_000,
-  },
-} as never)
+const root = fileURLToPath(new URL('.', import.meta.url))
+
+const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+
+/**
+ * THE SITE'S OWN FILES, WRITTEN FROM src/site.ts (P2/P4, the launch gate). The product name is
+ * undecided, so nothing that names it is typed into a static file: the page titles, the Open Graph
+ * and Twitter tags, the home-screen label and the manifest are all filled in here, at build time,
+ * from the one config. The HTML pages carry `%SITE_*%` placeholders; the manifest is generated whole.
+ */
+function sitePages(site: Site, deploy: Deploy): Plugin {
+  const vars: Record<string, string> = {
+    SITE_NAME: site.name,
+    SITE_SHORT: site.shortName,
+    SITE_TITLE: `${site.name} — spin the wheel, draft five, win the series`,
+    SITE_DESC: site.description,
+    SITE_URL: site.url,
+    SITE_THEME: site.themeColor,
+    SITE_DISCLAIMER: site.disclaimer,
+    SITE_CONTACT: site.contact,
+    OG_TITLE: site.ogTitle,
+    OG_IMAGE: `${site.url}og-image.png`,
+    OG_ALT: site.ogImageAlt,
+  }
+  // the manifest's start_url and scope follow the base: './' serves from any folder (GitHub Pages'
+  // /Game7/), '/' from a domain's root (P3)
+  const start = deploy.base === './' ? './' : deploy.base
+  const manifest = JSON.stringify(
+    {
+      id: start,
+      name: site.name,
+      short_name: site.shortName,
+      description: site.description,
+      start_url: start,
+      scope: start,
+      display: 'standalone',
+      orientation: 'portrait',
+      background_color: site.themeColor,
+      theme_color: site.themeColor,
+      categories: ['games', 'sports'],
+      icons: [
+        { src: 'icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+        { src: 'icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+        { src: 'icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+      ],
+      screenshots: [
+        { src: 'screenshots/phone-draft.png', sizes: '1080x1920', type: 'image/png', form_factor: 'narrow', label: 'The wheel lands on a team-season' },
+        { src: 'screenshots/phone-series.png', sizes: '1080x1920', type: 'image/png', form_factor: 'narrow', label: 'Game 7, play by play' },
+        { src: 'screenshots/desk-home.png', sizes: '1920x1080', type: 'image/png', form_factor: 'wide', label: 'Six ways to play' },
+      ].filter((s) => existsSync(join(root, 'public', s.src))),
+    },
+    null,
+    2,
+  )
+  // Cloudflare Web Analytics: a cookieless page-view count, only when a token is configured
+  const beacon = deploy.cfBeacon
+    ? `<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='${JSON.stringify({ token: deploy.cfBeacon })}'></script>`
+    : ''
+  let outDir = 'dist'
+  return {
+    name: 'site-pages',
+    configResolved(c) {
+      outDir = c.build.outDir
+    },
+    transformIndexHtml: {
+      order: 'pre',
+      handler: (html) => html.replace(/%(SITE_[A-Z_]+|OG_[A-Z_]+)%/g, (m, k: string) => (k in vars ? esc(vars[k]) : m)).replace('<!--CF_BEACON-->', beacon),
+    },
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        if (!req.url?.split('?')[0].endsWith('/manifest.webmanifest')) return next()
+        res.setHeader('Content-Type', 'application/manifest+json')
+        res.end(manifest)
+      })
+    },
+    generateBundle() {
+      this.emitFile({ type: 'asset', fileName: 'manifest.webmanifest', source: manifest })
+    },
+    /**
+     * THE AI POSTERS, BEHIND A FLAG. `VITE_MOMENTS=0` leaves the iconic-moments pictures and the
+     * Game 7 intro clip out of dist/ and empties the manifest the ladder reads, so nothing asks
+     * for them. scripts/check-dist.mjs fails a build that was told to leave them out and did not.
+     */
+    closeBundle() {
+      if (deploy.moments) return
+      const dir = join(root, outDir, 'moments')
+      if (!existsSync(dir)) return
+      for (const f of readdirSync(dir)) if (/^the-.*\.(jpe?g|png|webp)$/i.test(f) || f === 'game7-intro.mp4') rmSync(join(dir, f))
+      writeFileSync(join(dir, 'manifest.json'), '{}\n')
+    },
+  }
+}
+
+export default defineConfig(({ mode }) => {
+  const env = { ...loadEnv(mode, root, ''), ...process.env }
+  const site = siteFor(env)
+  const deploy = deployFor(env)
+  return {
+    plugins: [react(), sitePages(site, deploy)],
+    // P3: './' by default (any folder, GitHub Pages' /Game7/ today); BASE_PATH=/ for a root domain
+    base: deploy.base,
+    define: {
+      'import.meta.env.VITE_MOMENTS': JSON.stringify(deploy.moments ? '1' : '0'),
+    },
+    build: {
+      rollupOptions: {
+        // the game, and the static privacy page beside it (P5) — both written from src/site.ts
+        input: { index: join(root, 'index.html'), privacy: join(root, 'privacy/index.html') },
+      },
+    },
+    // PORT is honoured when the environment sets one, so a second session can bring up its own dev
+    // server for verification without taking the port another session is already serving on. An
+    // explicit `--port` on the command line still wins over this.
+    server: { host: true, port: process.env.PORT ? Number(process.env.PORT) : undefined },
+    test: {
+      environment: 'node',
+      include: ['tests/**/*.test.ts'],
+      testTimeout: 120_000,
+    },
+  } as never
+})

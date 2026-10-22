@@ -1,0 +1,16 @@
+# Cloudflare Pages headers (GitHub Pages ignores this file).
+# The hashed build output never changes under its name; the page and the worker always revalidate,
+# so a deploy is seen on the next load (the same rule public/sw.js keeps).
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+/
+  Cache-Control: no-cache
+/index.html
+  Cache-Control: no-cache
+/sw.js
+  Cache-Control: no-cache
+/manifest.webmanifest
+  Cache-Control: no-cache
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin

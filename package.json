@@ -17,7 +17,7 @@
     "opponents-fetch": "vite-node scripts/fetch-opponents.ts",
     "salaries": "vite-node scripts/salaries.ts",
     "ovr": "python data/compute_ovr.py src/data/players_stats.json",
-    "data": "npm run opponents && npm run stats && npm run teams && npm run salaries",
+    "data": "npm run opponents && npm run stats && npm run teams && npm run starters && npm run salaries",
     "icon": "node scripts/make-icon.mjs",
     "play": "node serve.mjs",
     "receipts": "vite-node scripts/receipts.ts",
@@ -29,9 +29,13 @@
     "explain": "cd data && python compute_ovr.py --explain",
     "read": "cd data && python compute_ovr.py --read",
     "scout": "vite-node scripts/scout.ts",
-    "balance": "vite-node scripts/balance.ts"
+    "balance": "vite-node scripts/balance.ts",
+    "starters": "vite-node scripts/starters.ts",
+    "batch-sim": "vite-node scripts/batch-sim.ts",
+    "calibrate": "vite-node scripts/calibrate.ts"
   },
   "dependencies": {
+    "posthog-js": "^1.438.13",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
@@ -43,6 +47,7 @@
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.4",
+    "playwright-core": "^1.64.1",
     "typescript": "^5.6.3",
     "vite": "^5.4.11",
     "vite-node": "^2.1.8",

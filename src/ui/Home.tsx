@@ -1,6 +1,8 @@
 import { type CampaignMode, type Progress, type Team } from '../state/campaign'
 import { useUserMode } from '../state/viewmode'
 import { FrontDoor } from './FrontDoor'
+import { SiteFooter } from './SiteFooter'
+import { EscapeBanner, FooterDoors } from './Escape'
 
 export type Mode = CampaignMode | 'database' | 'archetypes' | 'versus' | 'auction' | 'custom' | 'achievements' | 'teams'
 
@@ -36,5 +38,17 @@ export interface Era {
  * drawing rendered twice, which is what keeps scout's board and user's board the same board.
  */
 export function Home(props: { progress: Record<CampaignMode, Progress>; team: Team | null; onPick: (m: Mode) => void }) {
-  return <FrontDoor user={useUserMode()} {...props} />
+  return (
+    <>
+      {/* P9: inside TikTok / Instagram, the one visible way out to a real browser — never automatic */}
+      <EscapeBanner />
+      <FrontDoor user={useUserMode()} {...props} />
+      <SiteFooter>
+        <FooterDoors />
+        {/* P6: the way into creator mode from inside the installed app, which has no address bar to
+            type ?creator=1 into. It wears the club's name; nothing it does is saved. */}
+        <a href={`?creator=1${props.team ? `&team=${encodeURIComponent(`${props.team.city} ${props.team.name}`)}` : ''}`}>Creator mode</a>
+      </SiteFooter>
+    </>
+  )
 }

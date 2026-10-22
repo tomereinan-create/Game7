@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
-import { CAP_LIMIT, ROUNDS, SIGMA } from './config'
+import { CAP_LIMIT, ROUNDS } from './config'
 import { achCheckMeta, achResetCampaign, achSettleSeries, onUnlocked, type AchDef } from './state/achievements'
 import { Achievements } from './ui/Achievements'
 import { TeamDb } from './ui/TeamDb'
-import { odds } from './engine/odds'
+import { night, odds } from './engine/odds'
 import type { Tactics } from './engine/tactics'
 import CAMPAIGNS from './data/campaigns.json'
-import { applyMod, canBetter, compile, meanMargin, simSeries, starsFor } from './engine/resolver'
-import { aiTempo, boxContext, pace, reconcileTactics, tacticsMod } from './engine/tactics'
+import { canBetter, simSeries, starsFor } from './engine/resolver'
+import { boxContext, reconcileTactics } from './engine/tactics'
 import { balance, benchHeal, buy, capBonus, checkpointLevel, duraBoost, earned, livesBought, paceMastery, playbookRank, rank, respec, subsPerRound, type Branch } from './engine/tree'
 import { teach, teachOnce, tutorialLock, useLesson, useTutor } from './state/tutorial'
 import { Coach } from './ui/Coach'
@@ -53,6 +53,32 @@ import { TeamSetup } from './ui/TeamSetup'
 import { Custom } from './ui/Custom'
 import { Versus } from './ui/Versus'
 import { Auction } from './ui/Auction'
+import { autoTeam } from './state/autoteam'
+import { track } from './analytics'
+import { CREATOR, type Creator } from './creator/params'
+import { asOpponent, teamSeason } from './creator/teams'
+import { CreatorSettle } from './creator/Settle'
+import { challengeFromUrl } from './share/challenge'
+import { ChallengeView } from './ui/ChallengeView'
+import { ImportPrompt, IosHint, StandaloneWelcome } from './ui/Escape'
+import { standalone } from './share/inapp'
+
+/** Creator mode's club: the `team` in the address ("Tel Aviv Jets" — the last word is the nickname),
+ *  or one named off the run's seed, so the same address always wears the same name. */
+function creatorTeam(c: Creator): Team {
+  if (c.team) {
+    const words = c.team.split(/\s+/)
+    const name = words.length > 1 ? words.pop()! : 'Sevens'
+    return { city: words.join(' '), country: 'US', name }
+  }
+  const r = makeRng(c.seed)
+  return autoTeam(() => r.next())
+}
+/** Creator mode's `b`: a team-season to draft against instead of a campaign level. */
+const creatorOpp = CREATOR?.b ? (() => { const t = teamSeason(CREATOR.b!); return t ? asOpponent(t, Math.min(CREATOR.level, ROUNDS)) : null })() : null
+
+/** Never played a series and never banked a star: the visitor the launch gate is for (P1). */
+const firstRun = (p: Progress) => p.plays === 0 && p.stars.every((s) => s === 0)
 
 interface Tier {
   id: string
@@ -111,17 +137,47 @@ interface Pending {
 }
 
 
+/**
+ * CREATOR MODE'S "SETTLE IT" (P6): two team-seasons named in the address get their own screen —
+ * both fives, the 10,000-sim win chance, then one featured series. Everything else, creator mode
+ * included, is the game.
+ */
 export default function App() {
+  /* A CHALLENGE LINK (P11): `#c=` opens the challenge — call it, watch it, then your turn — and
+     only then the game. Read once; the address keeps it until the challenge is left, so a reload
+     mid-series comes back to it. */
+  const [challenge, setChallenge] = useState(() => (CREATOR || typeof location === 'undefined' ? null : challengeFromUrl(location.href)))
+  if (CREATOR?.a && CREATOR.b) return <CreatorSettle />
+  if (challenge)
+    return (
+      <ChallengeView
+        c={challenge}
+        onDone={() => {
+          const u = new URL(location.href)
+          u.hash = u.hash.replace(/(^#|&)c=[^&]*/, '').replace(/^#&?$/, '')
+          u.searchParams.delete('c')
+          history.replaceState(history.state, '', u.href)
+          setChallenge(null)
+        }}
+      />
+    )
+  return <Game />
+}
+
+function Game() {
   // Which front-door mode is active. The two campaigns share every screen
   // after Home; only the save slot and the salary line differ.
-  const [mode, setMode] = useState<Mode | null>(null)
+  // Creator mode (P6) opens straight onto a campaign draft, in memory (see src/boot.ts).
+  const [mode, setMode] = useState<Mode | null>(CREATOR ? 'campaign' : null)
   const [progress, setProgress] = useState<Record<CampaignMode, Progress>>(() => {
     const all = Object.fromEntries(MODES.map((m) => [m, loadProgress(m)])) as Record<CampaignMode, Progress>
+    // creator mode: the run's seed IS the ladder's seed, so the same address deals the same wheel
+    if (CREATOR) all.campaign = { ...all.campaign, seed: CREATOR.seed }
     // `?stars=1` marks the whole ladder cleared at one star — his door onto the later blocks.
-    starsFromUrl(all)
+    else starsFromUrl(all)
     return all
   })
-  const [level, setLevel] = useState<number | null>(null)
+  const [level, setLevel] = useState<number | null>(CREATOR ? Math.min(CREATOR.level, ROUNDS) : null)
   /**
    * THE STAGE HE CAME FROM (his ruling, 2026-10-01: "Pressing back to map should lead me to the
    * stage I was at"). The map centred on the NEXT level every time it mounted, so walking out of
@@ -134,6 +190,8 @@ export default function App() {
     if (level) setLastLevel(level)
   }, [level])
   const [pending, setPending] = useState<Pending | null>(null)
+  /** P1: the draft opened by a first visit spins on arrival. Cleared the moment that night is simmed. */
+  const [autoSpin, setAutoSpin] = useState(false)
   const [pickTeam, setPickTeam] = useState(false)
   /**
    * ONE CLUB, ALL THREE LADDERS (his ruling, 2026-09-11: "Change it so there will be one team name,
@@ -141,7 +199,7 @@ export default function App() {
    * nickname and a colour picker that reset to ice-blue were a toll on the door of every mode —
    * three times in one sitting. Held here, read from its own key, written back on every change.
    */
-  const [team, setTeamState] = useState<Team | null>(loadTeam)
+  const [team, setTeamState] = useState<Team | null>(() => (CREATOR ? creatorTeam(CREATOR) : loadTeam()))
   const [staff, setStaff] = useState(false)
   const [myTeam, setMyTeam] = useState(false)
   const [roster, setRoster] = useState(false)
@@ -232,6 +290,10 @@ export default function App() {
     document.body.classList.toggle('tut', tutorial)
     return () => document.body.classList.remove('tut')
   }, [tutorial])
+  /** P6: creator mode's furniture rules (the dock, the fabs and the toasts go; the reels grow). */
+  useEffect(() => {
+    document.body.classList.toggle('creator', !!CREATOR)
+  }, [])
 
   /**
    * THE DESK SCALE (his ruling, 2026-10-01: "Fix all", after the survey at 3840 x 1500). Three
@@ -316,7 +378,7 @@ export default function App() {
   const capped = cm === 'salary' || death
   const opponents = LEVELS
   const prog = cm ? progress[cm] : null
-  const opponent = level ? opponents[Math.min(level, ROUNDS) - 1] : null
+  const opponent = level ? (creatorOpp && cm === 'campaign' ? creatorOpp : opponents[Math.min(level, ROUNDS) - 1]) : null
   /**
    * WHICH BLOCK THE CAMPAIGN IS STANDING IN, as a skin. The map has worn one per block of thirty
    * since the four-skins ruling; his ruling here — "Make the skill tree and the drafting (spin) the
@@ -415,14 +477,12 @@ export default function App() {
     // rule: the death match always has a plan, everywhere else the Playbook node opens one, and
     // the names are read against the five that is actually playing. See state/campaign.ts.
     const plan = planFor(cm, prog, five.map((p) => p.name))
-    const base = compile(five, opponent.players, assignment)
-    const theirs = compile(opponent.players, five)
     // PACE (recal_57): both teams pick a tempo — the AI reads the surpluses and answers — and the
     // night gets a relative volume-surplus term plus a variance shift, replacing the flat sigma map.
-    const pc = plan ? pace(plan.tempo, aiTempo(opponent.players, five, meanMargin(theirs, base) < 0), five, opponent.players, paceMastery(prog)) : null
-    const mine = plan ? applyMod(base, { ...tacticsMod(plan, five, opponent.players), bonus: (tacticsMod(plan, five, opponent.players).bonus ?? 0) + (pc?.margin ?? 0) }) : base
-    const seed = randomSeed()
-    const sig = pc ? SIGMA * pc.sigmaMult : SIGMA
+    // Built by odds.ts `night`, the same call the draft card makes, so the card prices this night.
+    const { mine, theirs, pc, sigma: sig } = night(five, opponent.players, assignment, plan, paceMastery(prog))
+    // creator mode: the series is a function of the run's seed and the attempt, so a filmed run replays
+    const seed = CREATOR ? (levelSeed(prog, level) ^ 0x5bd1e995) >>> 0 || 1 : randomSeed()
     // Every mode sims the series entirely — the death match included (his ruling). Its wear is
     // charged when the series settles, in finish(), one durability per game it ran. The box scores
     // consume the tactical state (recal_61), so the context is captured at the moment of the sim.
@@ -448,6 +508,11 @@ export default function App() {
       heal: benchHeal(prog),
       dur,
     })
+    setAutoSpin(false)
+    // P9: ask the browser to keep this origin's storage through a quota sweep (it does not stop
+    // Safari's seven-day rule). Firefox would put up a permission prompt for it, so not there.
+    if (!CREATOR && (standalone() || !/Firefox\//.test(navigator.userAgent))) void navigator.storage?.persist?.().catch(() => false)
+    track('series_complete', { mode: cm, level, won: result.won, games: result.games.length, chance: Math.round(pre * 100) })
     // the toasts and the coach wait for the landing (see `hold`)
     hold.current = true
     held.current = { toasts: [], lesson: null }
@@ -561,6 +626,7 @@ export default function App() {
     setMode(null)
     setLevel(null)
     setLastLevel(null)
+    setAutoSpin(false)
     setPending(null)
     setPickTeam(false)
     setStaff(false)
@@ -607,6 +673,15 @@ export default function App() {
       {roster ? <Roster onBack={() => setRoster(false)} /> : archs ? <Archetypes onBack={() => setArchs(false)} /> : ach ? <Achievements onBack={() => setAch(false)} /> : teamDb ? <TeamDb initial={teamReq} onBack={() => { setTeamDb(false); requestTeam(null) }} /> : null}
       {/* the tutorial's coach: renders nothing outside tutorial mode, and on every screen inside it */}
       <Coach />
+      {/* P9: a link that carries a save, the iOS Home Screen hint after the first spin, and the
+          Home Screen app's first launch. None of them in creator mode, which saves nothing. */}
+      {CREATOR ? null : (
+        <>
+          <ImportPrompt />
+          <IosHint />
+          <StandaloneWelcome />
+        </>
+      )}
       {toasts.length ? (
         <div className="ach-toasts">
           {toasts.map((d) => (
@@ -634,7 +709,20 @@ export default function App() {
             else if (m === 'teams') setTeamDb(true)
             // the tutorial's gate (state/tutorial.ts): the door says why on the front door itself
             else if (tutorial && (m === 'salary' || m === 'death') && tutorialLock(m, progress)) return
-            else setMode(m)
+            else if ((MODES as string[]).includes(m) && !tutorial) {
+              /* ONE TAP TO A VISIBLE SPIN (P1, the launch gate). No name screen on the way in: a
+                 club with no name is named at random (state/autoteam.ts) and the map's rename door
+                 changes it later. And a visitor who has never played walks straight into level
+                 1's draft with the wheel already turning — the map, the ticket and the spin button
+                 were three more presses between the video and the thing it showed. The tutorial
+                 keeps its name screen: naming the club is one of its lessons. */
+              if (!team) setTeam(autoTeam())
+              setMode(m)
+              if (m === 'campaign' && firstRun(progress.campaign)) {
+                setLevel(1)
+                setAutoSpin(true)
+              }
+            } else setMode(m)
           }}
         />
       </>
@@ -873,7 +961,11 @@ export default function App() {
           skin={skin}
           assignment={pending.assignment}
           onAdvance={finish}
-          onSettled={release}
+          onSettled={() => {
+            release()
+            // the clip script (scripts/capture/clip.mjs) waits for this to end a filmed run
+            if (CREATOR) document.body.dataset.creatorDone = '1'
+          }}
           onRematch={runEnded || !canBetter(pending.result) ? undefined : rematch}
           /* the death match carries one five the whole way, so the end of a series is when he
              wants to look at it — see `onMyTeam` in Series. My team is the map's room, so the
@@ -939,6 +1031,9 @@ export default function App() {
            the way walking out does: a five with a worn-out man in it cannot take the floor at
            all, so this is not a peek at the roster, it is the only move left. */
         onMyTeam={death && prog.roster ? () => { setLevel(null); setMyTeam(true) } : undefined}
+        autoSpin={autoSpin}
+        autoplay={!!CREATOR?.auto}
+        creator={!!CREATOR}
       />
     </>
   )

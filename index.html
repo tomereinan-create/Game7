@@ -6,17 +6,43 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
     />
-    <meta name="theme-color" content="#0b0a09" />
+    <!-- Every %SITE_*% / %OG_*% below is written at build time from src/site.ts (vite.config.ts,
+         `sitePages`): the product's name is undecided, so no page names it by hand. -->
+    <title>%SITE_TITLE%</title>
+    <meta name="description" content="%SITE_DESC%" />
+    <link rel="canonical" href="%SITE_URL%" />
+    <meta name="theme-color" content="%SITE_THEME%" />
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="icon" href="icon-192.png" />
-    <link rel="apple-touch-icon" href="icon-192.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
+    <meta name="application-name" content="%SITE_SHORT%" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-title" content="Game7" />
+    <meta name="apple-mobile-web-app-title" content="%SITE_SHORT%" />
     <!-- Not black-translucent: that draws the app under the status bar, and the
          layout only insets the bottom, so the home button and the sticky header
-         would sit beneath the notch. Black reserves the bar and matches #0b0a09. -->
+         would sit beneath the notch. Black reserves the bar and matches the theme. -->
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+
+    <!-- THE LINK PREVIEW (P4). A link pasted into a chat, a bio or a comment rendered bare; these
+         give it a title, a sentence and the 1200x630 picture (public/og-image.png, made by
+         scripts/capture/stills.mjs). Absolute URLs, because a preview crawler reads them cold. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="%SITE_NAME%" />
+    <meta property="og:title" content="%OG_TITLE%" />
+    <meta property="og:description" content="%SITE_DESC%" />
+    <meta property="og:url" content="%SITE_URL%" />
+    <meta property="og:image" content="%OG_IMAGE%" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="%OG_ALT%" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="%OG_TITLE%" />
+    <meta name="twitter:description" content="%SITE_DESC%" />
+    <meta name="twitter:image" content="%OG_IMAGE%" />
+    <meta name="twitter:image:alt" content="%OG_ALT%" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <!-- Courier Prime came off on 2026-09-10 with the chalk playbook. It had exactly one caller in
@@ -27,7 +53,7 @@
       href="https://fonts.googleapis.com/css2?family=League+Gothic&family=Space+Grotesk:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
-    <title>Game7</title>
+    <!--CF_BEACON-->
   </head>
   <body>
     <div id="root"></div>

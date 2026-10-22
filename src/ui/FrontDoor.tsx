@@ -13,6 +13,9 @@ import { Trophy } from './Trophy'
 import { Ask } from './Ask'
 import { useLayout } from './useLayout'
 import type { Mode } from './Home'
+import { SITE } from '../site'
+import { newShareId, shareLink } from '../share/link'
+import { track } from '../analytics'
 
 /**
  * THE FRONT DOOR — both modes', and since 2026-09-10 it is the arena's own door rather than a
@@ -296,7 +299,9 @@ export function FrontDoor({
       ],
       metaKey: 'Banked',
       meta: `★ ${banked(progress.campaign)} / ${ROUNDS * 3}`,
-      cta: cur ? 'Continue →' : 'Run it again →',
+      /* P1: a visitor who has never played is taken straight to level 1 with the wheel turning
+         (App's onPick), so the button says what it does rather than "Continue" */
+      cta: progress.campaign.plays === 0 && banked(progress.campaign) === 0 ? 'Spin your first five →' : cur ? 'Continue →' : 'Run it again →',
     },
     {
       pick: 'salary',
@@ -397,7 +402,8 @@ export function FrontDoor({
       jersey: '6',
       label: '1v1 bid',
       tag: '$20 each',
-      desc: 'Blind-bid the level with the table — twenty a head, winner takes the pot.',
+      /* P2 (launch gate): no betting words — "pot" and "ante" read as gambling in every clip */
+      desc: 'A $20 budget each, best five wins. Every man goes to the block.',
       /* THE ONE META WITH NO KEY. Ours reads HOUSE RULES and has no middot to split at, and the
          mockup's answer — key "House rules", value "$20" — invents a number that appears nowhere in
          the data and says the kicker's "$20 each" twice. So the string stays whole in the value and
@@ -410,7 +416,7 @@ export function FrontDoor({
       ],
       metaKey: '',
       meta: 'House rules',
-      cta: 'Ante up →',
+      cta: 'Start the auction →',
     },
   ]
   const z = zones[sel]
@@ -458,9 +464,11 @@ export function FrontDoor({
   const [friends, setFriends] = useState(false)
   const [invited, setInvited] = useState(false)
   const invite = async () => {
-    const url = `${window.location.origin}${import.meta.env.BASE_URL}`
     try {
-      if (navigator.share) await navigator.share({ title: 'Game7', text: 'Draft a five and play me in Game7', url })
+      const native = typeof navigator.share === 'function'
+      const url = shareLink({ s: newShareId(), ref: native ? 'invite' : 'invite-copy' })
+      track('share_click', { target: 'invite' })
+      if (native) await navigator.share({ title: SITE.name, text: `Draft a five and play me in ${SITE.name}`, url })
       else await navigator.clipboard.writeText(url)
       setInvited(true)
       window.setTimeout(() => setInvited(false), 2500)
@@ -660,8 +668,13 @@ export function FrontDoor({
             it grows to match in `.fd-word`; this one is written here because the size is a prop. */}
         {/* "A touch bit smaller" — his ruling, 2026-09-30: 4.2 → 3.8 units, the cap with it. */}
         <Ball size="clamp(50px, calc(var(--fd-u) * 3.8), 220px)" dribble />
-        <b className="fd-word">
-          Game<em>7</em>
+        {/* P2: the product's name comes from src/site.ts, so a rename is one edit. The last word
+            wears the accent the 7 always has. */}
+        <b className={`fd-word${SITE.name.length > 7 ? ' long' : ''}`}>
+          {SITE.name.split(' ').slice(0, -1).join(' ')}
+          {/* "Game 7" keeps the mark it always had, GAME7: a number tucks up against the word */}
+          {SITE.name.includes(' ') && !/^\d+$/.test(SITE.name.split(' ').slice(-1)[0]) ? ' ' : ''}
+          <em>{SITE.name.split(' ').slice(-1)[0]}</em>
         </b>
         {/*
           HIS RULING, 2026-09-11: "157 ★ / Cleared 79/150 — here in the main page it needs to update

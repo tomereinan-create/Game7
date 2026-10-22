@@ -1,4 +1,5 @@
 import { ROUNDS } from '../config'
+import { SITE } from '../site'
 import CAMPAIGNS from '../data/campaigns.json'
 import { NODE, type Branch, type NodeId } from '../engine/tree'
 import type { Opponent } from '../engine/types'
@@ -45,7 +46,7 @@ export function doorLesson(ctx: { team: string | null; cur: number | null; clear
   return {
     id: 'door',
     kicker: 'Tutorial · The front door',
-    title: 'Welcome to Game 7',
+    title: `Welcome to ${SITE.name}`,
     steps: [
       {
         body: [

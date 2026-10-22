@@ -77,7 +77,7 @@ const TEAMS: Record<string, TeamColor> = {
   '90s': { primary: '#7b2d8e', deep: '#270d2e', accent: '#f2c14e', ink: '#ffffff' },
   '00s': { primary: '#2a6f8f', deep: '#0c222c', accent: '#9fd6ea', ink: '#ffffff' },
   '10s': { primary: '#1f7a5a', deep: '#08261c', accent: '#8fe0c0', ink: '#ffffff' },
-  ANBA: { primary: '#8a6a1f', deep: '#2c2109', accent: '#ffd97a', ink: '#ffffff' },
+  ALFT: { primary: '#8a6a1f', deep: '#2c2109', accent: '#ffd97a', ink: '#ffffff' },
   '1ST': { primary: '#9a7b23', deep: '#2f250a', accent: '#ffe08a', ink: '#ffffff' },
   '2ND': { primary: '#6f7378', deep: '#212326', accent: '#d9dde1', ink: '#ffffff' },
   ADEF: { primary: '#2f4a6b', deep: '#0e1722', accent: '#a6cbe9', ink: '#ffffff' },
