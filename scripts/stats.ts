@@ -156,6 +156,13 @@ for (const p of players) {
     fgp: pct(num(g.fg_percent)),
     tpp: pct(num(g.x3p_percent)),
     ftp: pct(num(g.ft_percent)),
+    // HOW HE SHOT, NOT ONLY HOW WELL (2026-10-22, the box-score report): the attempts per game by
+    // kind and his two-point rate, so a box score can give each man his own diet and his own
+    // percentages — Shaq's free throws at 52%, Ewing's threes almost never. Display only.
+    fga: r1(num(g.fga_per_game)),
+    tpa: r1(num(g.x3pa_per_game)),
+    fta: r1(num(g.fta_per_game)),
+    twop: pct(num(g.x2p_percent)),
     ts: a ? pct(num(a.ts_percent)) : null,
     per: a ? r1(num(a.per)) : null,
     ws: a ? r1(num(a.ws)) : null,
