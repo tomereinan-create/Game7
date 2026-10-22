@@ -35,6 +35,8 @@
     "calibrate": "vite-node scripts/calibrate.ts"
   },
   "dependencies": {
+    "@fontsource/league-gothic": "^5.3.0",
+    "@fontsource/space-grotesk": "^5.3.0",
     "posthog-js": "^1.438.13",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"

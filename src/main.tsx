@@ -7,6 +7,11 @@ import { CardProvider } from './ui/CardSheet'
 import { CREATOR } from './creator/params'
 import { initAnalytics } from './analytics'
 import { listenForInstall } from './state/install'
+// the game's two faces, self-hosted (subsets by unicode-range, so a page downloads only what it uses)
+import '@fontsource/league-gothic/400.css'
+import '@fontsource/space-grotesk/400.css'
+import '@fontsource/space-grotesk/500.css'
+import '@fontsource/space-grotesk/700.css'
 import './styles.css'
 
 const root = document.getElementById('root')!

@@ -1,4 +1,5 @@
 import { inAppBrowser, platform, standalone } from './share/inapp'
+import { SITE } from './site'
 
 /**
  * ANALYTICS (P5, the launch gate) — cookieless by construction.
@@ -27,6 +28,8 @@ import { inAppBrowser, platform, standalone } from './share/inapp'
 export type Props = Record<string, string | number | boolean | null | undefined>
 
 const KEY = (import.meta.env.VITE_POSTHOG_KEY as string | undefined) ?? ''
+/** Cloudflare Web Analytics, loaded by the game itself behind the same switches (see `loadBeacon`). */
+const CF = (import.meta.env.VITE_CF_BEACON as string | undefined) || SITE.cfBeacon
 const HOST = (import.meta.env.VITE_POSTHOG_HOST as string | undefined) || 'https://eu.i.posthog.com'
 /** The privacy page's off switch writes this; it is the only thing analytics ever stores. */
 export const OPT_OUT_KEY = 'game7.analytics'
@@ -37,7 +40,12 @@ let queue: [string, Props][] | null = null
 let off = !KEY
 
 export function analyticsAllowed(): boolean {
-  if (!KEY || typeof window === 'undefined') return false
+  return !!KEY && privacyAllows()
+}
+
+/** The visitor's own say: Global Privacy Control, Do Not Track, and the privacy page's off switch. */
+export function privacyAllows(): boolean {
+  if (typeof window === 'undefined') return false
   const nav = navigator as Navigator & { globalPrivacyControl?: boolean }
   if (nav.globalPrivacyControl === true || nav.doNotTrack === '1') return false
   try {
@@ -48,7 +56,11 @@ export function analyticsAllowed(): boolean {
   return true
 }
 
-/** Where the visit came from, read once and taken off the address so a re-share starts clean. */
+/**
+ * Where the visit came from, read once — and taken off the address so a re-share starts clean, but
+ * only once the page-view counter has read it too (the live check, 2026-10-22: the beacon reads the
+ * address when it reports, and it was reporting a clean one, so no short link was ever attributed).
+ */
 function arrival(): Props {
   const u = new URL(location.href)
   const p = u.searchParams
@@ -58,9 +70,36 @@ function arrival(): Props {
     if (v) props[k] = v.slice(0, 64)
     p.delete(k)
   }
-  if (p.has('c')) props.challenge = true
-  if (u.href !== location.href) history.replaceState(history.state, '', u.href)
+  if (p.has('c') || /(?:^#|&)c=/.test(u.hash)) props.challenge = true
+  if (u.href !== location.href) {
+    const clean = () => {
+      // only if nothing has moved the address since (a challenge closing, an import being read)
+      const now = new URL(location.href)
+      if (now.pathname === u.pathname && now.hash === u.hash) history.replaceState(history.state, '', u.href)
+    }
+    if (typeof window !== 'undefined' && CF && privacyAllows()) setTimeout(clean, 6000)
+    else clean()
+  }
   return props
+}
+
+/**
+ * CLOUDFLARE WEB ANALYTICS, LOADED BY THE GAME (the live check, 2026-10-22: the beacon was injected
+ * at the edge, so it counted visitors who had switched analytics off, sent GPC or Do Not Track, and
+ * every creator-mode film — twice). Loaded here it obeys the same switches as everything else. If
+ * the edge still injects its own copy (the dashboard setting is his to turn off), that one is left
+ * to do the counting rather than counting twice.
+ */
+function loadBeacon() {
+  if (!CF || typeof document === 'undefined') return
+  // a development server or the local build is not a visit to count
+  if (import.meta.env.DEV || /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname)) return
+  if (document.querySelector('script[src*="cloudflareinsights.com/beacon"]')) return
+  const s = document.createElement('script')
+  s.defer = true
+  s.src = 'https://static.cloudflareinsights.com/beacon.min.js'
+  s.setAttribute('data-cf-beacon', JSON.stringify({ token: CF, spa: true }))
+  document.head.appendChild(s)
 }
 
 /**
@@ -69,7 +108,12 @@ function arrival(): Props {
  */
 export function initAnalytics(opts: { creator?: boolean } = {}): boolean {
   const from = typeof location === 'undefined' ? {} : arrival()
-  if (opts.creator || !analyticsAllowed()) {
+  if (opts.creator || !privacyAllows()) {
+    off = true
+    return false
+  }
+  loadBeacon()
+  if (!KEY) {
     off = true
     return false
   }

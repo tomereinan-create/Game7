@@ -43,16 +43,8 @@
     <meta name="twitter:image" content="%OG_IMAGE%" />
     <meta name="twitter:image:alt" content="%OG_ALT%" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- Courier Prime came off on 2026-09-10 with the chalk playbook. It had exactly one caller in
-         the whole stylesheet — --ck-type, the front door's typeface — and that block is the flow
-         board's door screen now, in the app's own two faces. A render-blocking request for a family
-         nothing draws is worse than a missing one. -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=League+Gothic&family=Space+Grotesk:wght@400;500;700&display=swap"
-      rel="stylesheet"
-    />
+    <!-- The two faces are SELF-HOSTED (main.tsx imports them from @fontsource): no visitor's address
+         goes to Google to draw a word (the live check, 2026-10-22). -->
     <style>
       html { background: %SITE_THEME%; }
       body:has(> #root > .boot) { margin: 0; }

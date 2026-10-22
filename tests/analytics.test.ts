@@ -37,7 +37,12 @@ describe('analytics', () => {
     vi.stubEnv('VITE_POSTHOG_KEY', 'phc_test')
     const { replaced, store } = browser('https://game.test/?s=ab12cd34&ref=tt&utm_source=tiktok&creator=0#x')
     const a = await import('../src/analytics')
+    // the address is cleaned only once the page-view counter has had time to read it
+    vi.useFakeTimers({ toFake: ['setTimeout'] })
     expect(a.initAnalytics()).toBe(true)
+    expect(replaced.length).toBe(0)
+    vi.advanceTimersByTime(6000)
+    vi.useRealTimers()
     a.track('first_spin', { level: 1 })
     await vi.waitFor(() => expect(init).toHaveBeenCalled())
     const [key, cfg] = init.mock.calls[0]
