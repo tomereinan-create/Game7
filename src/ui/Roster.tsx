@@ -7,6 +7,7 @@ import { CardName } from './CardSheet'
 import { DetailGrid, LINES, Mini, SHEET, StatHead } from './Stat'
 import { eligible, POSITIONS, type Pos } from '../engine/positions'
 import { useUserMode } from '../state/viewmode'
+import { fold } from '../engine/names'
 
 type AxisKey = 'peak_season' | 'ovr' | 'o_ovr' | 'd_ovr'
 type Key = 'name' | AxisKey | `attrs.${AttrKey}`
@@ -158,7 +159,7 @@ export function Roster({ onBack }: { onBack: () => void }) {
   }, [archOf])
 
   const rows = useMemo(() => {
-    const needle = q.trim().toLowerCase()
+    const needle = fold(q.trim())
     const from = yrFrom ? Number(yrFrom) : null
     const to = yrTo ? Number(yrTo) : null
     const thr = statK && statV !== '' ? Number(statV) : null
@@ -167,7 +168,7 @@ export function Roster({ onBack }: { onBack: () => void }) {
          the exact form of the question; this is the one a hand reaches for first — type "sniper"
          and the book is every sniper in it. A name and a tag cannot be confused: no archetype is
          a man's name and no man is called "Lockdown defender". */
-      if (needle && !p.name.toLowerCase().includes(needle) && !(archOf.get(p.name) ?? '').toLowerCase().includes(needle)) return false
+      if (needle && !fold(p.name).includes(needle) && !fold(archOf.get(p.name) ?? '').includes(needle)) return false
       if (arch && archOf.get(p.name) !== arch) return false
       if (pos && !eligible(LINES[p.name]?.pos).includes(pos)) return false
       if (from !== null && p.peak_season < from) return false

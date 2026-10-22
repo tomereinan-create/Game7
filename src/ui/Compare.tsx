@@ -5,6 +5,7 @@ import type { AttrKey, Player, StatLine } from '../engine/types'
 import { HeatHex } from './HeatHex'
 import { OVR_TIP } from './MatchupPanel'
 import { GROUPS, LINES } from './Stat'
+import { fold } from '../engine/names'
 
 /** The season line, same fields the detail panel shows, as comparable numbers. */
 const BOX: { label: string; k: keyof StatLine; pct?: boolean }[] = [
@@ -43,9 +44,9 @@ export function Compare({ initial = [], onBack }: { initial?: string[]; onBack: 
 
   const five = useMemo(() => names.map((n) => PLAYERS.find((p) => p.name === n)).filter(Boolean) as Player[], [names])
   const hits = useMemo(() => {
-    const needle = q.trim().toLowerCase()
+    const needle = fold(q.trim())
     if (!needle) return []
-    return PLAYERS.filter((p) => p.name.toLowerCase().includes(needle) && !names.includes(p.name))
+    return PLAYERS.filter((p) => fold(p.name).includes(needle) && !names.includes(p.name))
       .sort((a, b) => b.ovr - a.ovr)
       .slice(0, 8)
   }, [q, names])

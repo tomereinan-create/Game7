@@ -1,5 +1,6 @@
 import { defenseVs, isRateable, matchupMargin, MKNOBS, ratings100, REF_FIVE, scoreVs, type Assignment } from '../engine/offense'
 import { fieldGauges, seasonGauges } from '../engine/gauges'
+import { rankLabel, seasonRank } from '../engine/seasonRank'
 import type { Player } from '../engine/types'
 
 const short = (n: string) => n.replace(/ '\d\d( \([a-z]\))?$/, '')
@@ -11,7 +12,7 @@ const sgn = (v: number, d = 1) => (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(
  * dial a colour that was computed from the VALUE (the database's red-to-green rating scale), so
  * the ring and the numeral both say the same thing the number does.
  */
-export function Dial({ label, value, tone, sub, color, unread }: { label: string; value: number; tone: 'you' | 'them' | 'scale'; sub?: string; color?: string; unread?: boolean }) {
+export function Dial({ label, value, tone, sub, color, unread, rank }: { label: string; value: number; tone: 'you' | 'them' | 'scale'; sub?: string; color?: string; unread?: boolean; rank?: string }) {
   const r = 26
   const c = 2 * Math.PI * r
   const arc = c * 0.75
@@ -29,6 +30,7 @@ export function Dial({ label, value, tone, sub, color, unread }: { label: string
       </svg>
       <span className="dl">{label}</span>
       {sub ? <span className="ds">{sub}</span> : null}
+      {rank && !unread ? <span className="drank">{rank}</span> : null}
     </div>
   )
 }
@@ -50,13 +52,15 @@ export function PlayerDials({ p, tone = 'you' }: { p: Player; tone?: 'you' | 'th
 /** The two dials a team card carries, with the raw numbers underneath. recal_64: pass `vs`
  * (a season, or 'field' for the campaign's opponents) to percentile WITHIN that pool — the
  * basis rides on the dial so a 64-18 champ is never judged against all of history unlabeled. */
-export function TeamDials({ five, tone, vs }: { five: Player[]; tone: 'you' | 'them'; vs?: number | 'field' }) {
+export function TeamDials({ five, tone, vs, ab }: { five: Player[]; tone: 'you' | 'them'; vs?: number | 'field'; ab?: string }) {
   if (vs !== undefined) {
     const g = vs === 'field' ? fieldGauges(five) : seasonGauges(five, vs)
+    // a five with a season also says where it stands in it (his ruling, 2026-10-22)
+    const r = vs !== 'field' && g.complete ? seasonRank(five, vs, ab) : null
     return (
       <div className="dials">
-        <Dial label="OFF" value={g.off} tone={tone} sub={g.complete ? g.basis : 'needs five'} unread={!g.complete} />
-        <Dial label="DEF" value={g.def} tone={tone} sub={g.complete ? g.basis : 'needs five'} unread={!g.complete} />
+        <Dial label="OFF" value={g.off} tone={tone} sub={g.complete ? g.basis : 'needs five'} unread={!g.complete} rank={r ? rankLabel(r.off, r.season) : undefined} />
+        <Dial label="DEF" value={g.def} tone={tone} sub={g.complete ? g.basis : 'needs five'} unread={!g.complete} rank={r ? rankLabel(r.def, r.season) : undefined} />
       </div>
     )
   }

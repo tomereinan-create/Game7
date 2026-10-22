@@ -2351,7 +2351,7 @@ button {
   .draft .count { font-size: 18px; }
   .draft .opp-line { font-size: 16px; }
   .draft .dial .dl { font-size: 13px; margin-top: -5px; }
-  .draft .dial .ds { font-size: 12px; white-space: nowrap; }
+  .draft .dial .ds, .draft .dial .drank { font-size: 12px; white-space: nowrap; }
   /* the caption under a dial ("all-time scale") must not break onto a second line — that alone
      made the name row 16px deeper and pushed both floors down — so the head dials widen */
   .draft .opp-top .dial { width: 86px; }
@@ -3483,6 +3483,8 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
 .dial text { font-family: var(--num); font-size: 15px; fill: var(--ink); }
 .dial .dl { font-family: var(--mono); font-size: 9px; letter-spacing: 0.14em; color: var(--muted); margin-top: -6px; }
 .dial .ds { font-family: var(--mono); font-size: 9px; color: var(--faint); }
+/* the season rank under the all-time basis: "#2 in 2025" (his ruling, 2026-10-22) */
+.dial .drank { font-family: var(--mono); font-size: 9px; color: var(--muted); white-space: nowrap; }
 /* ---- matchup panel ---- */
 .mp-head { padding: 6px 0 10px; border-bottom: 1px solid var(--line); }
 .mp-head b { display: block; font-family: var(--serif); font-size: 21px; line-height: 1.05; font-weight: 400; }
@@ -5172,7 +5174,7 @@ body.offstage #root { position: relative; z-index: 1; }
   .tdb-sheet .dials.tdb-scale .dial { width: clamp(96px, 7vw, 168px); }
   .tdb-sheet .dials.tdb-scale .dial svg { width: clamp(84px, 6.2vw, 150px); height: auto; }
   .tdb-sheet .dials.tdb-scale .dial .dl { font-size: clamp(11px, 0.75vw, 17px); margin-top: -8px; }
-  .tdb-sheet .dials.tdb-scale .dial .ds { font-size: clamp(9px, 0.6vw, 14px); }
+  .tdb-sheet .dials.tdb-scale .dial .ds, .tdb-sheet .dials.tdb-scale .dial .drank { font-size: clamp(9px, 0.6vw, 14px); }
   .tdb-sheet .card-head .label { font-size: clamp(13px, 1.1vw, 24px); }
 }
 
@@ -9711,7 +9713,7 @@ body:has(.fd-modes .fd-help) .coach-fab { display: none; }
   .node .ab { font-size: clamp(8px, 0.5vw, 18px) !important; }
   .node .ln { font-size: clamp(13px, 0.75vw, 27px) !important; }
   .node-dials .dial .dl, .pdials .dial .dl, .dial .dl { font-size: clamp(7px, 0.5vw, 17px); }
-  .dial .ds { font-size: clamp(9px, 0.55vw, 18px); }
+  .dial .ds, .dial .drank { font-size: clamp(9px, 0.55vw, 18px); }
   .era-band em, .era em, .trail em { font-size: clamp(9px, 0.6vw, 22px); }
   .seriesnow-note, .myteam .seriesnow-note { font-size: clamp(10px, 0.7vw, 24px); }
   .assignworth .label, .assignworth .cap, .assignworth i { font-size: clamp(9px, 0.6vw, 20px); }

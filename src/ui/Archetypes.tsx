@@ -3,6 +3,7 @@ import { archetype, BIG_RULE, DEFAULT_ORDER, isDefaultOrder, isSavedOrder, PLAYE
 import type { Player } from '../engine/types'
 import { PlayerDials } from './MatchupPanel'
 import { DetailGrid } from './Stat'
+import { fold } from '../engine/names'
 
 /**
  * The archetype database: every tag the tree hands out, what it means, and every
@@ -171,8 +172,8 @@ export function Archetypes({ onBack }: { onBack: () => void }) {
   const rows = useMemo(() => {
     if (!tag) return []
     const list = groups.find(([t]) => t === tag)?.[1] ?? []
-    const needle = q.trim().toLowerCase()
-    return needle ? list.filter((p) => p.name.toLowerCase().includes(needle)) : list
+    const needle = fold(q.trim())
+    return needle ? list.filter((p) => fold(p.name).includes(needle)) : list
   }, [tag, q, groups])
 
   useEffect(() => {

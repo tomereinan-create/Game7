@@ -22,6 +22,22 @@ const SUFFIX = /^(jr|sr|ii|iii|iv|v)\.?$/i
 /** "Marvin Bagley III '26" -> "Marvin Bagley III". The season leaves; the man does not. */
 export const bareName = (name: string) => name.replace(/ '\d\d( \([a-z]\))?$/, '')
 
+/** Letters a decomposition leaves alone: Aşık's dotless ı, and the Cyrillic е in one card's name. */
+const FOLD_EXTRA: Record<string, string> = { ı: 'i', е: 'e' }
+
+/**
+ * A NAME AS A SEARCH BOX COMPARES IT: accents off, case off. "jokic" finds Nikola Jokić, "doncic"
+ * Luka Dončić, "ginobili" Manu Ginóbili — 317 cards carry an accent, and nobody types one (his
+ * report, 2026-10-22: the Database answered "Jokic" with 0 of 10,000 while Custom, which folded
+ * its own, found him). Every player search reads through this one.
+ */
+export const fold = (s: string) =>
+  s
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[ıе]/g, (c) => FOLD_EXTRA[c])
+    .toLowerCase()
+
 /**
  * The name a jersey, a scorebug or a play-by-play line wears.
  *

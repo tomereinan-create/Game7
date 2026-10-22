@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { WHEEL, type TeamSeason } from './Draft'
 import { ovrOf, winsOf, YEARS } from './TeamDb'
 import { DRAFT_SIZE, SIGMA } from '../config'
-import { teamCode } from '../engine/names'
+import { fold, teamCode } from '../engine/names'
 import { PLAYERS } from '../engine/pool'
 import { loadFive, type FiveKind } from '../engine/starters'
 import { compile, simSeries } from '../engine/resolver'
@@ -16,11 +16,6 @@ import { DetailGrid } from './Stat'
 import { useUserMode } from '../state/viewmode'
 
 const BY_NAME = new Map(PLAYERS.map((p) => [p.name, p]))
-const fold = (s: string) =>
-  s
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
 
 /**
  * Custom matchup: build both fives by hand out of the whole database, then play
