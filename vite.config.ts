@@ -53,7 +53,7 @@ function sitePages(site: Site, deploy: Deploy): Plugin {
       screenshots: [
         { src: 'screenshots/phone-draft.png', sizes: '1080x1920', type: 'image/png', form_factor: 'narrow', label: 'The wheel lands on a team-season' },
         { src: 'screenshots/phone-series.png', sizes: '1080x1920', type: 'image/png', form_factor: 'narrow', label: 'Game 7, play by play' },
-        { src: 'screenshots/desk-home.png', sizes: '1920x1080', type: 'image/png', form_factor: 'wide', label: 'Six ways to play' },
+        { src: 'screenshots/desk-home.jpg', sizes: '1920x1080', type: 'image/jpeg', form_factor: 'wide', label: 'Six ways to play' },
       ].filter((s) => existsSync(join(root, 'public', s.src))),
     },
     null,

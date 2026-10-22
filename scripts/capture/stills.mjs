@@ -47,8 +47,9 @@ try {
     const desk = await browser.newPage({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1 })
     await desk.goto(app, { waitUntil: 'networkidle' })
     await desk.waitForTimeout(800)
-    await desk.screenshot({ path: join(root, 'public/screenshots/desk-home.png') })
-    console.log('wrote public/screenshots/{phone-draft,phone-series,desk-home}.png')
+    // the painted arena is a photograph in all but name: JPEG, a tenth of the PNG
+    await desk.screenshot({ path: join(root, 'public/screenshots/desk-home.jpg'), type: 'jpeg', quality: 82 })
+    console.log('wrote public/screenshots/{phone-draft,phone-series}.png and desk-home.jpg')
   }
 } finally {
   await browser.close()

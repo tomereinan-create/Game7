@@ -1,9 +1,10 @@
 # Short links for bios and pinned comments (P5), read by Cloudflare Pages; GitHub Pages ignores this
 # file. Static rules only (2,000 allowed, no Functions), so a surge costs nothing. The ref lands in
-# the `open` event; a creator's own link carries their handle: /c/handle -> ref=c-handle.
+# the `open` event. A creator's own link, /c/<handle>, needs no rule: Pages serves the game for a
+# path it has no file for, and src/boot.ts turns /c/<handle> into ref=c-<handle> (a _redirects
+# placeholder is not substituted inside a query string).
 /tt   /?ref=tt   302
 /ig   /?ref=ig   302
 /yt   /?ref=yt   302
 /x    /?ref=x    302
 /r    /?ref=r    302
-/c/:creator   /?ref=c-:creator   302

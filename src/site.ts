@@ -41,8 +41,8 @@ export interface Site {
 }
 
 const NAME = 'Game 7'
-/** Planned: 'game7draft.com' (handles @game7draft). Not bought yet — set it here once it is. */
-const DOMAIN = ''
+/** Bought 2026-10-22 (Cloudflare Registrar, zone in the same account as the Pages project). Handles @game7draft. */
+const DOMAIN = 'game7draft.com'
 /** Where the game is served today, until a domain is bought and Cloudflare Pages takes over. */
 export const LEGACY_URL = 'https://tomereinan-create.github.io/Game7/'
 

@@ -10821,7 +10821,8 @@ body.creator .draft .wheel-idle .spin-team { font-size: 48px; }
 }
 .g7-toast-go { flex: 1; padding: 10px 0; border: 0; background: none; color: var(--ink, #f2ece0); font: 400 14px/1.3 var(--sans, sans-serif); text-align: left; cursor: pointer; }
 .g7-toast-go b { color: var(--you, #f0b323); }
-.site-foot .g7-install { color: var(--you, #f0b323); }
+.site-foot .g7-install { color: var(--you, #f0b323); }
+/* =====================================================================================
    THE SHARE CARD (P10) — the Share door under the verdict, and the sheet it opens
    (src/ui/ShareSheet.tsx). Its own prefix, shr-. The sheet is the app's own full-screen
    .sheet with DONE in its top bar, and its doors are the dock's .btn and .btn.ghost, so it

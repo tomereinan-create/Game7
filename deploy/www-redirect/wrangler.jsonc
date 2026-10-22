@@ -1,0 +1,7 @@
+{
+  "name": "game7draft-www",
+  "main": "worker.js",
+  "compatibility_date": "2026-10-01",
+  "workers_dev": false,
+  "routes": [{ "pattern": "www.game7draft.com", "custom_domain": true }]
+}

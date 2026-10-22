@@ -1,0 +1,68 @@
+# Deploys the game to game7draft.com: the Cloudflare Pages project `game7draft`, built at the root
+# (BASE_PATH=/), on every push to main. GitHub Pages (deploy.yml) keeps serving the old address until
+# the mover replaces it.
+#
+# Needs one repository secret, CLOUDFLARE_API_TOKEN (a Cloudflare API token with Account ->
+# Cloudflare Pages -> Edit). Until it is set this workflow skips with a notice instead of failing.
+name: Deploy Game 7 to Cloudflare Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cloudflare-pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Is the Cloudflare token set?
+        id: gate
+        env:
+          TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          if [ -n "$TOKEN" ]; then echo "ok=1" >> "$GITHUB_OUTPUT"
+          else echo "::notice::CLOUDFLARE_API_TOKEN is not set - skipping the Cloudflare Pages deploy"; fi
+
+      - uses: actions/checkout@v4
+        if: steps.gate.outputs.ok == '1'
+
+      - uses: actions/setup-node@v4
+        if: steps.gate.outputs.ok == '1'
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        if: steps.gate.outputs.ok == '1'
+        run: npm ci
+
+      # the same build settings as deploy.yml, at the domain's root
+      - name: Build
+        if: steps.gate.outputs.ok == '1'
+        run: npm run build
+        env:
+          BASE_PATH: /
+          VITE_POSTHOG_KEY: ${{ vars.VITE_POSTHOG_KEY }}
+          VITE_POSTHOG_HOST: ${{ vars.VITE_POSTHOG_HOST }}
+          VITE_CF_BEACON: ${{ vars.VITE_CF_BEACON }}
+          VITE_MOMENTS: ${{ vars.VITE_MOMENTS }}
+
+      - name: Check the build
+        if: steps.gate.outputs.ok == '1'
+        run: node scripts/check-dist.mjs
+        env:
+          VITE_MOMENTS: ${{ vars.VITE_MOMENTS }}
+
+      - name: Deploy to Cloudflare Pages
+        if: steps.gate.outputs.ok == '1'
+        run: npx --yes wrangler@4.107.1 pages deploy dist --project-name game7draft --branch main --commit-hash "${{ github.sha }}" --commit-message "${{ github.sha }}"
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: bb704a24f336ceb4d32aa1a290d22761

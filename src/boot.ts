@@ -31,6 +31,21 @@ class MemoryStorage implements Storage {
   }
 }
 
+/**
+ * A CREATOR'S SHORT LINK, /c/<handle> (P5). On the domain's root the host serves the game for any
+ * path it has no file for, so the handle arrives in the path. It becomes `ref=c-<handle>` (which
+ * the analytics read once and drop) before anything resolves a relative URL against /c/.
+ */
+if (import.meta.env.BASE_URL.startsWith('/') && location.pathname.startsWith(`${import.meta.env.BASE_URL}c/`)) {
+  const handle = location.pathname.slice(import.meta.env.BASE_URL.length + 2).replace(/\/$/, '')
+  if (handle && !handle.includes('/')) {
+    const u = new URL(location.href)
+    u.pathname = import.meta.env.BASE_URL
+    u.searchParams.set('ref', `c-${decodeURIComponent(handle).slice(0, 40)}`)
+    history.replaceState(history.state, '', u.href)
+  }
+}
+
 if (CREATOR) {
   try {
     const mem = new MemoryStorage()
