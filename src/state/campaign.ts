@@ -330,13 +330,26 @@ export function afterBuy(before: Progress, after: Progress): Progress {
   return { ...after, lives: before.lives + livesBought(after) - livesBought(before), checkpoint: checkpointLevel(after) }
 }
 
+/** Death match: Extra lives bought this run and already spent on a loss. */
+export const usedLives = (p: Progress) => Math.max(0, livesBought(p) - p.lives)
+
+/** Stars a death-match respec cannot hand back: the Extra life ranks whose life is already used. */
+export const respecKeeps = (p: Progress) => usedLives(p) * price('surv_life')
+
 /**
- * A RESPEC IN THE DEATH MATCH hands back the stars of the Extra life ranks, so it takes back the
- * lives they bought that are still in hand — otherwise respec-and-rebuy would mint a life every
- * time. The checkpoint goes with its node.
+ * A RESPEC IN THE DEATH MATCH. Two rules keep it from being a way to buy lives for nothing:
+ *   · the lives still in hand go back with the stars that bought them — otherwise respec-and-rebuy
+ *     would mint a life every time;
+ *   · A USED LIFE IS NOT REFUNDABLE (his ruling, 2026-10-22: "yes, make used lives
+ *     non-refundable"). The life was spent absorbing a loss, so its Extra life rank stays bought
+ *     and its star stays spent. Those ranks still count toward the three, so a respec cannot
+ *     reopen lives the run has already had.
+ * Everything else comes back as in any respec, and the checkpoint goes with its node.
  */
 export function afterRespec(p: Progress): Progress {
-  return { ...respec(p), lives: Math.max(0, p.lives - livesBought(p)), checkpoint: 0 }
+  const used = usedLives(p)
+  const base = { ...respec(p), lives: 0, checkpoint: 0 }
+  return used ? { ...base, nodes: { surv_life: used }, spent: respecKeeps(p) } : base
 }
 
 /**

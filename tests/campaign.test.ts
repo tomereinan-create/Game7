@@ -5,7 +5,7 @@ import SALARIES from '../src/data/salaries.json'
 import { PLAYERS } from '../src/engine/pool'
 import { buy, checkpointLevel, livesBought, subsPerRound, type Wallet } from '../src/engine/tree'
 import { balance, earned } from '../src/engine/tree'
-import { advanceTo, afterBuy, afterRespec, applyWear, clearedCount, currentLevel, die, levelSeed, loadProgress, playable, saveProgress, settledProgress, totalStars, wornOut, type Progress } from '../src/state/campaign'
+import { advanceTo, afterBuy, afterRespec, applyWear, respecKeeps, clearedCount, currentLevel, die, levelSeed, loadProgress, playable, saveProgress, settledProgress, totalStars, wornOut, type Progress } from '../src/state/campaign'
 
 const prog = (stars: number[]): Progress => ({ coach: 'def', stars, seed: 12345, plays: 0, spent: 0, nodes: {}, roster: null, lives: 0, checkpoint: 0, deaths: 0, wear: {}, subsUsed: 0, tactics: DEFAULT_TACTICS, bench: null })
 const zeros = () => Array.from({ length: ROUNDS }, () => 0)
@@ -415,5 +415,26 @@ describe('death match — the Saving point and the lives', () => {
     expect(r.checkpoint).toBe(0)
     expect(r.nodes).toEqual({})
     expect(afterBuy(r, buy(r, 'surv_life')!).lives).toBe(1)
+  })
+
+  it('a used life is not refundable: its rank stays bought and its star stays spent', () => {
+    const start: Progress = { ...prog(upTo(10)), roster: five }
+    let p = afterBuy(start, buy(start, 'surv_life')!)
+    p = afterBuy(p, buy(p, 'surv_life')!)
+    p = afterBuy(p, buy(p, 'surv_save')!)
+    // two lives bought, one spent on a loss
+    p = die(p)
+    expect(p.lives).toBe(1)
+    expect(respecKeeps(p)).toBe(1)
+    const r = afterRespec(p)
+    expect(r.nodes).toEqual({ surv_life: 1 })
+    expect(r.spent).toBe(1)
+    expect(r.lives).toBe(0)
+    expect(r.checkpoint).toBe(0)
+    // the kept rank still counts toward the three: two more lives at most, never a fourth
+    let q = afterBuy(r, buy(r, 'surv_life')!)
+    q = afterBuy(q, buy(q, 'surv_life')!)
+    expect(q.lives).toBe(2)
+    expect(buy(q, 'surv_life')).toBeNull()
   })
 })

@@ -57,6 +57,7 @@ export function Tree({
   skin = 'arena',
   onBuy,
   onRespec,
+  respecKeeps = 0,
   onBack,
 }: {
   wallet: Wallet
@@ -71,8 +72,14 @@ export function Tree({
   skin?: Skin
   onBuy: (id: NodeId) => void
   onRespec: () => void
+  /**
+   * Stars a reset will NOT hand back — the death match's used Extra lives (his ruling, 2026-10-22:
+   * "make used lives non-refundable"). Zero everywhere else.
+   */
+  respecKeeps?: number
   onBack: () => void
 }) {
+  const refund = wallet.spent - respecKeeps
   const user = useUserMode()
   const bal = balance(wallet)
   const [open, setOpen] = useState<NodeId | null>(null)
@@ -138,9 +145,9 @@ export function Tree({
             <div className="map-kicker">
               {wallet.spent} spent of {treeCost()}
             </div>
-            {wallet.spent > 0 ? (
+            {refund > 0 ? (
               <button className="map-link danger" onClick={() => setAskRespec(true)}>
-                Reset spending · refund {wallet.spent}★
+                Reset spending · refund {refund}★
               </button>
             ) : null}
           </div>
@@ -258,7 +265,11 @@ export function Tree({
       {askRespec ? (
         <Ask
           label="The staff tree"
-          text={`All ${wallet.spent} stars come back and every node is unlearned. Reset your staff?`}
+          text={
+            respecKeeps > 0
+              ? `${refund} of your ${wallet.spent} stars come back and every node is unlearned, except ${respecKeeps === 1 ? 'the Extra life you already used — it stays bought' : `the ${respecKeeps} Extra lives you already used — they stay bought`}. Reset your staff?`
+              : `All ${wallet.spent} stars come back and every node is unlearned. Reset your staff?`
+          }
           yes="Reset spending"
           danger
           onYes={() => {

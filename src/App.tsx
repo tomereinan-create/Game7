@@ -22,6 +22,7 @@ import {
   advanceTo,
   afterBuy,
   afterRespec,
+  respecKeeps,
   callsPlan,
   clubCode,
   planFor,
@@ -876,6 +877,7 @@ function Game() {
             if (tutorial) teach(unlockLesson(id, rank(next, id)))
           }}
           onRespec={() => commit(cm, death ? afterRespec(prog) : respec(prog))}
+          respecKeeps={death ? respecKeeps(prog) : 0}
           onBack={() => setStaff(false)}
         />
       </>
