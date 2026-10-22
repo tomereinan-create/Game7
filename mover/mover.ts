@@ -14,13 +14,24 @@ declare const TARGET: string
 
 async function go() {
   const u = new URL(TARGET)
-  u.searchParams.set('ref', 'mover')
-  let url = u.href
+  /* A LINK THAT WAS MINTED ON THE OLD ADDRESS KEEPS WHAT IT CARRIED (the live check, 2026-10-22: a
+     challenge shared in the twenty minutes before the domain was live landed on the front door with
+     no challenge). Its share tag, its own ref and its `c=` cross over; the save code joins the hash
+     with '&', which both the challenge and the import readers take. */
+  const here = new URL(location.href)
+  for (const k of ['s', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content']) {
+    const v = here.searchParams.get(k)
+    if (v) u.searchParams.set(k, v)
+  }
+  u.searchParams.set('ref', here.searchParams.get('ref') || 'mover')
+  const c = /(?:^#|&)c=([^&]+)/.exec(here.hash)?.[1] ?? here.searchParams.get('c')
+  const hash: string[] = c ? [`c=${c}`] : []
   try {
-    if (hasProgress()) url += `#import=${await encodeSave(collectSave())}`
+    if (hasProgress()) hash.push(`import=${await encodeSave(collectSave())}`)
   } catch {
     /* storage blocked, or no CompressionStream: go on without the save rather than not at all */
   }
+  const url = u.href + (hash.length ? `#${hash.join('&')}` : '')
   const a = document.getElementById('go')
   if (a) a.setAttribute('href', url)
   location.replace(url)
