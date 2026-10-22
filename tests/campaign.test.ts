@@ -5,7 +5,7 @@ import SALARIES from '../src/data/salaries.json'
 import { PLAYERS } from '../src/engine/pool'
 import { buy, checkpointLevel, livesBought, subsPerRound, type Wallet } from '../src/engine/tree'
 import { balance, earned } from '../src/engine/tree'
-import { advanceTo, applyWear, clearedCount, currentLevel, die, levelSeed, loadProgress, playable, saveProgress, settledProgress, totalStars, wornOut, type Progress } from '../src/state/campaign'
+import { advanceTo, afterBuy, afterRespec, applyWear, respecKeeps, clearedCount, currentLevel, die, levelSeed, loadProgress, playable, saveProgress, settledProgress, totalStars, wornOut, type Progress } from '../src/state/campaign'
 
 const prog = (stars: number[]): Progress => ({ coach: 'def', stars, seed: 12345, plays: 0, spent: 0, nodes: {}, roster: null, lives: 0, checkpoint: 0, deaths: 0, wear: {}, subsUsed: 0, tactics: DEFAULT_TACTICS, bench: null })
 const zeros = () => Array.from({ length: ROUNDS }, () => 0)
@@ -212,7 +212,7 @@ describe('death match — a run, not a map', () => {
       tactics: { ...DEFAULT_TACTICS, style: 'postup' },
     }
     const dead = die(spent)
-    expect(dead.stars.every((s) => s === 0)).toBe(true) // the checkpoint spares nothing now
+    expect(dead.stars.every((s) => s === 0)).toBe(true) // no Saving point bought: nothing is spared
     expect(dead.nodes).toEqual({})
     expect(dead.spent).toBe(0)
     expect(dead.checkpoint).toBe(0)
@@ -345,5 +345,96 @@ describe('a settled series', () => {
     const p = prog(zeros())
     const s = settledProgress('death', { ...p, lives: 1, roster: five }, night(false, 4))
     expect(levelSeed(s, 1)).not.toBe(levelSeed(p, 1))
+  })
+})
+
+/**
+ * THE TWO SURVIVAL NODES THAT DID NOT WORK (2026-10-22): "Saving point does nothing" — a death went
+ * to level 1 whatever was bought — and "Lives refill" — any purchase set the lives back to the
+ * Extra life rank, so a life lost earlier came back with the next node.
+ */
+describe('death match — the Saving point and the lives', () => {
+  const five = ['a', 'b', 'c', 'd', 'e']
+  const upTo = (n: number) => zeros().map((_, i) => (i < n ? 2 : 0))
+
+  it('a run that dies past its checkpoint restarts ON it, with the Saving point still bought', () => {
+    // checkpoint 20, frontier at level 26
+    const p: Progress = { ...prog(upTo(25)), roster: five, nodes: { surv_life: 1, surv_save: 1, coach_tactics: 2 }, spent: 4, checkpoint: 20, wear: { a: 30 }, record: { w: 25, l: 1 } }
+    const d = die(p)
+    expect(currentLevel(d)).toBe(20)
+    expect(d.stars.slice(0, 19).every((s) => s === 2)).toBe(true)
+    expect(d.stars.slice(19).every((s) => s === 0)).toBe(true)
+    expect(d.nodes).toEqual({ surv_save: 1 })
+    expect(d.spent).toBe(1)
+    expect(d.checkpoint).toBe(20)
+    expect(d.lives).toBe(0)
+    expect(d.roster).toBeNull()
+    expect(d.wear).toEqual({})
+    expect(d.tactics).toEqual(DEFAULT_TACTICS)
+    expect(d.deaths).toBe(1)
+    expect(d.record).toEqual({ w: 25, l: 1 })
+    // and the next death is caught at the same rung
+    const again = die({ ...d, stars: upTo(30), roster: five })
+    expect(currentLevel(again)).toBe(20)
+  })
+
+  it('the deeper ranks catch the run higher up', () => {
+    const p: Progress = { ...prog(upTo(70)), nodes: { surv_life: 1, surv_save: 3 }, spent: 4 }
+    expect(currentLevel(die(p))).toBe(60)
+  })
+
+  it('dying exactly on the checkpoint level restarts on it; dying below it is a full reset', () => {
+    const on = die({ ...prog(upTo(19)), nodes: { surv_life: 1, surv_save: 1 }, spent: 2 })
+    expect(currentLevel(on)).toBe(20)
+    const below = die({ ...prog(upTo(14)), nodes: { surv_life: 1, surv_save: 1 }, spent: 2 })
+    expect(currentLevel(below)).toBe(1)
+    expect(below.nodes).toEqual({})
+    expect(below.spent).toBe(0)
+  })
+
+  it('a life lost stays lost when another node is bought', () => {
+    const start: Progress = { ...prog(upTo(10)), roster: five }
+    const withLife = afterBuy(start, buy(start, 'surv_life')!)
+    expect(withLife.lives).toBe(1)
+    const lost = die(withLife)
+    expect(lost.lives).toBe(0)
+    // the bug: any purchase set lives back to the Extra life rank
+    const bought = afterBuy(lost, buy(lost, 'surv_save')!)
+    expect(bought.lives).toBe(0)
+    expect(bought.checkpoint).toBe(20)
+    // a second Extra life rank adds exactly one
+    expect(afterBuy(bought, buy(bought, 'surv_life')!).lives).toBe(1)
+  })
+
+  it('a respec takes back the lives it refunds, so respec-and-rebuy cannot mint one', () => {
+    const start: Progress = { ...prog(upTo(10)) }
+    let p = afterBuy(start, buy(start, 'surv_life')!)
+    p = afterBuy(p, buy(p, 'surv_save')!)
+    const r = afterRespec(p)
+    expect(r.lives).toBe(0)
+    expect(r.checkpoint).toBe(0)
+    expect(r.nodes).toEqual({})
+    expect(afterBuy(r, buy(r, 'surv_life')!).lives).toBe(1)
+  })
+
+  it('a used life is not refundable: its rank stays bought and its star stays spent', () => {
+    const start: Progress = { ...prog(upTo(10)), roster: five }
+    let p = afterBuy(start, buy(start, 'surv_life')!)
+    p = afterBuy(p, buy(p, 'surv_life')!)
+    p = afterBuy(p, buy(p, 'surv_save')!)
+    // two lives bought, one spent on a loss
+    p = die(p)
+    expect(p.lives).toBe(1)
+    expect(respecKeeps(p)).toBe(1)
+    const r = afterRespec(p)
+    expect(r.nodes).toEqual({ surv_life: 1 })
+    expect(r.spent).toBe(1)
+    expect(r.lives).toBe(0)
+    expect(r.checkpoint).toBe(0)
+    // the kept rank still counts toward the three: two more lives at most, never a fourth
+    let q = afterBuy(r, buy(r, 'surv_life')!)
+    q = afterBuy(q, buy(q, 'surv_life')!)
+    expect(q.lives).toBe(2)
+    expect(buy(q, 'surv_life')).toBeNull()
   })
 })
