@@ -57,11 +57,20 @@ jobs:
         if: steps.slot.outputs.mode == 'publish'
       - run: npm run build
         if: steps.slot.outputs.mode == 'publish'
+      # Main's slot at the root of gh-pages is the MOVER, the same as the live old address
+      # (deploy.yml): if the Pages source is ever switched to this branch, the old address must
+      # still carry saves to game7draft.com rather than serve the old game. Keep until 2027-04-22.
+      - name: The root is the mover
+        if: steps.slot.outputs.mode == 'publish' && steps.slot.outputs.dir == '.'
+        run: |
+          node scripts/build-mover.mjs
+          rm -rf dist
+          mv dist-mover dist
 
       # If an Android build has been published, carry it into the site, so the
       # apk has a link on the game's own address instead of a GitHub page.
       - name: Include the Android app
-        if: steps.slot.outputs.mode == 'publish'
+        if: steps.slot.outputs.mode == 'publish' && steps.slot.outputs.dir != '.'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |

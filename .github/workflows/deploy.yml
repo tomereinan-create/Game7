@@ -1,4 +1,15 @@
-name: Deploy Game7 to GitHub Pages
+# THE OLD ADDRESS IS THE MOVER NOW (his word, 2026-10-22: "yes replace github.io with the mover").
+#
+# The game lives at https://game7draft.com (cloudflare-pages.yml). This workflow keeps
+# https://tomereinan-create.github.io/Game7/ serving the MOVER: a page that reads the save a player
+# left at the old address and carries it to the new one (#import), plus a service worker that
+# replaces the game's on every phone that installed it. It builds the mover — never the game — on
+# every push to main, so no later push can put the old game back over it.
+#
+# KEEP IT LIVE UNTIL AT LEAST 2027-04-22. Phones that played at the old address can only reach their
+# progress through here. Do not delete this workflow, the repository's Pages site, or the mover's
+# files (mover/, scripts/build-mover.mjs) before then.
+name: Deploy the mover to GitHub Pages (the old address)
 
 on:
   push:
@@ -24,35 +35,30 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
-      # The deploy's own settings (src/site.ts `deployFor`), from the repository's Actions variables.
-      # Unset is off: no key, no analytics; no token, no beacon; VITE_MOMENTS=0 leaves the AI posters out.
-      - name: Build
-        run: npm run build
-        env:
-          VITE_POSTHOG_KEY: ${{ vars.VITE_POSTHOG_KEY }}
-          VITE_POSTHOG_HOST: ${{ vars.VITE_POSTHOG_HOST }}
-          VITE_CF_BEACON: ${{ vars.VITE_CF_BEACON }}
-          VITE_MOMENTS: ${{ vars.VITE_MOMENTS }}
-          BASE_PATH: ${{ vars.BASE_PATH }}
-          SITE_URL: ${{ vars.SITE_URL }}
+      - name: Build the mover
+        run: node scripts/build-mover.mjs
 
-      # Every page carries the name from src/site.ts, the link-preview picture is there, and with
-      # VITE_MOMENTS=0 set on this job no AI poster or intro clip reached dist/moments.
-      - name: Check the build
-        run: node scripts/check-dist.mjs
-        env:
-          VITE_MOMENTS: ${{ vars.VITE_MOMENTS }}
+      # The mover must point at the new domain, carry the link preview, and be the only thing here.
+      - name: Check the mover
+        run: |
+          set -eu
+          for f in index.html 404.html sw.js .nojekyll; do test -f "dist-mover/$f" || { echo "missing dist-mover/$f"; exit 1; }; done
+          grep -q 'og:url" content="https://game7draft.com/"' dist-mover/index.html
+          grep -q 'og:image" content="https://game7draft.com/og-image.png"' dist-mover/index.html
+          grep -q 'import=' dist-mover/index.html
+          if [ -d dist-mover/assets ]; then echo "the game's bundle is in the mover"; exit 1; fi
+          echo "the mover is sound"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './dist'
+          path: './dist-mover'
 
   deploy:
     environment:

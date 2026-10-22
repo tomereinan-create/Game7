@@ -1,12 +1,16 @@
 /**
- * Builds the MOVER (P3) into dist-mover/: the page that replaces the game at its old address and
- * carries every save to the new domain. Run once the domain is set in src/site.ts:
+ * Builds the MOVER (P3) into dist-mover/: the page that replaces the game at its old address
+ * (https://tomereinan-create.github.io/Game7/) and carries every save to the new domain.
  *
- *   node scripts/build-mover.mjs            (or MOVER_TARGET=https://example.com/ to override)
+ *   node scripts/build-mover.mjs            (MOVER_TARGET=https://example.com/ to point it elsewhere)
  *
- * dist-mover/ is the whole content of the new public repo that keeps the old GitHub Pages address
- * alive: index.html, 404.html (every old deep link lands on the mover too), sw.js (replaces the
- * game's worker on phones that installed it) and .nojekyll. Keep it live for at least six months.
+ * Since 2026-10-22 (his word: "yes replace github.io with the mover") .github/workflows/deploy.yml
+ * builds THIS on every push to main and publishes it as the old address's GitHub Pages site — the
+ * game itself is served from the domain by cloudflare-pages.yml. Keep it live until at least
+ * 2027-04-22: every phone that played at the old address can only reach its save through here.
+ *
+ * dist-mover/: index.html, 404.html (every old deep link lands on the mover too), sw.js (replaces
+ * the game's worker on phones that installed it) and .nojekyll.
  */
 import { build } from 'esbuild'
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
@@ -14,13 +18,12 @@ import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const root = fileURLToPath(new URL('..', import.meta.url))
-const siteSrc = readFileSync(join(root, 'src/site.ts'), 'utf8')
-const pick = (re) => (re.exec(siteSrc) ?? [])[1] ?? ''
-const NAME = pick(/const NAME = '([^']*)'/)
-const DOMAIN = pick(/const DOMAIN = '([^']*)'/)
-const THEME = pick(/themeColor: '([^']*)'/)
-const DISCLAIMER = pick(/disclaimer:\s*'([^']*)'/)
-const target = process.env.MOVER_TARGET || (DOMAIN ? `https://${DOMAIN}/` : '')
+
+// the site's own config, as the app reads it — compiled on the fly, so this runs on any Node
+const siteJs = await build({ entryPoints: [join(root, 'src/site.ts')], bundle: true, write: false, format: 'esm', platform: 'neutral' })
+const { SITE } = await import(`data:text/javascript;base64,${Buffer.from(siteJs.outputFiles[0].text).toString('base64')}`)
+
+const target = process.env.MOVER_TARGET || (SITE.domain ? `https://${SITE.domain}/` : '')
 if (!target) {
   console.error('No new address: set DOMAIN in src/site.ts (or MOVER_TARGET). The mover must not point at the address it replaces.')
   process.exit(1)
@@ -41,12 +44,19 @@ const js = await build({
 })
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;')
 const html = readFileSync(join(root, 'mover/index.html'), 'utf8')
-  .replaceAll('%SITE_NAME%', esc(NAME))
-  .replaceAll('%SITE_THEME%', THEME)
-  .replaceAll('%SITE_DISCLAIMER%', esc(DISCLAIMER))
+  .replaceAll('%SITE_NAME%', esc(SITE.name))
+  .replaceAll('%SITE_DESC%', esc(SITE.description))
+  .replaceAll('%OG_TITLE%', esc(SITE.ogTitle))
+  .replaceAll('%OG_ALT%', esc(SITE.ogImageAlt))
+  .replaceAll('%SITE_THEME%', SITE.themeColor)
+  .replaceAll('%SITE_DISCLAIMER%', esc(SITE.disclaimer))
   .replaceAll('%TARGET_PRINTED%', esc(target.replace(/^https?:\/\//, '').replace(/\/$/, '')))
   .replaceAll('%TARGET%', esc(target))
-  .replace('%MOVER_JS%', () => js.outputFiles[0].text.replace(/<\/script/gi, '<\/script'))
+  .replace('%MOVER_JS%', () => js.outputFiles[0].text.replace(/<\/script/gi, '<\\/script'))
+if (/%[A-Z_]+%/.test(html)) {
+  console.error(`mover/index.html still has placeholders: ${html.match(/%[A-Z_]+%/g).join(', ')}`)
+  process.exit(1)
+}
 
 const out = join(root, 'dist-mover')
 mkdirSync(out, { recursive: true })

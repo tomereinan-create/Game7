@@ -3,9 +3,25 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>%SITE_NAME% has moved</title>
+    <title>%SITE_NAME% has moved to %TARGET_PRINTED%</title>
+    <meta name="description" content="%SITE_DESC%" />
     <meta name="robots" content="noindex" />
     <link rel="canonical" href="%TARGET%" />
+    <!-- A link to the old address pasted anywhere still previews as the game at its new one: a preview
+         crawler reads these and never runs the script below. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="%SITE_NAME%" />
+    <meta property="og:title" content="%OG_TITLE%" />
+    <meta property="og:description" content="%SITE_DESC%" />
+    <meta property="og:url" content="%TARGET%" />
+    <meta property="og:image" content="%TARGET%og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="%OG_ALT%" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="%OG_TITLE%" />
+    <meta name="twitter:description" content="%SITE_DESC%" />
+    <meta name="twitter:image" content="%TARGET%og-image.png" />
     <noscript><meta http-equiv="refresh" content="0;url=%TARGET%" /></noscript>
     <style>
       :root { color-scheme: dark; }
