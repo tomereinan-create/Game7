@@ -11051,3 +11051,44 @@ body.creator .shr-open { display: none; }
   pointer-events: none;
 }
 @media (min-width: 900px) { .home-arm { top: calc(env(safe-area-inset-top, 0px) + 72px); } }
+
+/* LIVE CHECK #7 — THE FRONT DOOR AT TABLET WIDTH. The identity row (ball, wordmark, two counters,
+   the three mode chips, Friends) is a no-wrap row of things that do not shrink, and it only wrapped
+   below 640px: from 640 to 899 it ran 35-70px past the window, the page panned sideways and Friends
+   sat off the edge (768px: 805 wide). The phone's two-line row now holds up to the desk layout. */
+@media (min-width: 640px) and (max-width: 899px) {
+  .fd-id { flex-wrap: wrap; row-gap: calc(var(--fd-u) * 0.5); }
+  .fd-id > .ball7,
+  .fd-word,
+  .fd-modes,
+  .fd-friend { order: 1; }
+  .fd-modes { margin-left: auto; }
+  .fd-idbr { display: block; order: 2; flex: 0 0 100%; height: 0; }
+  .fd-div,
+  .fd-badge,
+  .fd-stat { order: 3; }
+}
+
+/* LIVE CHECK #8 — THE WHEEL'S HOLD BUTTONS ON A PHONE. Below 900px they were the caption's own 8px
+   text in --line-3 on the panel (2.13:1), on a 25x12 target, and read as a disabled label. A pill
+   you can read and a hit area a thumb can find (the ::after grows it without moving the caption). */
+@media (max-width: 899px) {
+  .reel-hold {
+    position: relative;
+    padding: 3px 8px;
+    border: 1px solid var(--line-3);
+    border-radius: 999px;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--ink-2, #ddd5c7);
+  }
+  .reel-hold::after { content: ''; position: absolute; inset: -12px -10px; }
+  .reel.held .reel-hold { border-color: var(--you); color: var(--you); }
+}
+
+/* LIVE CHECK #9 — THE TROPHY TOAST STANDS ABOVE THE DOCK, AND TAKES NO TAPS. It sat on NEXT LEVEL /
+   BACK TO THE MAP for five seconds and swallowed the tap meant for them (z 90 over the dock's 20). */
+.ach-toasts {
+  bottom: calc(var(--foot, 0px) + var(--dock, 0px) + 12px + env(safe-area-inset-bottom, 0px));
+  pointer-events: none;
+}
