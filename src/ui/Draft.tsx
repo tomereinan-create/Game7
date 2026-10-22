@@ -1705,7 +1705,7 @@ export function Draft({
               stamped on a second time. `seasonName` only stamps a name that does not already end
               in one. */}
           <div className="opp-name">{seasonName(opponent.team, opponent.season)}</div>
-          {user ? null : <TeamDials five={opponent.players} tone="them" vs={opponent.season ?? 'field'} />}
+          {user ? null : <TeamDials five={opponent.players} tone="them" vs={opponent.season ?? 'field'} ab={opponent.ab} />}
         </div>
         {/* The NET is an engine number and the axis line below it is engine ratings — or, unbought,
             an advert for the node that sells them. User mode plays blind, and with the record gone

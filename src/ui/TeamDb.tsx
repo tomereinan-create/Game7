@@ -1,5 +1,6 @@
 import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { seasonGauges } from '../engine/gauges'
+import { rankLabel, seasonRank } from '../engine/seasonRank'
 import { teamLine } from '../engine/teamline'
 import { archetype, PLAYERS } from '../engine/pool'
 import { eligible, POSITIONS } from '../engine/positions'
@@ -266,6 +267,8 @@ function ratingsOf(t: TeamSeason) {
  */
 function TeamHero({ t, sorted, tag, onPick, span: [from, to] }: { t: TeamSeason; sorted: 'ovr' | 'off' | 'def' | null; tag: string; onPick: () => void; span: Span }) {
   const { live, rows } = ratingsOf(t)
+  const five = fiveOf(t)
+  const rank = five ? seasonRank(five, t.y, t.ab) : null
   const c = teamColor(t.ab)
   return (
     <button
@@ -301,7 +304,7 @@ function TeamHero({ t, sorted, tag, onPick, span: [from, to] }: { t: TeamSeason;
         <span className="thero-dials">
           {rows.map(({ k, v }) => (
             <span className={`thero-dial ${sorted === k ? 'on' : ''}`} key={k}>
-              <Dial label={k.toUpperCase()} value={v!} tone="scale" color={ratingTone(v)} />
+              <Dial label={k.toUpperCase()} value={v!} tone="scale" color={ratingTone(v)} rank={rank ? rankLabel(rank[k], t.y) : undefined} />
             </span>
           ))}
         </span>
@@ -699,7 +702,16 @@ export function TeamDb({ onBack, initial = null }: { onBack: () => void; /** ope
      * NOT `roster` ITSELF, which is the order the season file happens to list them in, and not
      * `five` concatenated raw, which carries the nulls an incomplete five leaves behind.
      */
-    return { roster, five, bench, sheet: [...fielded, ...bench], gauges: fielded.length === 5 ? seasonGauges(fielded, picked.y) : null, fielded }
+    return {
+      roster,
+      five,
+      bench,
+      sheet: [...fielded, ...bench],
+      gauges: fielded.length === 5 ? seasonGauges(fielded, picked.y) : null,
+      // where the five stands in its own season, beside each all-time dial (his ruling, 2026-10-22)
+      rank: fielded.length === 5 ? seasonRank(fielded, picked.y, picked.ab) : null,
+      fielded,
+    }
   }, [picked])
 
   return (
@@ -946,11 +958,11 @@ export function TeamDb({ onBack, initial = null }: { onBack: () => void; /** ope
               <div className="dials tdb-scale tdb-clubdials">
                 {(
                   [
-                    ['OVR', ovrOf(picked) ?? 0],
-                    ['OFF', detail.gauges?.off ?? 0],
-                    ['DEF', detail.gauges?.def ?? 0],
+                    ['OVR', ovrOf(picked) ?? 0, detail.rank?.ovr],
+                    ['OFF', detail.gauges?.off ?? 0, detail.rank?.off],
+                    ['DEF', detail.gauges?.def ?? 0, detail.rank?.def],
                   ] as const
-                ).map(([l, v]) => (
+                ).map(([l, v, r]) => (
                   <Dial
                     key={l}
                     label={l}
@@ -959,6 +971,7 @@ export function TeamDb({ onBack, initial = null }: { onBack: () => void; /** ope
                     color={detail.gauges ? ratingTone(v) : 'var(--faint)'}
                     sub={detail.gauges ? detail.gauges.basis : 'needs five'}
                     unread={!detail.gauges}
+                    rank={r ? rankLabel(r, picked.y) : undefined}
                   />
                 ))}
               </div>

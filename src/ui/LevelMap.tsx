@@ -3,6 +3,7 @@ import { useLayout } from './useLayout'
 import { ROUNDS } from '../config'
 import type { Opponent } from '../engine/types'
 import { fieldGauges, seasonGauges } from '../engine/gauges'
+import { rankLabel, seasonRank } from '../engine/seasonRank'
 import { balance, canBuy, NODE, NODES } from '../engine/tree'
 import { Dial } from './MatchupPanel'
 import { currentLevel, playable, totalStars, type Progress } from '../state/campaign'
@@ -501,6 +502,11 @@ export function LevelMap({
     if (!o) return null
     return o.season ? seasonGauges(o.players, o.season) : fieldGauges(o.players)
   }, [cur, opponents])
+  // and where that five stands in its own season, beside the all-time dials (his ruling, 2026-10-22)
+  const nowRank = useMemo(() => {
+    const o = cur ? opponents[cur - 1] : null
+    return o?.season && nowGauge?.complete ? seasonRank(o.players, o.season, o.ab) : null
+  }, [cur, opponents, nowGauge])
   /** How far ahead the map reveals: what you have cleared, and the one you are on. */
   const revealed = (state: string) => state !== 'locked'
   const starGlyphs = (n: number) => [1, 2, 3].map((k) => <i key={k} className={k <= n ? 'lit' : ''}>★</i>)
@@ -1165,8 +1171,8 @@ export function LevelMap({
                 {!user && state === 'done' ? <span className="node-stars">{starGlyphs(stars)}</span> : null}
                 {state === 'now' && nowGauge && !user ? (
                   <span className="node-dials">
-                    <Dial label="OFF" value={nowGauge.off} tone="them" />
-                    <Dial label="DEF" value={nowGauge.def} tone="them" />
+                    <Dial label="OFF" value={nowGauge.off} tone="them" rank={nowRank ? rankLabel(nowRank.off, nowRank.season) : undefined} />
+                    <Dial label="DEF" value={nowGauge.def} tone="them" rank={nowRank ? rankLabel(nowRank.def, nowRank.season) : undefined} />
                     <span className="gauge-basis">{nowGauge.basis}</span>
                   </span>
                 ) : null}
