@@ -1707,7 +1707,11 @@ export function Draft({
             {`vs you: OFF ${theirs.off.toFixed(1)} · DRTG ${theirs.drtg.toFixed(1)} · NET ${theirs.net > 0 ? '+' : ''}${theirs.net.toFixed(1)}`}
           </div>
         ) : null}
-        {!user && has('scout_ratings') ? (
+        {/* EXACT RATINGS SHOWS WHAT IT BOUGHT IN EVERY MODE (his report, 2026-10-22: "everything it
+            unlocks only shows in Scout mode ... the opponent panel shows names with no numbers").
+            The blindfold is about verdicts on YOUR choices; these are numbers about their five,
+            bought with stars, the way Custom and Vs friend already show ratings in user mode. */}
+        {has('scout_ratings') ? (
           <div className="opp-line">
             {`Inside ${Math.round(theirs.in)} · Outside ${Math.round(theirs.out)} · Interior D ${Math.round(theirs.id)} · Perimeter D ${Math.round(theirs.pd)}`}
           </div>
@@ -1729,7 +1733,7 @@ export function Draft({
             club={teamColor(opponent.ab)}
             spots={opponent.players.map((p, i) => ({
               p,
-              tag: `${opponent.positions?.[i] ?? POSITIONS[i]}${!user && rank(wallet, 'scout_ratings') >= 2 ? ` · ${p.ovr}` : ''}`,
+              tag: `${opponent.positions?.[i] ?? POSITIONS[i]}${rank(wallet, 'scout_ratings') >= 2 ? ` · ${p.ovr}` : ''}`,
               onTap: () => openCard(p),
             }))}
           />
@@ -1744,15 +1748,13 @@ export function Draft({
                   onClick={() => setOppOpen((o) => (o === p.name ? null : p.name))}
                 >
                   <span className="oppman-name">{p.name}</span>
-                  {user ? null : (
                   <span className="oppman-nums">
                     <i>{p.ovr}</i>
                     <i>{p.o_ovr}</i>
                     <i>{p.d_ovr}</i>
                   </span>
-                  )}
                 </button>
-                {oppOpen === p.name ? <DetailGrid p={p} mode={user ? 'stats' : undefined} /> : null}
+                {oppOpen === p.name ? <DetailGrid p={p} /> : null}
               </div>
             ))}
             <div className="oppmen-cap">
