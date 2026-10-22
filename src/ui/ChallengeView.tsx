@@ -24,12 +24,14 @@ const sideName = (n: string, y?: number) => (y ? `${n} '${String(y).slice(2)}` :
  * THE OPPONENT AT ITS POSITIONS (the live check, 2026-10-22: a Custom five arrives in the order its
  * men were tapped, so "Your turn" seated Giannis at PG and Durant at C). The five is seated the way
  * the ladder seats a real team — the best legal board, PG to C — and a five that cannot fill all
- * five spots (three centres) keeps its order, each man at a position he actually played.
+ * five spots (no one who ever played PF) seats whom it can, and the rest take the open spots under
+ * the position they actually played — a tag never names a spot a man never played.
  */
 export function seatFive(players: Player[]): { players: Player[]; positions: string[] } {
-  const board = startingFive(players).five
-  if (board.every(Boolean)) return { players: board as Player[], positions: [...POSITIONS] }
-  return { players, positions: players.map((p) => eligible(LINES[p.name]?.pos)[0]) }
+  const { five, bench } = startingFive(players)
+  const rest = [...bench]
+  const seated = five.map((p) => p ?? rest.shift()!)
+  return { players: seated, positions: five.map((p, i) => (p ? POSITIONS[i] : eligible(LINES[seated[i].name]?.pos)[0])) }
 }
 
 /**

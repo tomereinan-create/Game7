@@ -63,4 +63,15 @@ describe("'Your turn' seats the challenge's opponent at real positions", () => {
     const { LINES } = await import('../src/ui/Stat')
     seated.players.forEach((p, i) => expect(eligible(LINES[p.name]?.pos)).toContain(POSITIONS[i]))
   })
+
+  it('a five that cannot fill every spot seats whom it can; the rest keep a position they played', async () => {
+    const { seatFive } = await import('../src/ui/ChallengeView')
+    const { eligible } = await import('../src/engine/positions')
+    const { LINES } = await import('../src/ui/Stat')
+    const B = realStarters(2026, 'WAS')
+    const seated = seatFive([...B].reverse())
+    expect(seated.players).toHaveLength(5)
+    expect(new Set(seated.players.map((p) => p.name)).size).toBe(5)
+    seated.players.forEach((p, i) => expect(eligible(LINES[p.name]?.pos)).toContain(seated.positions[i]))
+  })
 })
