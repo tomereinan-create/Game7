@@ -149,6 +149,11 @@ export interface Opponent {
   tag?: string
   /** Team abbreviation, for the level map tiles. */
   ab?: string
+  /**
+   * What the opponent card's head calls a five that is not a level of the ladder — a challenge's
+   * "Challenge opponent". Absent, the head reads "Level N opponent".
+   */
+  label?: string
   players: Player[]
 }
 
