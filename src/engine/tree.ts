@@ -115,7 +115,7 @@ export const NODES: Node[] = [
     blurb: 'Defensive assignments stop being naive.',
     rankBlurbs: [
       'Assignments go from naive to optimal: the anchor hides on their worst shooter.',
-      'And the draft screen prices it — what the assignment is worth, in points of spread.',
+      'And the draft screen prices it — what the assignment is worth, in points of margin.',
     ],
   },
   {

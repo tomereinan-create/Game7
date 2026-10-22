@@ -533,7 +533,7 @@ const WHERE: Record<NodeId, (r: number) => string[]> = {
   coach_optimal: (r) => [
     r === 1
       ? 'On every night from here: your defensive assignments go from naive to optimal — the anchor hides on their worst shooter, the rest sort themselves. Nothing to press; it is how your five defends now.'
-      : 'Rank 2 prices the assignment on the draft, in points of spread.',
+      : 'Rank 2 prices the assignment on the draft, in points of margin.',
     ...(r === 2 ? [`That price is a number, and ${BLIND.charAt(0).toLowerCase()}${BLIND.slice(1)}`] : []),
   ],
   coach_manual: (r) => [

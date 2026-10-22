@@ -197,7 +197,11 @@ export function Analysis({
         <div className="card an-head">
           <div className="an-spread">
             <span className="you">{myName}</span>
-            <b className={o.spread >= 0 ? 'you' : 'them'}>{o.spread >= 0 ? '−' : '+'}{Math.abs(o.spread).toFixed(1)}</b>
+            {/* the projected margin, pointing at the side it favours — not a book's "−6.8" (the live check) */}
+            <b className={o.spread >= 0 ? 'you' : 'them'}>
+              {o.spread >= 0 ? '◀ ' : ''}+{Math.abs(o.spread).toFixed(1)}
+              {o.spread < 0 ? ' ▶' : ''}
+            </b>
             <span className="them">{theirName}</span>
           </div>
           <div className="an-odds">

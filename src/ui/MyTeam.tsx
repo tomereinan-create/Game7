@@ -814,7 +814,7 @@ export function MyTeam({
             <div className="card" style={{ paddingBottom: 4 }}>
               <div className="card-head">
                 <span className="label">Tactics</span>
-                <span className="cap">{worth ? `worth ${worth} pts of spread` : 'set'}</span>
+                <span className="cap">{worth ? `worth ${worth} pts of margin` : 'set'}</span>
               </div>
               <div className="seriesnow-note" style={{ paddingBottom: 10 }}>
                 Your plan is still called and still priced — it is out of the way while you make the change, so
@@ -835,7 +835,7 @@ export function MyTeam({
                     ? 'your plan'
                     : (() => {
                         const w = tacticsParts(gateTactics(tactics, playbook), five).reduce((a, x) => a + x.pts, 0)
-                        return `worth ${w >= 0 ? '+' : '−'}${Math.abs(w).toFixed(1)} pts of spread`
+                        return `worth ${w >= 0 ? '+' : '−'}${Math.abs(w).toFixed(1)} pts of margin`
                       })()}
               </span>
             </div>

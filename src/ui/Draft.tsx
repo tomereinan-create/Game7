@@ -2073,7 +2073,7 @@ export function Draft({
             {assignWorth >= 0 ? '+' : '−'}
             {Math.abs(assignWorth).toFixed(1)}
           </b>
-          <i>points of spread against a naive board</i>
+          <i>points of margin against a naive board</i>
         </div>
       ) : null}
       {full && !user ? <MatchupPanel mine={five} theirs={opponent.players} myName={teamName} theirName={opponent.team} assignment={assignment} /> : null}
@@ -2095,18 +2095,13 @@ export function Draft({
           <div className="odds-grid">
             <div>
               <b className={chance.spread >= 0 ? 'you' : 'them'}>
-                {chance.spread >= 0 ? '−' : '+'}
-                {Math.abs(chance.spread).toFixed(1)}
+                +{Math.abs(chance.spread).toFixed(1)}
               </b>
-              {/* WHOSE LINE IT IS (his report, 2026-09-09: he read the headline as sign-flipped
-                  because it prints −6.8 while the decomposition below reads +6.8). It is not
-                  flipped — this is the book convention, where the FAVOURITE lays the points, and
-                  it agrees with everything else on the card: Φ(+6.8/σ) is the same 75% the game
-                  cell prints. What it never said was WHOSE 6.8 it is, and a bare "Spread" over a
-                  minus sign is exactly the reading he made. Naming the side turns it into the line
-                  a book would post — SLC −6.8 — which can only be read one way. His ruling: keep
-                  the convention, label it properly. */}
-              <i>Spread · {chance.spread >= 0 ? (teamAb ?? teamCode(teamName)) : (opponent.ab ?? teamCode(opponent.team))}</i>
+              {/* NO SPORTSBOOK LINE (the live check, 2026-10-22, under the no-betting-look rule): this
+                  was "−5.5 SPREAD · SYD", the book's own notation. It is the projected margin now,
+                  named by the side it favours — "+5.5 MARGIN · SYD" — the same number, read the same
+                  one way his 2026-09-09 ruling asked for (whose 5.5 it is), with no betting word. */}
+              <i>Margin · {chance.spread >= 0 ? (teamAb ?? teamCode(teamName)) : (opponent.ab ?? teamCode(opponent.team))}</i>
             </div>
             <div>
               <b className={chance.game >= 0.5 ? 'you' : 'them'}>{(100 * chance.game).toFixed(0)}%</b>

@@ -16,7 +16,7 @@ export const COACHES: Coach[] = [
   },
   {
     id: 'gambler',
-    name: 'The Gambler',
+    name: 'The Wildcard',
     blurb: 'Game noise 17 instead of 14, for both teams',
     mod: {},
     sigma: GAMBLER_SIGMA,
