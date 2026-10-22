@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { track } from '../analytics'
+import { copyText as copy } from '../share/clipboard'
 import { inAppBrowser, platform, standalone } from '../share/inapp'
 import { shareLink } from '../share/link'
 import { SITE } from '../site'
@@ -31,13 +32,11 @@ const setFlag = (k: string, v: string) => {
   }
 }
 
-async function copy(text: string): Promise<boolean> {
-  try {
-    await navigator.clipboard.writeText(text)
-    return true
-  } catch {
-    return false
-  }
+/** What a refused copy says, under the field it selected for a long press. */
+const COPY_FAILED = 'This browser would not copy it. Press and hold the text above, then choose Copy.'
+const selectIn = (el: HTMLInputElement | HTMLTextAreaElement | null) => {
+  el?.focus()
+  el?.select()
 }
 
 /** The game's address carrying this browser's save in its hash, or bare when there is none yet. */
@@ -66,6 +65,19 @@ function openOutside(url: string) {
 }
 
 function Sheet({ title, onClose, children }: { title: string; onClose?: () => void; children: React.ReactNode }) {
+  // Escape closes it, as it closes the app's other dialogs (the live check, 2026-10-22)
+  const close = useRef(onClose)
+  close.current = onClose
+  useEffect(() => {
+    const key = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && close.current) {
+        e.stopPropagation()
+        close.current()
+      }
+    }
+    window.addEventListener('keydown', key)
+    return () => window.removeEventListener('keydown', key)
+  }, [])
   // portalled to the body: a sheet opened from the footer must not wear the footer's link styles
   return createPortal(
     <div className="g7-sheet" role="dialog" aria-modal="true" aria-label={title} onClick={(e) => e.target === e.currentTarget && onClose?.()}>
@@ -89,7 +101,8 @@ function Sheet({ title, onClose, children }: { title: string; onClose?: () => vo
 export function EscapeBanner() {
   const app = inAppBrowser()
   const [help, setHelp] = useState<string | null>(null)
-  const [copied, setCopied] = useState(false)
+  const [copied, setCopied] = useState<boolean | null>(null)
+  const field = useRef<HTMLInputElement>(null)
   if (!app) return null
   const browser = platform() === 'android' ? 'Chrome' : 'Safari'
   const go = async () => {
@@ -112,8 +125,16 @@ export function EscapeBanner() {
               : `If ${browser} did not open, copy the link and paste it into ${browser}.`}{' '}
             The link carries your progress with it.
           </p>
-          <input className="g7-code" readOnly value={help} onFocus={(e) => e.currentTarget.select()} aria-label="Link to the game with your progress" />
-          <button className="btn" onClick={async () => setCopied(await copy(help))}>
+          <input ref={field} className="g7-code" readOnly value={help} onFocus={(e) => e.currentTarget.select()} aria-label="Link to the game with your progress" />
+          {copied === false ? <p className="g7-msg">{COPY_FAILED}</p> : null}
+          <button
+            className="btn"
+            onClick={async () => {
+              const ok = await copy(help)
+              setCopied(ok)
+              if (!ok) selectIn(field.current)
+            }}
+          >
             {copied ? 'Copied — paste it into ' + browser : 'Copy the link'}
           </button>
         </Sheet>
@@ -130,6 +151,18 @@ export function SaveSheet({ onClose }: { onClose: () => void }) {
   const [msg, setMsg] = useState<string | null>(null)
   const [armed, setArmed] = useState(false)
   const [copied, setCopied] = useState<'code' | 'link' | null>(null)
+  const [failed, setFailed] = useState<'code' | 'link' | null>(null)
+  const codeField = useRef<HTMLTextAreaElement>(null)
+  const linkField = useRef<HTMLInputElement>(null)
+  useEffect(() => {
+    if (failed) selectIn(failed === 'code' ? codeField.current : linkField.current)
+  }, [failed])
+  const copyOut = async (what: 'code' | 'link') => {
+    const ok = await copy(what === 'code' ? code : link)
+    setCopied(ok ? what : null)
+    setFailed(ok ? null : what)
+    track('savecode_export', { via: what, ok })
+  }
   useEffect(() => {
     let on = true
     void encodeSave(collectSave()).then((c) => {
@@ -159,26 +192,14 @@ export function SaveSheet({ onClose }: { onClose: () => void }) {
   return (
     <Sheet title="Save code" onClose={onClose}>
       <p>Your progress lives in this browser only. Copy this code to carry it to another browser, a phone, or the Home Screen app.</p>
-      <textarea className="g7-code" readOnly rows={3} value={code || 'Writing your code…'} onFocus={(e) => e.currentTarget.select()} aria-label="Your save code" />
+      <textarea ref={codeField} className="g7-code" readOnly rows={3} value={code || 'Writing your code…'} onFocus={(e) => e.currentTarget.select()} aria-label="Your save code" />
+      {failed === 'link' ? <input ref={linkField} className="g7-code" readOnly value={link} onFocus={(e) => e.currentTarget.select()} aria-label="Link to the game with your progress" /> : null}
+      {failed ? <p className="g7-msg">{COPY_FAILED}</p> : null}
       <div className="g7-row">
-        <button
-          className="btn"
-          disabled={!code}
-          onClick={async () => {
-            if (await copy(code)) setCopied('code')
-            track('savecode_export', { via: 'code' })
-          }}
-        >
+        <button className="btn" disabled={!code} onClick={() => copyOut('code')}>
           {copied === 'code' ? 'Code copied' : 'Copy code'}
         </button>
-        <button
-          className="btn ghost"
-          disabled={!link}
-          onClick={async () => {
-            if (await copy(link)) setCopied('link')
-            track('savecode_export', { via: 'link' })
-          }}
-        >
+        <button className="btn ghost" disabled={!link} onClick={() => copyOut('link')}>
           {copied === 'link' ? 'Link copied' : 'Copy as a link'}
         </button>
       </div>
@@ -212,21 +233,28 @@ export function SaveSheet({ onClose }: { onClose: () => void }) {
 export function ImportPrompt() {
   const [state, setState] = useState<{ data: Record<string, string> } | { error: string } | null>(null)
   useEffect(() => {
-    const code = importFromUrl(location.href)
-    if (!code) return
-    const u = new URL(location.href)
-    u.hash = u.hash.replace(/(^#|&)import=[^&]*/, '').replace(/^#&?$/, '')
-    u.searchParams.delete('import')
-    history.replaceState(history.state, '', u.href)
-    decodeSave(code)
-      .then((data) => {
-        if (!hasProgress()) {
-          applySave(data)
-          track('savecode_import', { via: 'link', replaced: false })
-          location.reload()
-        } else setState({ data })
-      })
-      .catch((e) => setState({ error: e instanceof BadCode ? e.message : 'That link’s save could not be read.' }))
+    const read = () => {
+      const code = importFromUrl(location.href)
+      if (!code) return
+      const u = new URL(location.href)
+      u.hash = u.hash.replace(/(^#|&)import=[^&]*/, '').replace(/^#&?$/, '')
+      u.searchParams.delete('import')
+      history.replaceState(history.state, '', u.href)
+      decodeSave(code)
+        .then((data) => {
+          if (!hasProgress()) {
+            applySave(data)
+            track('savecode_import', { via: 'link', replaced: false })
+            location.reload()
+          } else setState({ data })
+        })
+        .catch((e) => setState({ error: e instanceof BadCode ? e.message : 'That link’s save could not be read.' }))
+    }
+    read()
+    // a save link pasted into the address bar of a tab that already has the game open changes only
+    // the hash, which loads nothing (the live check, 2026-10-22: nothing happened)
+    window.addEventListener('hashchange', read)
+    return () => window.removeEventListener('hashchange', read)
   }, [])
   if (!state) return null
   if ('error' in state)
@@ -271,7 +299,22 @@ const A2HS = 'game7.a2hs'
 export function IosHint({ quiet = false }: { quiet?: boolean }) {
   const [shown, setShown] = useState(false)
   const [open, setOpen] = useState(false)
-  const [copied, setCopied] = useState(false)
+  const [copied, setCopied] = useState<boolean | null>(null)
+  /* the code is written when the sheet opens, not on the tap: WebKit only lets a page copy while
+     the tap is still fresh, and an await before the copy can let it go stale */
+  const [code, setCode] = useState('')
+  const codeField = useRef<HTMLTextAreaElement>(null)
+  useEffect(() => {
+    if (!open || code) return
+    let on = true
+    void encodeSave(collectSave()).then((c) => on && setCode(c))
+    return () => {
+      on = false
+    }
+  }, [open, code])
+  useEffect(() => {
+    if (copied === false) selectIn(codeField.current)
+  }, [copied])
   useEffect(() => {
     if (platform() !== 'ios' || inAppBrowser() || standalone() || flag(A2HS)) return
     let t = 0
@@ -315,16 +358,24 @@ export function IosHint({ quiet = false }: { quiet?: boolean }) {
             <li>Open {SITE.shortName} from your Home Screen and paste your save code when it asks.</li>
           </ol>
           <p>The Home Screen app starts empty, so take your progress with you:</p>
+          {copied === false ? (
+            <>
+              <textarea ref={codeField} className="g7-code" readOnly rows={3} value={code} onFocus={(e) => e.currentTarget.select()} aria-label="Your save code" />
+              <p className="g7-msg">{COPY_FAILED}</p>
+            </>
+          ) : null}
           <button
             className="btn"
+            disabled={!code}
             onClick={async () => {
-              const ok = await copy(await encodeSave(collectSave()))
+              const ok = await copy(code)
               setCopied(ok)
               track('a2hs_copy', { ok })
-              setFlag(A2HS, 'done')
+              // a code that never reached the clipboard has not been taken along: the hint stays due
+              if (ok) setFlag(A2HS, 'done')
             }}
           >
-            {copied ? 'Save code copied' : 'Copy my save code'}
+            {copied ? 'Save code copied' : code ? 'Copy my save code' : 'Writing your code…'}
           </button>
         </Sheet>
       )}
