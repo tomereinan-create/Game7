@@ -2,7 +2,8 @@
 # file. Static rules only (2,000 allowed, no Functions), so a surge costs nothing. The ref lands in
 # the `open` event. A creator's own link, /c/<handle>, is the game itself (the 200 rewrite below),
 # and src/boot.ts turns it into ref=c-<handle> (a placeholder is not substituted inside a query
-# string). Every other unknown path is a real 404 now (dist/404.html).
+# string). Every other unknown path is a real 404 now (dist/404.html). The rewrite targets "/":
+# Pages ignores a 200 rewrite to "/index.html".
 /tt   /?ref=tt   302
 /ig   /?ref=ig   302
 /yt   /?ref=yt   302
@@ -17,4 +18,4 @@
 /TT   /?ref=tt  302
 /IG   /?ref=ig  302
 /YT   /?ref=yt  302
-/c/*  /index.html  200
+/c/*  /  200
