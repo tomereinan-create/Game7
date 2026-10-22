@@ -1,0 +1,63 @@
+{
+  "aspect_ratio": "1:1",
+  "model": "grok",
+  "resolution": "2k",
+  "style": "A finished, professional logo, flat and vector-clean, perfectly symmetrical where it should be, no photo, no texture, no watermark, no extra words, no people.",
+  "moments": [
+    {
+      "slug": "logo-crest",
+      "title": "logo-crest",
+      "look": "",
+      "tier": "logo",
+      "era": "",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/logo-today.jpg"
+      ],
+      "prompt": "A LOGO for a basketball game called GAME 7, on a plain dark background, centred, large, nothing else in the frame. The reference image shows the mark the game uses today: an orange basketball carrying a bold white 7, and the wordmark GAME7 with the 7 in orange. Keep that idea - the ball, the 7, the word GAME - and make it a CREST: a shield outline in gold with the ball-and-7 at its heart, GAME 7 lettered across a ribbon beneath, two small stars, clean vector edges, navy, gold and orange. The only text is GAME 7 (or GAME and 7), spelled exactly."
+    },
+    {
+      "slug": "logo-mono",
+      "title": "logo-mono",
+      "look": "",
+      "tier": "logo",
+      "era": "",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/logo-today.jpg"
+      ],
+      "prompt": "A LOGO for a basketball game called GAME 7, on a plain dark background, centred, large, nothing else in the frame. The reference image shows the mark the game uses today: an orange basketball carrying a bold white 7, and the wordmark GAME7 with the 7 in orange. Keep that idea - the ball, the 7, the word GAME - and make it a single clean MONOGRAM: the digit 7 cut from the seams of a basketball, one continuous bold shape, orange on black, the word GAME small and wide-tracked under it, flat vector, no gradients. The only text is GAME 7 (or GAME and 7), spelled exactly."
+    },
+    {
+      "slug": "logo-neon",
+      "title": "logo-neon",
+      "look": "",
+      "tier": "logo",
+      "era": "",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/logo-today.jpg"
+      ],
+      "prompt": "A LOGO for a basketball game called GAME 7, on a plain dark background, centred, large, nothing else in the frame. The reference image shows the mark the game uses today: an orange basketball carrying a bold white 7, and the wordmark GAME7 with the 7 in orange. Keep that idea - the ball, the 7, the word GAME - and make it a NEON SIGN: the ball drawn as glowing orange tube lines with the 7 inside, GAME 7 in white neon script beneath, soft glow on a black wall, clean and legible. The only text is GAME 7 (or GAME and 7), spelled exactly."
+    },
+    {
+      "slug": "logo-banner",
+      "title": "logo-banner",
+      "look": "",
+      "tier": "logo",
+      "era": "",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/logo-today.jpg"
+      ],
+      "prompt": "A LOGO for a basketball game called GAME 7, on a plain dark background, centred, large, nothing else in the frame. The reference image shows the mark the game uses today: an orange basketball carrying a bold white 7, and the wordmark GAME7 with the 7 in orange. Keep that idea - the ball, the 7, the word GAME - and make it a hanging PENNANT like a championship banner: navy cloth with a gold trim and fringe, the orange ball-and-7 at the top, GAME 7 in bold white block letters below it, flat and crisp. The only text is GAME 7 (or GAME and 7), spelled exactly."
+    },
+    {
+      "slug": "logo-type",
+      "title": "logo-type",
+      "look": "",
+      "tier": "logo",
+      "era": "",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/logo-today.jpg"
+      ],
+      "prompt": "A LOGO for a basketball game called GAME 7, on a plain dark background, centred, large, nothing else in the frame. The reference image shows the mark the game uses today: an orange basketball carrying a bold white 7, and the wordmark GAME7 with the 7 in orange. Keep that idea - the ball, the 7, the word GAME - and make it pure TYPOGRAPHY: GAME 7 in one heavy condensed sans, white, with the counter of the 7 replaced by a small orange basketball, a thin orange underline, nothing else - the kind of mark that reads at any size. The only text is GAME 7 (or GAME and 7), spelled exactly."
+    }
+  ]
+}
