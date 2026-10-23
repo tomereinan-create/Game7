@@ -8,7 +8,7 @@ import type { Tactics } from './engine/tactics'
 import CAMPAIGNS from './data/campaigns.json'
 import { canBetter, simSeries, starsFor } from './engine/resolver'
 import { boxContext, reconcileTactics } from './engine/tactics'
-import { balance, benchHeal, buy, capBonus, duraBoost, earned, paceMastery, playbookRank, rank, respec, subsPerRound, type Branch } from './engine/tree'
+import { balance, benchHeal, buy, buyBoost, capBonus, duraBoost, earned, paceMastery, playbookRank, rank, respec, subsPerRound, type Branch } from './engine/tree'
 import { teach, teachOnce, tutorialLock, useLesson, useTutor } from './state/tutorial'
 import { Coach } from './ui/Coach'
 import { auctionLesson, customLesson, eraLesson, ladderLesson, lifeLesson, mapLesson, myTeamLesson, runOverLesson, spendLesson, staffLesson, teamLesson, trophyLesson, unlockLesson, versusLesson } from './ui/lessons'
@@ -506,9 +506,14 @@ function Game() {
     mapLesson({ mode: cm!, level: currentLevel(prog!), opp: (() => { const l = currentLevel(prog!); return l ? opponents[l - 1] : null })(), eras: ERAS, bal, lives: prog!.lives }),
   )
   useLesson(`mode.${cm ?? 'campaign'}`, screen === 'map' && cm !== 'campaign', () => ladderLesson(cm!, prog!.lives)!)
-  useLesson('spend', screen === 'map' && bal >= 1, () => spendLesson(bal))
+  useLesson('spend', screen === 'map' && bal >= 1, () => spendLesson(bal, death))
   useLesson('staff', screen === 'staff', () =>
-    staffLesson({ bal, earned: earned(prog!), branches: ['Scout', 'Front office', 'Coach', ...(capped ? (['Salary'] as Branch[]) : []), ...(death ? (['Survival'] as Branch[]) : [])] }),
+    staffLesson({
+      bal,
+      earned: earned(prog!),
+      branches: ['Scout', 'Front office', 'Coach', ...(capped ? (['Salary'] as Branch[]) : []), ...(death ? (['Survival'] as Branch[]) : (['Dynasty'] as Branch[]))],
+      death,
+    }),
   )
   useLesson('myteam', screen === 'myteam', () =>
     myTeamLesson({
@@ -531,7 +536,7 @@ function Game() {
     })
   }, [tutorial, screen, prog])
 
-  const sim = (five: Player[], assignment: Assignment, toWin: number) => {
+  const sim = (five: Player[], assignment: Assignment, toWin: number, edge = 0) => {
     if (!opponent || !prog || !cm || !level) return
     // Our defense is whatever the board assigned; the AI always plays optimal. On top of it comes
     // the PLAN, priced in points of spread like every other modifier — in ALL THREE MODES now (his
@@ -541,8 +546,9 @@ function Game() {
     const plan = planFor(cm, prog, five.map((p) => p.name))
     // PACE (recal_57): both teams pick a tempo — the AI reads the surpluses and answers — and the
     // night gets a relative volume-surplus term plus a variance shift, replacing the flat sigma map.
-    // Built by odds.ts `night`, the same call the draft card makes, so the card prices this night.
-    const { mine, theirs, pc, sigma: sig } = night(five, opponent.players, assignment, plan, paceMastery(prog))
+    // Built by odds.ts `night`, the same call the draft card makes, so the card prices this night —
+    // a Hot hand boost's points (`edge`) included, handed over by the draft that priced them.
+    const { mine, theirs, pc, sigma: sig } = night(five, opponent.players, assignment, plan, paceMastery(prog), death ? 0 : edge)
     // creator mode: the series is a function of the run's seed and the attempt, so a filmed run replays
     const seed = CREATOR ? (levelSeed(prog, level) ^ 0x5bd1e995) >>> 0 || 1 : randomSeed()
     // Every mode sims the series entirely — the death match included (his ruling). Its wear is
@@ -973,7 +979,8 @@ function Game() {
           death={death}
           skin={skin}
           onBuy={(id) => {
-            const next = buy(prog, id)
+            // the death match keeps one star a rank (engine/tree.ts `price`)
+            const next = buy(prog, id, death)
             if (!next) return
             // Survival nodes take effect the moment they are bought: a life bought is a life in hand
             // (and a life already lost stays lost), and a checkpoint bought is ground you can no
@@ -1113,6 +1120,19 @@ function Game() {
         seed={attempt.seed}
         resume={resume}
         onSave={keepsDraft(cm) ? (s) => saveDraft(cm, { level, base: attempt.base, plays: attempt.plays, seed: attempt.seed, ...s }) : undefined}
+        /* THE BOOSTS (his ruling, 2026-10-23): paid out of the save's stars into `boosted`, which no
+           respec hands back; the draft holds the boost itself, kept beside it, until the sim. The
+           campaign and the cap only — the ladders that keep a draft — and never in creator mode. */
+        onBoost={
+          keepsDraft(cm) && !CREATOR
+            ? (id, held) => {
+                const next = buyBoost(prog, id, held)
+                if (!next) return false
+                commit(cm, next)
+                return true
+              }
+            : undefined
+        }
         teamName={teamName}
         teamAb={clubCode(team)}
         salary={capped}

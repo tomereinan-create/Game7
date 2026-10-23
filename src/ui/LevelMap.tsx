@@ -493,7 +493,8 @@ export function LevelMap({
     bal > 0 &&
     NODES.some((n) => {
       const b = NODE[n.id].branch
-      return (b === 'Salary' ? salary : b === 'Survival' ? death : true) && canBuy(progress, n.id)
+      // the Dynasty branch is the campaign's and the cap's, and the death match prices every rank at one star
+      return (b === 'Salary' ? salary : b === 'Survival' ? death : b === 'Dynasty' ? !death : true) && canBuy(progress, n.id, death)
     })
   // recal_64: the NEXT ticket's dials percentile within the opponent's own season — computed for
   // that one node only (a whole map of season pools would be 47 pools for dials nobody sees).

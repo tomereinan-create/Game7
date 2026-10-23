@@ -14,17 +14,21 @@ const five = (...n: string[]) => n.map((x) => by.get(x)!)
 const opp = OPP as Opponent[]
 
 describe('staff tree — stars as a campaign currency', () => {
-  it('every rank costs one star; the whole ranked tree is a checklist a long campaign works through', () => {
+  it('a rank costs its row in the branch plus one (his ruling, 2026-10-23); the whole tree is still a checklist a long campaign works through', () => {
     console.log(`  par income ${parIncome()}★ over ${ROUNDS} levels; ${NODES.length} nodes, ${treeCost()}★ of ranks`)
-    for (const n of NODES) expect(price(n.id)).toBe(1)
-    // no skill is a one-time skill: every node holds at least two ranks, each documented
+    // the milder pricing: depth 0 one star, depth 1 two, depth 2 three, depth 3 four
+    for (const n of NODES.filter((x) => ['Scout', 'Front office', 'Coach', 'Salary'].includes(x.branch))) expect(price(n.id), n.id).toBe(n.depth + 1)
+    // no skill is a one-time skill: every node holds at least two ranks, each documented — save
+    // Scout's pick, which he approved as listed at one rank
     for (const n of NODES) {
-      expect(n.ranks, `${n.id} must be rankable`).toBeGreaterThanOrEqual(2)
+      if (n.id !== 'dyn_pick') expect(n.ranks, `${n.id} must be rankable`).toBeGreaterThanOrEqual(2)
       expect(n.rankBlurbs, `${n.id} must describe every rank`).toHaveLength(n.ranks)
     }
-    expect(treeCost()).toBe(NODES.reduce((a, n) => a + n.ranks, 0))
+    expect(treeCost()).toBe(NODES.reduce((a, n) => a + n.ranks * price(n.id), 0))
     expect(treeCost()).toBeGreaterThan(NODES.length) // ranks, not a flat checklist
     expect(parIncome()).toBeGreaterThan(treeCost()) // deliberate: the tree is not a scarcity puzzle
+    // the campaign's own tree — the three staff branches and the Dynasty — still fits inside par
+    expect(parIncome()).toBeGreaterThan(treeCost(['Scout', 'Front office', 'Coach', 'Dynasty']))
   })
 
   it('ranks stack to the node maximum, and each branch is a chain: the next node needs the one before', () => {
@@ -46,7 +50,9 @@ describe('staff tree — stars as a campaign currency', () => {
     expect(rank(w, 'fo_spin')).toBe(3)
     expect(buy(w, 'fo_spin')).toBeNull()
     expect(buy({ ...w, spent: 100000 }, 'scout_ratings')).toBeNull() // no stars, no rank
-    expect(NODES).toHaveLength(16) // 10 staff (Matchup reads left 2026-10-22) + the Salary payroll node + the 5 Survival nodes (death match)
+    // 10 staff (Matchup reads left 2026-10-22) + the Salary payroll node + the 5 Survival nodes (death
+    // match) + the 3 Dynasty nodes (2026-10-23)
+    expect(NODES).toHaveLength(19)
     // respec: everything refunded, nothing owned, earned untouched
     const back = respec(w)
     expect(balance(back)).toBe(ROUNDS * 2)

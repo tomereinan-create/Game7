@@ -18,13 +18,31 @@ import { CourtFive, type Side } from './CourtFive'
 import { ChipRow } from './ChipRow'
 import { isRateable, naiveAssignment, solveBoard, type Assignment } from '../engine/offense'
 import { DEFAULT_TACTICS, gateTactics, reconcileTactics, styleFit, STYLES, type Tactics } from '../engine/tactics'
-import { capBonus, duraBoost, owned, paceMastery, playbookRank, rank, respinSeason, type NodeId } from '../engine/tree'
+import {
+  balance,
+  BOOST_MAX,
+  BOOSTS,
+  canBoost,
+  capBonus,
+  duraBoost,
+  extraSpins,
+  HOT_HAND,
+  owned,
+  paceMastery,
+  playbookRank,
+  rank,
+  respinSeason,
+  sameRosterUses,
+  scoutsPicks,
+  type BoostId,
+  type NodeId,
+} from '../engine/tree'
 import { WEAR_OUT, type Progress } from '../state/campaign'
 import { Matchups } from './Matchups'
 import { TacticsCalls, tacticsWorth, worthLine } from './TacticsPanel'
 import { MatchupPanel, TeamDials } from './MatchupPanel'
 import { compile, meanMargin } from '../engine/resolver'
-import { countedRng, type DraftState, type Wide } from '../state/draftsave'
+import { countedRng, hasSpun, type DraftState, type Wide } from '../state/draftsave'
 import type { Opponent, Player } from '../engine/types'
 import { DetailGrid, LINES, Mini, StatHead } from './Stat'
 import { useUserMode } from '../state/viewmode'
@@ -147,6 +165,19 @@ const PLAYER_OF = new Map(PLAYERS.map((p) => [p.name, p.player]))
 export const bare = (name: string) => PLAYER_OF.get(name) ?? name
 
 /**
+ * A team-season the five can still take a man from: one not already on it, who plays an open ring
+ * and, in the salary cap, fits what is left of the payroll. The test every landing has to pass.
+ */
+export const landable = (t: TeamSeason, taken: Set<string>, open: Pos[], afford?: (n: string) => boolean) =>
+  t.p.some((n) => !taken.has(bare(n)) && posOf(n).some((x) => open.includes(x)) && (!afford || afford(n)))
+
+/**
+ * Every club name on the wheel, A to Z — the franchises Scout's pick offers. A name, not a code: the
+ * wheel's TEAM reel spins names, and holding it keeps the name (`heldPool`), so this is the same list.
+ */
+export const FRANCHISES = [...new Set(WHEEL.map((t) => t.team))].sort((a, b) => a.localeCompare(b))
+
+/**
  * A settled spin: a team-season with at least one available player who can fill an open slot.
  *
  * `pool` is the wheel by default. His ruling on the two reels — "unless selected to spin 1 only" —
@@ -164,8 +195,7 @@ export function landOn(
   pool: TeamSeason[] = WHEEL,
 ): TeamSeason | null {
   if (!pool.length) return null
-  const ok = (t: TeamSeason) =>
-    t !== avoid && t.p.some((n) => !taken.has(bare(n)) && posOf(n).some((x) => open.includes(x)) && (!afford || afford(n)))
+  const ok = (t: TeamSeason) => t !== avoid && landable(t, taken, open, afford)
   for (let i = 0; i < 400; i++) {
     const t = pool[Math.floor(next() * pool.length)]
     if (ok(t)) return t
@@ -179,6 +209,42 @@ export function landOn(
     if (ok(t)) return t
   }
   return null
+}
+
+/**
+ * THE QUEUE OF LANDINGS AHEAD, as a rule (the draft's idle wheel runs it). `need` is one — the next
+ * landing, which the wheel has always drawn while idle so Sight seeing can show it — or two while a
+ * Film session is in the attempt. A landing already queued is kept for as long as the five can still
+ * take a man from it (`fits`); one a pick has emptied is dropped and the queue moves up. Only what is
+ * missing is drawn: the first against `avoid`, the second against the first, so the two never match.
+ *
+ * Null when the queue is already right and nothing is drawn. With one wanted and none in hand it is
+ * exactly the single `draw(avoid)` the wheel always made, so a seed deals the wheel it always dealt.
+ */
+export function fillQueue(
+  q: { upcoming: TeamSeason | null; after: TeamSeason | null },
+  need: 1 | 2,
+  fits: (t: TeamSeason) => boolean,
+  draw: (avoid: TeamSeason | null) => TeamSeason | null,
+  avoid: TeamSeason | null = null,
+): { upcoming: TeamSeason | null; after: TeamSeason | null } | null {
+  const held = [q.upcoming, q.after].filter((t): t is TeamSeason => !!t && fits(t)).slice(0, need)
+  if (held.length === need && held[0] === q.upcoming && (need === 1 || held[1] === q.after)) return null
+  const first = held[0] ?? draw(avoid)
+  const second = need === 2 ? (held[1] ?? (first ? draw(first) : null)) : null
+  return { upcoming: first, after: second }
+}
+
+/**
+ * SCOUT'S PICK'S LANDING: a season of the named franchise the five can still take a man from, drawn
+ * off the wheel's own stream the way a held team reel's is — or null, before anything is drawn, when
+ * the franchise has none left for the open rings (and the cap), so a refusal costs neither the pick
+ * nor a number of the stream.
+ */
+export function franchiseLanding(team: string, taken: Set<string>, open: Pos[], next: () => number, afford?: (n: string) => boolean): TeamSeason | null {
+  const pool = WHEEL.filter((t) => t.team === team)
+  if (!pool.some((t) => landable(t, taken, open, afford))) return null
+  return landOn(taken, open, next, null, afford, pool)
 }
 
 /**
@@ -265,6 +331,7 @@ export function Draft({
   onPicks,
   resume = null,
   onSave,
+  onBoost,
 }: {
   opponent: Opponent
   seed: number
@@ -313,7 +380,8 @@ export function Draft({
    * My team exactly as it always was.
    */
   onTactics?: (t: Tactics) => void
-  onSim: (five: Player[], assignment: Assignment, toWin: number) => void
+  /** `edge` is a Hot hand boost's points, handed to odds.ts `night` exactly as this screen's card priced them. */
+  onSim: (five: Player[], assignment: Assignment, toWin: number, edge: number) => void
   /**
    * Leaving mid-draft: `started` says picks exist; App's leave rule (state/draftsave.ts) decides what
    * that costs. `ended` is the wheel running dry — that attempt is over whatever the rule says.
@@ -356,6 +424,12 @@ export function Draft({
    */
   resume?: DraftState | null
   onSave?: (s: DraftState) => void
+  /**
+   * THE BOOSTS (his ruling, 2026-10-23 — engine/tree.ts BOOSTS): pay for one out of the save's stars.
+   * `held` is what the attempt already has. True when App charged it. Absent — the death match,
+   * creator mode — and the shop is not drawn.
+   */
+  onBoost?: (id: BoostId, held: BoostId[]) => boolean
 }) {
   // Death match starts with last level's five already placed; a normal draft starts empty.
   // The carried five arrives in SLOT ORDER (PG to C) — the order My team shows and the player can
@@ -479,10 +553,34 @@ export function Draft({
   const has = (id: NodeId) => owned(wallet, id)
   // Per-draft allowances: an owned Front-office node is one use every draft.
   const [used, setUsed] = useState<Partial<Record<NodeId, number>>>(() => ({ ...resume?.used }))
-  /** Per-draft allowances are the node's RANK: three ranks of Extra spin is three respins a draft. */
-  const allowance = (id: NodeId) => (id === 'fo_spin' || id === 'fo_respin' ? rank(wallet, id) : has(id) ? 1 : 0)
+  /** The boosts bought for this attempt (engine/tree.ts BOOSTS), kept with the draft until its sim. */
+  const [boosts, setBoosts] = useState<BoostId[]>(() => [...(resume?.boosts ?? [])])
+  /** FILM SESSION: the next TWO landings are seen, this draft only. */
+  const film = boosts.includes('film')
+  /** HOT HAND: points on every game's margin — the card prices it below and the sim is handed it. */
+  const edge = boosts.includes('hothand') ? HOT_HAND : 0
+  /**
+   * Per-draft allowances are the node's RANK: three ranks of Extra spin is three respins a draft. The
+   * Dynasty branch adds to them outside the death match — Extra spin+ on top of Extra spin, and a
+   * Timeout boost one more — and brings two of its own: Same roster again and Scout's pick.
+   */
+  const allowance = (id: NodeId) =>
+    id === 'fo_spin'
+      ? extraSpins(wallet, death, boosts)
+      : id === 'fo_respin'
+        ? rank(wallet, id)
+        : id === 'dyn_same'
+          ? sameRosterUses(wallet, death)
+          : id === 'dyn_pick'
+            ? scoutsPicks(wallet, death)
+            : has(id)
+              ? 1
+              : 0
   const charges = (id: NodeId) => allowance(id) - (used[id] ?? 0)
   const onConsume = (id: NodeId) => setUsed((u) => ({ ...u, [id]: (u[id] ?? 0) + 1 }))
+  /** Scout's pick: the franchise list is open, and the line that says a franchise had no season to give. */
+  const [picking, setPicking] = useState(false)
+  const [pickNote, setPickNote] = useState<string | null>(null)
   /** A drafted player being dragged to another slot (press and drag). */
   const [drag, setDrag] = useState<{ from: Pos; x: number; y: number; over: Pos | null } | null>(null)
   const dragRef = useRef<{ from: Pos; x0: number; y0: number; moved: boolean } | null>(null)
@@ -503,8 +601,10 @@ export function Draft({
   const avoidRef = useRef<TeamSeason | null>(null)
   /** Decided ahead of the spin so the Wheel whisperer can show it; the spin just lands there. */
   const [upcoming, setUpcoming] = useState<TeamSeason | null>(resume?.upcoming ?? null)
-  /** What the player is allowed to know about the next landing: Sight seeing, or nothing. */
-  const seen = has('scout_wheel') ? upcoming : null
+  /** And the landing after it — drawn only while a Film session is in the attempt, which shows it. */
+  const [after, setAfter] = useState<TeamSeason | null>(resume?.after ?? null)
+  /** What the player is allowed to know about the next landing: Sight seeing (or a Film session), or nothing. */
+  const seen = has('scout_wheel') || film ? upcoming : null
   /** Exact ratings rank 3: which opposing man has his sheet open. */
   const [oppOpen, setOppOpen] = useState<string | null>(null)
   /**
@@ -831,7 +931,8 @@ export function Draft({
   // PACE (recal_57): the AI answers the tempo call off the surpluses; the readout below shows both.
   // The card prices the night the sim plays: odds.ts `night`, the call App.tsx sims with (P8 — it
   // used to assume the AI was never the underdog, and so never answered a wash night slow).
-  const nt = five.length ? night(five, opponent.players, assignment, plan, paceMastery(wallet)) : null
+  // and a Hot hand's points ride the same night (`edge`), so the card shows exactly what the sim plays
+  const nt = five.length ? night(five, opponent.players, assignment, plan, paceMastery(wallet), edge) : null
   const pc = nt?.pc ?? null
   const sigma = nt?.sigma ?? SIGMA
   /**
@@ -877,7 +978,7 @@ export function Draft({
    */
   const lessonCtx = { hasBoard: has('coach_manual'), hasPlan: canCallPlan, tips: user && tips.length > 0 }
   useLesson(carry ? 'draft.carry' : 'draft.spin', true, () =>
-    draftLesson({ level: opponent.round, opp: opponent, salary, death, carry: !!carry, spins: rank(wallet, 'fo_spin'), changeLeft: spinLeft, ...lessonCtx }),
+    draftLesson({ level: opponent.round, opp: opponent, salary, death, carry: !!carry, spins: allowance('fo_spin'), changeLeft: spinLeft, ...lessonCtx }),
   )
   useLesson('draft.landed', !!spun && !spinning, () =>
     landedLesson({ team: spun!.team, year: spun!.y, open, respins: charges('fo_spin'), seasonRespins: charges('fo_respin') }),
@@ -916,13 +1017,31 @@ export function Draft({
   // (`dead` stops nothing in play — once the wheel is dry none of the four below can change, so this
   // never ran again anyway — but it stops a kept dry draft drawing again as it reopens, which would
   // move its stream)
+  /**
+   * THE QUEUE. One landing ahead, as always — and TWO while a Film session is in the attempt, the
+   * second drawn straight after the first and never the same team-season. A landing already in the
+   * queue is kept for as long as the five can still take a man from it; one that a pick has left with
+   * nobody to give (it was drawn before that pick, which a Film session's second look always is, and
+   * which a Same roster or Scout's pick spin leaves behind it) is dropped, and the queue moves up.
+   * With no Film session and no such spin the queue is exactly the one landing this always drew, at
+   * exactly the moment it always drew it — a seed deals the same wheel it always dealt.
+   */
   useEffect(() => {
-    if (spun || spinning || full || upcoming || dead) return
-    const next = landOn(takenMen, open, () => rng.current.next(), avoidRef.current, (n) => !overCap(n))
-    setUpcoming(next)
-    setDead(!next)
+    if (spun || spinning || full || dead) return
+    const afford = (n: string) => !overCap(n)
+    const q = fillQueue(
+      { upcoming, after },
+      film ? 2 : 1,
+      (t) => landable(t, takenMen, open, afford),
+      (avoid) => landOn(takenMen, open, () => rng.current.next(), avoid, afford),
+      avoidRef.current,
+    )
+    if (!q) return
+    setUpcoming(q.upcoming)
+    setAfter(q.after)
+    setDead(!q.upcoming)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [spun, spinning, full, picks.length])
+  }, [spun, spinning, full, picks.length, film])
 
   /**
    * HIS RULING: an actual wheel, and two of them — see ./SpinReels. The team-season is chosen
@@ -934,15 +1053,30 @@ export function Draft({
    * team and the spin stays inside that franchise, hold the year and it stays inside that season.
    * `upcoming` (the Wheel whisperer's peek) is only good for an unheld spin, since it was drawn
    * against the whole wheel.
+   *
+   * `to` is a landing already CHOSEN — Same roster again re-lands on the last one, Scout's pick on a
+   * season of the franchise he named — and `pin` is the reel that does not turn for it: the team
+   * reel either way (Same roster keeps the rows it had, Scout's pick shows the franchise he picked
+   * standing still while the year spins). A chosen landing leaves the queue where it is; the next
+   * spin off the wheel still lands where the queue says.
    */
-  const spin = (force = false) => {
+  const spin = (force = false, to: TeamSeason | null = null, pin: 'kept' | 'picked' | null = null) => {
     if (spinning || (spun && !force) || full || dead) return
     const pool = heldPool(hold, lastLanding.current)
     const draw = (from: TeamSeason[]) => landOn(takenMen, open, () => rng.current.next(), avoidRef.current, (n) => !overCap(n), from)
+    // the queue's head, as it stands — under a Film session it can have been drawn before a pick
+    // (see THE QUEUE), so it is checked again; without one this is exactly `upcoming`
+    const queued =
+      film && upcoming && (upcoming === avoidRef.current || !landable(upcoming, takenMen, open, (n) => !overCap(n))) ? null : upcoming
     // a hold that leaves nothing legal must not be allowed to spend the spin on nothing
-    const res = (hold ? draw(pool) : upcoming) ?? draw(WHEEL)
+    const res = to ?? (hold ? draw(pool) : queued) ?? draw(WHEEL)
     avoidRef.current = null
-    setUpcoming(null)
+    if (!to) {
+      // a landing off the wheel takes the queue's head, and the Film session's second look moves up
+      // (unless a hold or a stale head just landed on that very season)
+      setUpcoming(film && after !== res ? after : null)
+      setAfter(null)
+    }
     if (!res) {
       setDead(true)
       return
@@ -955,7 +1089,10 @@ export function Draft({
     setSlot(null)
     setInfo(null)
     setDisplay(res)
-    setReels((prev) => buildReels(res, WHEEL, () => rng.current.next(), Date.now(), hold, prev))
+    setReels((prev) => {
+      const built = buildReels(res, WHEEL, () => rng.current.next(), Date.now(), pin === 'kept' ? 'team' : pin === 'picked' ? null : hold, prev)
+      return pin === 'picked' ? { ...built, held: 'team' } : built
+    })
     lastLanding.current = res
     // Reduced motion gets the answer and not the ride.
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
@@ -1217,6 +1354,80 @@ export function Draft({
     setMoving(null)
   }
 
+  /** What the wheel can still give this five, by the same test every landing passes. */
+  const canLand = (t: TeamSeason | null): t is TeamSeason => !!t && landable(t, takenMen, open, (n) => !overCap(n))
+  /** Between spins, with the wheel idle and a man still to draft. */
+  const idle = !spun && !spinning && !full && !dead
+  /**
+   * SAME ROSTER AGAIN (Dynasty, The Champions' tier): after a pick, the next spin re-lands on the
+   * team-season he just drafted from — a second man off a stacked roster. Offered only while that
+   * roster still has a man this five can take (an open ring, and the cap in the salary cap), and one
+   * press is the spin, the way Respin team's is.
+   */
+  const relandOn = lastLanding.current
+  const canReland = idle && picks.length > 0 && charges('dyn_same') > 0 && canLand(relandOn)
+  const reland = () => {
+    if (!canReland || !relandOn) return
+    onConsume('dyn_same')
+    setPicking(false)
+    setPickNote(null)
+    spin(false, relandOn, 'kept')
+  }
+  /**
+   * SCOUT'S PICK (Dynasty, The Customs' tier): he names the franchise and the year spins inside it,
+   * the way a held team reel does — on a season the five can still take a man from. A franchise with
+   * none left says so, and the pick is not spent. Read off the same test before anything is drawn, so
+   * a refusal does not move the wheel's stream either.
+   */
+  const canScoutPick = idle && charges('dyn_pick') > 0
+  const scoutPick = (team: string) => {
+    if (!canScoutPick) return
+    const res = franchiseLanding(team, takenMen, open, () => rng.current.next(), (n) => !overCap(n))
+    if (!res) {
+      setPickNote(`No ${team} season has a man for ${open.join(' · ')}${salary ? ' inside the cap' : ''} — your pick is not spent.`)
+      return
+    }
+    onConsume('dyn_pick')
+    setPicking(false)
+    setPickNote(null)
+    spin(false, res, 'picked')
+  }
+
+  /**
+   * THE BOOSTS ARE BOUGHT BEFORE THE FIRST SPIN, and only then (his ruling: "bought with stars before
+   * the draft's first spin"). The shop is this draft's while it has not spun — a kept draft that has
+   * comes back with its shop shut, whatever is on the map.
+   */
+  const spunYet = hasSpun({ reels, slots, landed: display, last: lastLanding.current })
+  const shop = !!onBoost && !death && !creator && !carry && !spunYet
+  /** Everything the draft runs on as it stands, for `onSave` — with any part of it replaced. */
+  const snapshot = (over: Partial<DraftState> = {}): DraftState => ({
+    draws: wheelRng.draws(),
+    slots,
+    landed: display,
+    last: lastLanding.current,
+    upcoming,
+    after,
+    reels,
+    hold,
+    used,
+    dead,
+    wide,
+    board,
+    boosts,
+    ...over,
+  })
+  const buyBoost = (id: BoostId) => {
+    if (!shop || !canBoost(wallet, id, boosts) || !onBoost) return
+    // the stars first: App refuses what the save cannot pay for
+    if (!onBoost(id, boosts)) return
+    const next = [...boosts, id]
+    // and the draft holds it IN THE SAME PRESS — a reload can never fall between the stars going and
+    // the boost being kept, so it can neither be refunded nor bought twice
+    onSave?.(snapshot({ boosts: next }))
+    setBoosts(next)
+  }
+
   const [wide, setWide] = useState<Wide>(resume?.wide ?? 'team')
   /**
    * WHO CAN ACTUALLY BE DRAFTED RIGHT NOW: a man who plays one of the open rings and, in the
@@ -1278,7 +1489,7 @@ export function Draft({
   const handed = useRef(false)
   const sim = () => {
     handed.current = true
-    onSim(five, assignment, toWin)
+    onSim(five, assignment, toWin, edge)
   }
   useEffect(() => {
     onPicks?.(picks.length)
@@ -1294,9 +1505,9 @@ export function Draft({
   const drawsNow = wheelRng.draws()
   useEffect(() => {
     if (!onSave || handed.current) return
-    onSave({ draws: drawsNow, slots, landed: display, last: lastLanding.current, upcoming, reels, hold, used, dead, wide, board })
+    onSave(snapshot({ draws: drawsNow }))
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [drawsNow, slots, display, upcoming, reels, hold, used, dead, wide, board])
+  }, [drawsNow, slots, display, upcoming, after, reels, hold, used, dead, wide, board, boosts])
 
   /* P5: the funnel's third step — a five drafted in full (a death match's carried five does not count,
      and nor does a kept draft that reopens already full: it was counted when it was drafted) */
@@ -1890,6 +2101,12 @@ export function Draft({
                 {display.div ? ` · ${display.div}` : ''}
                 {display.rec ? ` · ${display.rec}` : ''}
               </div>
+              {/* FILM SESSION: with a landing up, the next one off the wheel is the film's second look */}
+              {film && spun && upcoming && !reading ? (
+                <div className="dyn-note">
+                  Film session: next off the wheel — {upcoming.team} {upcoming.y}
+                </div>
+              ) : null}
             </>
           )}
           {spun ? (
@@ -1986,12 +2203,60 @@ export function Draft({
             <span className="label">Spin {picks.length + 1} of {DRAFT_SIZE}</span>
             <span className="cap">Open: {open.join(' ')}</span>
           </div>
-          <div className="spin-team dim">{has('scout_wheel') && upcoming ? upcoming.team : 'The wheel'}</div>
+          <div className="spin-team dim">{seen ? seen.team : 'The wheel'}</div>
           <div className="spin-sub">
-            {has('scout_wheel') && upcoming ? `${upcoming.y} · ${CONF[upcoming.c]} — sight seeing says so` : 'A random year, conference and team. Draft one from that roster.'}
+            {seen ? `${seen.y} · ${CONF[seen.c]} — ${has('scout_wheel') ? 'sight seeing' : 'the film'} says so` : 'A random year, conference and team. Draft one from that roster.'}
           </div>
           {rank(wallet, 'scout_wheel') >= 2 && upcoming ? (
             <div className="whisper-roster">{upcoming.p.map((n) => n.replace(/ '\d\d$/, '')).join(' · ')}</div>
+          ) : null}
+          {/* FILM SESSION: the landing after that one too */}
+          {film && after ? (
+            <div className="dyn-note film-next">
+              Film session — then {after.team} {after.y}
+            </div>
+          ) : null}
+          {/* THE DYNASTY BRANCH'S TWO SPINS, in the chips Respin team is made of: one press is the
+              spin (Same roster again) or opens the franchises (Scout's pick). A row of their own
+              under the landing rather than in the head, which a phone would break in three. */}
+          {(canReland && relandOn) || canScoutPick ? (
+            <div className="dyn-row">
+              {canReland && relandOn ? (
+                <button className="chip-btn" onClick={reland} title={`The next spin lands on ${relandOn.team} ${relandOn.y} again`}>
+                  Same roster again
+                </button>
+              ) : null}
+              {canScoutPick ? (
+                <button
+                  className={`chip-btn ${picking ? 'on' : ''}`}
+                  aria-expanded={picking}
+                  onClick={() => {
+                    setPicking((v) => !v)
+                    setPickNote(null)
+                  }}
+                >
+                  Scout’s pick
+                </button>
+              ) : null}
+            </div>
+          ) : null}
+          {canReland && relandOn ? (
+            <div className="dyn-note">
+              Same roster again lands on {relandOn.team} {relandOn.y} — {charges('dyn_same')} left this draft.
+            </div>
+          ) : null}
+          {picking && canScoutPick ? (
+            <>
+              <div className="widen-cap">Scout’s pick — choose the franchise, the year spins</div>
+              {pickNote ? <div className="dyn-note warn">{pickNote}</div> : null}
+              <div className="poschips widen picklist">
+                {FRANCHISES.map((team) => (
+                  <button key={team} className="sortb" onClick={() => scoutPick(team)}>
+                    {team}
+                  </button>
+                ))}
+              </div>
+            </>
           ) : null}
           {has('fo_decade') || has('fo_division') ? (
             <>
@@ -2023,6 +2288,41 @@ export function Draft({
                 ) : null}
               </div>
             </>
+          ) : null}
+          {shop ? (
+            <>
+              {/* THE BOOSTS (his ruling, 2026-10-23). Bought here, before the first spin, and only
+                  here: a ticket on the map is a door straight into this draft, with no room of its
+                  own to put a shop in, and this card is the last thing before the wheel turns. The
+                  same chips the widen row above is made of. */}
+              <div className="widen-cap">
+                Boosts for this level · up to {BOOST_MAX} · ★ {balance(wallet)} to spend
+              </div>
+              <div className="poschips widen boosts">
+                {BOOSTS.map((b) => {
+                  const inIt = boosts.includes(b.id)
+                  const can = canBoost(wallet, b.id, boosts)
+                  return (
+                    <button
+                      key={b.id}
+                      className={`sortb ${inIt ? 'on' : ''} ${!inIt && !can ? 'no' : ''}`}
+                      disabled={inIt || !can}
+                      aria-pressed={inIt}
+                      title={b.blurb}
+                      onClick={() => buyBoost(b.id)}
+                    >
+                      {b.name} {inIt ? '✓' : `★${b.price}`}
+                    </button>
+                  )
+                })}
+              </div>
+              <div className="dyn-note">
+                {BOOSTS.map((b) => `${b.name}: ${b.blurb.charAt(0).toLowerCase()}${b.blurb.slice(1).replace(/\.$/, '')}`).join(' · ')}. Used up by this attempt.
+              </div>
+            </>
+          ) : boosts.length ? (
+            /* once the wheel has turned the shop is shut; what this attempt holds is said in a line */
+            <div className="dyn-note boosts-in">In this level: {boosts.map((id) => BOOSTS.find((b) => b.id === id)?.name).join(' · ')}</div>
           ) : null}
         </div>
       )}
@@ -2174,12 +2474,18 @@ export function Draft({
               fit <b>{chance.parts.fit >= 0 ? '+' : '−'}{Math.abs(chance.parts.fit).toFixed(1)}</b>
             </span>
             <span>
-              {plan ? 'edge' : 'era'} <b>{chance.parts.modifiers >= 0 ? '+' : '−'}{Math.abs(chance.parts.modifiers).toFixed(1)}</b>
+              {plan || edge ? 'edge' : 'era'} <b>{chance.parts.modifiers >= 0 ? '+' : '−'}{Math.abs(chance.parts.modifiers).toFixed(1)}</b>
             </span>
             <span className="eq">
               = <b>{chance.parts.total >= 0 ? '+' : '−'}{Math.abs(chance.parts.total).toFixed(1)}</b>
             </span>
           </div>
+          {/* HOT HAND, priced where the rest of the edge is: the same points the sim is handed */}
+          {edge ? (
+            <div className="seriesnow-note hot-note">
+              Hot hand: +{edge.toFixed(1)} points every game, inside the edge above
+            </div>
+          ) : null}
           {pc && !user ? (
             <div className="seriesnow-note">
               {paceMastery(wallet) >= 1 ? (

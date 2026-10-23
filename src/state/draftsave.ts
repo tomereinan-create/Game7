@@ -1,7 +1,7 @@
 import { WHEEL, type TeamSeason } from '../data/wheel'
 import { POSITIONS, type Pos } from '../engine/positions'
 import { makeRng, type Rng } from '../engine/rng'
-import type { NodeId } from '../engine/tree'
+import { BOOST_MAX, isBoost, type BoostId, type NodeId } from '../engine/tree'
 import type { Hold, ReelSpin } from '../ui/SpinReels'
 import { draftKey, levelSeed, type CampaignMode, type Progress } from './campaign'
 
@@ -90,12 +90,21 @@ export interface DraftState {
   last: TeamSeason | null
   /** The next landing, already drawn (Sight seeing shows it). */
   upcoming: TeamSeason | null
+  /** The landing after that — drawn only while a Film session boost is in the attempt, which shows it. */
+  after: TeamSeason | null
   reels: ReelSpin | null
   hold: Hold
+  /** Per-draft charges spent: Extra spin (with Extra spin+ and a Timeout on top), Version respin, Same roster again, Scout's pick. */
   used: Partial<Record<NodeId, number>>
   dead: boolean
   wide: Wide
   board: number[] | null
+  /**
+   * The boosts bought for this attempt (engine/tree.ts BOOSTS). Kept here, with the draft, so a reload
+   * or a walk out and back neither refunds nor repeats them; they go when the series is simmed and
+   * the draft is cleared. Their stars are already in the save's `boosted`.
+   */
+  boosts: BoostId[]
 }
 
 /** The attempt a draft belongs to. */
@@ -118,11 +127,17 @@ export const draftAttempt = (p: Progress, level: number): DraftAttempt => ({ lev
 const ID = (t: TeamSeason) => `${t.ab}|${t.y}`
 const BY_ID = new Map(WHEEL.map((t) => [ID(t), t]))
 
-interface Stored extends DraftAttempt, Omit<DraftState, 'landed' | 'last' | 'upcoming'> {
+/**
+ * As written. `after` and `boosts` came in after the first drafts were kept (2026-10-23, the boosts and
+ * the Dynasty branch); a draft written without them reads back with none — the shape is the same v1.
+ */
+interface Stored extends DraftAttempt, Omit<DraftState, 'landed' | 'last' | 'upcoming' | 'after' | 'boosts'> {
   v: 1
   landed: string | null
   last: string | null
   upcoming: string | null
+  after?: string | null
+  boosts?: BoostId[]
 }
 
 const readAll = (m: CampaignMode): Record<string, unknown> => {
@@ -145,7 +160,15 @@ const writeAll = (m: CampaignMode, all: Record<string, unknown>) => {
 
 export function saveDraft(m: CampaignMode, d: DraftSave) {
   if (!keepsDraft(m)) return
-  const s: Stored = { ...d, v: 1, landed: d.landed && ID(d.landed), last: d.last && ID(d.last), upcoming: d.upcoming && ID(d.upcoming) }
+  const s: Stored = {
+    ...d,
+    v: 1,
+    landed: d.landed && ID(d.landed),
+    last: d.last && ID(d.last),
+    upcoming: d.upcoming && ID(d.upcoming),
+    after: d.after && ID(d.after),
+    boosts: [...d.boosts],
+  }
   writeAll(m, { ...readAll(m), [d.level]: s })
 }
 
@@ -178,9 +201,12 @@ export function loadDraft(m: CampaignMode, level: number, p: Progress): DraftSav
   const slots = s.slots
   if (!slots || typeof slots !== 'object' || Object.entries(slots).some(([k, v]) => !(POSITIONS as readonly string[]).includes(k) || typeof v !== 'string')) return null
   const ts = (id: unknown): TeamSeason | null | undefined => (id === null ? null : typeof id === 'string' ? BY_ID.get(id) : undefined)
-  const [landed, last, upcoming] = [ts(s.landed), ts(s.last), ts(s.upcoming)]
+  const [landed, last, upcoming, after] = [ts(s.landed), ts(s.last), ts(s.upcoming), s.after === undefined ? null : ts(s.after)]
   // a team-season this build no longer has: the draft cannot be put back as it was
-  if (landed === undefined || last === undefined || upcoming === undefined) return null
+  if (landed === undefined || last === undefined || upcoming === undefined || after === undefined) return null
+  // the boosts were paid for: a list that does not read back exactly is not guessed at
+  const boosts = s.boosts === undefined ? [] : s.boosts
+  if (!Array.isArray(boosts) || boosts.length > BOOST_MAX || !boosts.every(isBoost) || new Set(boosts).size !== boosts.length) return null
   const reels = s.reels && isReel(s.reels.team) && isReel(s.reels.year) && isHold(s.reels.held) && typeof s.reels.nonce === 'number' ? s.reels : null
   const used = s.used && typeof s.used === 'object' && Object.values(s.used).every((n) => isInt(n)) ? s.used : {}
   const board = Array.isArray(s.board) && s.board.length === POSITIONS.length && s.board.every((n) => isInt(n)) ? s.board : null
@@ -194,14 +220,25 @@ export function loadDraft(m: CampaignMode, level: number, p: Progress): DraftSav
     landed,
     last,
     upcoming,
+    after,
     reels,
     hold: isHold(s.hold) ? s.hold : null,
     used,
     dead: s.dead === true,
     wide: WIDES.includes(s.wide as Wide) ? (s.wide as Wide) : 'team',
     board,
+    boosts: [...boosts],
   }
 }
+
+/**
+ * WHETHER THE ATTEMPT HAS SPUN YET — the line the boosts are bought behind ("bought with stars before
+ * the draft's first spin"). The reels exist from the first spin on and are kept with the draft, and a
+ * man on the board means a spin landed whatever the reels say, so either one closes the shop; a draft
+ * that has only had its first landing DRAWN (the idle wheel draws one for Sight seeing) has not spun.
+ */
+export const hasSpun = (d: Pick<DraftState, 'reels' | 'slots' | 'landed' | 'last'>) =>
+  !!d.reels || !!d.landed || !!d.last || Object.keys(d.slots).length > 0
 
 /**
  * THE WHEEL'S STREAM, COUNTED. The same numbers `makeRng(seed)` gives, in the same order — the

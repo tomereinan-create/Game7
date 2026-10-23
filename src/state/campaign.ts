@@ -1,6 +1,6 @@
 import { ROUNDS } from '../config'
 import { DEFAULT_TACTICS, gateTactics, reconcileTactics, type Tactics } from '../engine/tactics'
-import { checkpointLevel, livesBought, migrate, playbookRank, price, rank, respec, type NodeId } from '../engine/tree'
+import { checkpointLevel, livesBought, migrate, playbookRank, price, PRICING, rank, respec, type NodeId } from '../engine/tree'
 import type { CoachId } from '../engine/types'
 import type { Kit } from '../ui/teamColors'
 import { teamCode } from '../engine/names'
@@ -145,6 +145,10 @@ export interface Progress {
   ladder?: number
   /** Stars won on an older ladder whose levels are gone. Spendable, but not cleared levels. */
   credit?: number
+  /** Stars spent on single-use boosts — gone with the attempt, never refunded (engine/tree.ts `Wallet.boosted`). */
+  boosted?: number
+  /** The price list `spent` was paid at (engine/tree.ts `Wallet.pricing`, `migrate`). */
+  pricing?: number
 }
 
 /**
@@ -282,6 +286,8 @@ const fresh = (): Progress => ({
   record: { w: 0, l: 0 },
   ladder: LADDER,
   credit: 0,
+  boosted: 0,
+  pricing: PRICING,
 })
 
 /**
@@ -316,7 +322,7 @@ export function die(p: Progress): Progress {
     ...reset,
     stars: p.stars.map((s, i) => (i < at - 1 ? s : 0)),
     nodes: { surv_save: save },
-    spent: save * price('surv_save'),
+    spent: save * price('surv_save', true),
     checkpoint: at,
     record: p.record ?? reset.record,
   }
@@ -337,7 +343,7 @@ export function afterBuy(before: Progress, after: Progress): Progress {
 export const usedLives = (p: Progress) => Math.max(0, livesBought(p) - p.lives)
 
 /** Stars a death-match respec cannot hand back: the Extra life ranks whose life is already used. */
-export const respecKeeps = (p: Progress) => usedLives(p) * price('surv_life')
+export const respecKeeps = (p: Progress) => usedLives(p) * price('surv_life', true)
 
 /**
  * A RESPEC IN THE DEATH MATCH. Two rules keep it from being a way to buy lives for nothing:
@@ -440,6 +446,9 @@ export function loadProgress(m: CampaignMode): Progress {
             })(),
       ladder: LADDER,
       credit,
+      boosted: typeof p.boosted === 'number' && p.boosted > 0 ? p.boosted : 0,
+      // absent on a save from before the per-node prices: `migrate` re-derives its spend at one star
+      pricing: typeof p.pricing === 'number' ? p.pricing : undefined,
     })
   } catch {
     return fresh()

@@ -352,7 +352,8 @@ export function achSettleSeries(ev: SeriesEvent) {
     u(47)
     if (camp.losses === 0) u(48)
     if (!camp.short) u(7)
-    if (balance(ev.nextProg) === 0 && ev.nextProg.spent > 0) u(52)
+    // stars that went on boosts were spent too (engine/tree.ts `boosted`)
+    if (balance(ev.nextProg) === 0 && ev.nextProg.spent + (ev.nextProg.boosted ?? 0) > 0) u(52)
   }
   if (won && ev.mode === 'death' && !NODES.some((n) => n.branch === 'Survival' && (ev.nextProg.nodes[n.id] ?? 0) > 0)) u(49)
   metaChecks(s, ev.nextProg, ev.team)

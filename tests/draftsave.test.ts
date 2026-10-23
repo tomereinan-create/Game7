@@ -100,12 +100,14 @@ const state = (w: ReturnType<typeof wheel>, rng: ReturnType<typeof countedRng>):
   landed: w.landed,
   last: w.landed,
   upcoming: w.upcoming,
+  after: null,
   reels: w.reels,
   hold: null,
   used: { fo_spin: 1 },
   dead: false,
   wide: 'team',
   board: null,
+  boosts: [],
 })
 
 describe('the wheel is one counted stream', () => {
@@ -173,12 +175,14 @@ describe('a reload continues the same draft (his report)', () => {
       landed: WHEEL[17],
       last: WHEEL[17],
       upcoming: null,
+      after: WHEEL[40],
       reels: { team: { rows: ['A', 'B'], at: 1 }, year: { rows: ['1990'], at: 0 }, nonce: 5, held: 'year' },
       hold: 'team',
       used: { fo_spin: 1, fo_respin: 2 },
       dead: false,
       wide: 'decade',
       board: [4, 3, 2, 1, 0],
+      boosts: ['film', 'hothand'],
     }
     saveDraft('salary', s)
     expect(loadDraft('salary', 9, p)).toEqual(s)
@@ -244,7 +248,7 @@ describe('a kept draft belongs to its attempt', () => {
 
 describe('when a kept draft ends', () => {
   const p = ladder()
-  const put = (m: 'campaign' | 'salary', level: number) => saveDraft(m, { ...draftAttempt(p, level), draws: 0, slots: {}, landed: null, last: null, upcoming: null, reels: null, hold: null, used: {}, dead: false, wide: 'team', board: null })
+  const put = (m: 'campaign' | 'salary', level: number) => saveDraft(m, { ...draftAttempt(p, level), draws: 0, slots: {}, landed: null, last: null, upcoming: null, after: null, reels: null, hold: null, used: {}, dead: false, wide: 'team', board: null, boosts: [] })
 
   it('the sim clears that level and only that level', () => {
     put('campaign', 3)
@@ -315,7 +319,7 @@ describe('walking out of a draft (one rule, his call)', () => {
 
   it('the death match is as it was: no kept draft, and a walk out with men on the board spends the attempt', () => {
     expect(keepsDraft('death')).toBe(false)
-    saveDraft('death', { ...draftAttempt(p, 1), draws: 0, slots: {}, landed: null, last: null, upcoming: null, reels: null, hold: null, used: {}, dead: false, wide: 'team', board: null })
+    saveDraft('death', { ...draftAttempt(p, 1), draws: 0, slots: {}, landed: null, last: null, upcoming: null, after: null, reels: null, hold: null, used: {}, dead: false, wide: 'team', board: null, boosts: [] })
     expect(store.has(draftKey('death'))).toBe(false)
     expect(loadDraft('death', 1, p)).toBeNull()
     expect(afterLeave('death', p, true)).toEqual({ progress: { ...p, plays: 8 }, keep: false })
@@ -345,7 +349,7 @@ describe('the draft screen opens on a kept draft', () => {
     )
 
   it('with its men in their rings and its landing on the reels', () => {
-    const html = render({ draws: 40, slots: { PG: pg, C: c }, landed: t, last: t, upcoming: null, reels: buildReels(t, WHEEL, makeRng(1).next, 1), hold: null, used: {}, dead: false, wide: 'team', board: null })
+    const html = render({ draws: 40, slots: { PG: pg, C: c }, landed: t, last: t, upcoming: null, after: null, reels: buildReels(t, WHEEL, makeRng(1).next, 1), hold: null, used: {}, dead: false, wide: 'team', board: null, boosts: [] })
     expect(html).toContain('2 OF 5')
     expect(html).toContain(pg.replace(/'/g, '&#x27;'))
     expect(html).toContain(c.replace(/'/g, '&#x27;'))
