@@ -223,6 +223,12 @@ DKNOBS = dict(
     DISC_FREEPTS=0.030,  # free points allowed per pt of indiscipline below 55
     TRANSITION=0.020,    # OFF pts per pt of perimdisrupt above 55 (steals score)
 )
+def oop_penalty(five):
+    """recal_232: the DRtg a five pays for the men it seats out of position — MKNOBS['OOP_DRTG'] (below)
+    per man marked 'oop', and exactly 0 for every unmarked five. Mirrors offense.ts oopPenalty."""
+    n = sum(1 for p in five if p.get('oop'))
+    return MKNOBS['OOP_DRTG'] * n if n else 0
+
 def team_defense(five):
     A = [p['attrs'] for p in five]
     di = [a['perdef'] for a in A]
@@ -234,6 +240,7 @@ def team_defense(five):
     drtg   = 118 - 0.14*didx
     drtg  -= DKNOBS['DRB_STOP']  * sum(max(0, a['drb']-50) for a in A)/5 * 1.0    # stops completed on the glass
     drtg  += DKNOBS['DISC_FREEPTS']*sum(max(0, 55-a['discipline']) for a in A)/5*3 # fouls = free points
+    drtg  += oop_penalty(five)   # recal_232: the same MKNOBS['OOP_DRTG'] per out-of-position man; 0 when unmarked
     return didx, drtg
 
 def transition_bonus(five):
@@ -285,6 +292,18 @@ MKNOBS = dict(
     # RE-DERIVED by recal_133 (1.0773 -> 0.4523) on the same rule: the pool's mean drtgRef is held
     # at 110.047736 to six places, because a smaller second-anchor credit lowers the whole board.
     DIDX_HOLD=0.4523,
+    # recal_232 — A MAN OUT OF POSITION COSTS HIS FIVE ON DEFENCE. His rulings (2026-10-22): "yes, go
+    # with rule C for the 44 teams, but have this player penelised for playing oop" / "re-solve
+    # version, 0.13 penalty, build it". 44 team-seasons cannot field a strict PG-to-C five from their
+    # pool; bestfive.ts teamFive re-solves them letting a man stand ONE STEP from a listed position,
+    # and marks him ('oop' on a copy of the card). Each marked man adds this to the five's DRtg, here
+    # and in team_defense; offence is unpenalised. MEASURED, not guessed: over 1,110 real starting
+    # fives (bref games started, scripts/diag-team/realoop232.ts, within-season) each man started one
+    # step outside his listed positions costs +0.351 real DRtg (s.e. 0.129) with the five's own
+    # drtg_ref, height and rim protection held, and real DRtg runs 2.786 points per drtg_ref point
+    # there: 0.351 / 2.786 = 0.126, shipped as 0.13. An unmarked five adds exactly 0 — the 1,255
+    # strictly fieldable fives, every card's marg and every drafted five read bit-identically.
+    OOP_DRTG=0.13,
 )
 # recal_60: EVERY PAIRING GENERATES EDGE — mirrors offense.ts pairingEdge/pairingTable/pairingTerm/bestBoard.
 def pairing_edge(a, b, atk_usg):
@@ -405,7 +424,8 @@ def defense_vs(us, them):
     # -0.43 in the tracking era). Every tilt past .24/.22/.20/.18/.16 costs fit monotonically.
     didx = (0.55*eff_di + 0.13*anc*0.9 + 0.12*min(99, steals)*0.9 + 0.12*max(0, 60 + glass/4)
             - MKNOBS['DIDX_HOLD'])
-    drtg = 110 - MKNOBS['DRTG_COEF']*(didx - 55) + hunt_pen   # rebased: coef scales DIFFERENCES
+    # recal_232: MKNOBS['OOP_DRTG'] per man seated out of position — 0 for every unmarked five
+    drtg = 110 - MKNOBS['DRTG_COEF']*(didx - 55) + hunt_pen + oop_penalty(us)   # rebased: coef scales DIFFERENCES
     return drtg, min(99, steals)
 
 def score_vs(us, them):

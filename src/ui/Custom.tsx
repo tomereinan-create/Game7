@@ -4,6 +4,7 @@ import { ovrOf, winsOf, YEARS } from './TeamDb'
 import { DRAFT_SIZE, SIGMA } from '../config'
 import { fold, teamCode } from '../engine/names'
 import { PLAYERS } from '../engine/pool'
+import { seatOutOfPosition, type Pos } from '../engine/positions'
 import { loadFive, type FiveKind } from '../engine/starters'
 import { compile, simSeries } from '../engine/resolver'
 import { makeRng } from '../engine/rng'
@@ -26,6 +27,14 @@ export function Custom({ onHome }: { onHome: () => void }) {
   const user = useUserMode()
   const [side, setSide] = useState<0 | 1>(0)
   const [teams, setTeams] = useState<[string[], string[]]>([[], []])
+  /**
+   * recal_232: the stand-ins a "best" load seated out of position, name -> seat, per side. A club
+   * whose strict walk leaves a hole loads its re-solved team-season five (starters.ts bestStarters),
+   * and the man standing one step off his listed positions keeps his mark here — `teams` holds only
+   * names — so the series charges his five MKNOBS.OOP_DRTG on DEF exactly as the Teams screen reads
+   * it. A man picked by hand carries none: this sandbox has no positions.
+   */
+  const [marks, setMarks] = useState<[Record<string, Pos>, Record<string, Pos>]>([{}, {}])
   const [names, setNames] = useState<[string, string]>(['Team A', 'Team B'])
   /** A loaded team's real club code, kept while the side still wears the name it was loaded under. */
   const [clubs, setClubs] = useState<[{ name: string; ab: string } | null, { name: string; ab: string } | null]>([null, null])
@@ -68,7 +77,14 @@ export function Custom({ onHome }: { onHome: () => void }) {
     return names[i] === DEFAULT_NAMES[i] ? (i ? 'B' : 'A') : teamCode(names[i])
   }
 
-  const five = (i: 0 | 1) => teams[i].map((n) => BY_NAME.get(n)!).filter(Boolean)
+  const five = (i: 0 | 1) =>
+    teams[i]
+      .map((n) => {
+        const p = BY_NAME.get(n)
+        const at = marks[i][n]
+        return p && at ? seatOutOfPosition(p, at) : p
+      })
+      .filter((p): p is Player => !!p)
   const A = five(0)
   const B = five(1)
   const takenMen = new Set([...teams[0], ...teams[1]].map((n) => BY_NAME.get(n)?.player ?? n))
@@ -90,12 +106,19 @@ export function Custom({ onHome }: { onHome: () => void }) {
       return next
     })
   }
-  const drop = (i: 0 | 1, name: string) =>
+  const drop = (i: 0 | 1, name: string) => {
     setTeams((cur) => {
       const next: [string[], string[]] = [[...cur[0]], [...cur[1]]]
       next[i] = next[i].filter((n) => n !== name)
       return next
     })
+    setMarks((cur) => {
+      if (!cur[i][name]) return cur
+      const next: typeof cur = [{ ...cur[0] }, { ...cur[1] }]
+      delete next[i][name]
+      return next
+    })
+  }
 
   const sim = () => {
     if (!ready) return
@@ -124,10 +147,17 @@ export function Custom({ onHome }: { onHome: () => void }) {
   const loadTeam = (t: TeamSeason) => {
     // the same man may not appear twice across the matchup, so the other side's men sit this one out
     const other = new Set(teams[1 - side].map((n) => BY_NAME.get(n)?.player ?? n))
-    const names5 = loadFive(t.y, t.ab, loadKind, other).map((p) => p.name)
+    const loaded = loadFive(t.y, t.ab, loadKind, other)
+    const names5 = loaded.map((p) => p.name)
     setTeams((cur) => {
       const next: [string[], string[]] = [[...cur[0]], [...cur[1]]]
       next[side] = names5
+      return next
+    })
+    // recal_232: a re-solved "best" five's stand-in keeps his mark; a real five carries none
+    setMarks((cur) => {
+      const next: typeof cur = [{ ...cur[0] }, { ...cur[1] }]
+      next[side] = Object.fromEntries(loaded.filter((p) => p.oop).map((p) => [p.name, p.oop!]))
       return next
     })
     const name = `'${String(t.y).slice(2)} ${t.team}`

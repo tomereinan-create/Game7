@@ -4,14 +4,14 @@ import { DRAFT_SIZE, SIGMA } from '../config'
 import { PLAYERS } from '../engine/pool'
 import { compile, simSeries } from '../engine/resolver'
 import { isRateable } from '../engine/offense'
-import { POSITIONS, type Pos } from '../engine/positions'
+import { POSITIONS, seatOutOfPosition, type Pos } from '../engine/positions'
 import { canStillFill, type Slots } from '../engine/slots'
 import { LINES, StatHead } from './Stat'
 import { makeRng } from '../engine/rng'
 import type { Player, SeriesResult } from '../engine/types'
 import { Bars } from './Bars'
 import { WHEEL, posOf, type TeamSeason } from './Draft'
-import { ovrOf, startingFive, winsOf, YEARS } from './TeamDb'
+import { ovrOf, teamFive, winsOf, YEARS } from './TeamDb'
 import { PlayerCard } from './PlayerCard'
 import { Series } from './Series'
 
@@ -149,8 +149,18 @@ export function Versus({ onHome }: { onHome: () => void }) {
   const turn = (loaded[0] ? 0 : countOf(0)) + (loaded[1] ? 0 : countOf(1))
   const who: 0 | 1 = loaded[0] && !loaded[1] ? 1 : loaded[1] && !loaded[0] ? 0 : ORDER[Math.min(turn, ORDER.length - 1)]
 
-  /** Floor order, the way the campaign hands a five to the resolver. */
-  const five = (i: 0 | 1) => POSITIONS.map((x) => BY_NAME.get(slots[i][x] ?? '')).filter((p): p is Player => !!p)
+  /**
+   * Floor order, the way the campaign hands a five to the resolver. recal_232: a man on a ring
+   * outside his listed positions goes in MARKED (a copy carrying `oop`), so his five pays
+   * MKNOBS.OOP_DRTG for him on DEF. Only a loaded club's re-solved five can seat one — a drafted
+   * ring is always one of the man's own (`legalRingsFor`) — so a drafted five is read exactly as
+   * before.
+   */
+  const five = (i: 0 | 1) =>
+    POSITIONS.map((x) => {
+      const p = BY_NAME.get(slots[i][x] ?? '')
+      return p && !posOf(p.name).includes(x) ? seatOutOfPosition(p, x) : p
+    }).filter((p): p is Player => !!p)
   const A = five(0)
   const B = five(1)
   /** One man, one matchup - a pool card whose player is already fielded (either side) is dead. */
@@ -201,7 +211,10 @@ export function Versus({ onHome }: { onHome: () => void }) {
   /**
    * A team-season this side may actually take. Two ways it can fail, and BOTH are refused with a
    * reason rather than hidden, so the drafter is not left wondering where a club went:
-   *   - its best legal five is short (the rows that already print OVR "—"), or
+   *   - it has no five at all — fewer than five men in the pool once the other side's men sit out
+   *     (recal_232: a strict hole is no longer a refusal; the club's team-season five re-solves it
+   *     with a man one step out of position, marked and penalised, exactly as the Teams screen
+   *     shows it), or
    *   - taking it would strand the other drafter. Measured before the gate: 0.25% of
    *     club-by-state pairs strand, and 97 of 100 boards contain at least one such club — so
    *     without this the constraint would trade a 69% illegal-five rate for a rarer soft-lock.
@@ -212,7 +225,7 @@ export function Versus({ onHome }: { onHome: () => void }) {
     const other = side === 0 ? 1 : 0
     const otherMen = new Set(five(other).map((p) => p.player))
     const cands = t.p.map((n) => BY_NAME.get(n)).filter((p): p is Player => !!p && !otherMen.has(p.player))
-    const best = startingFive(cands).five
+    const best = teamFive(cands).five
     if (!best.every(Boolean)) return { ok: false, why: 'their best five here is short' }
     const men = (best as Player[]).map((p) => p.player)
     const rest = remaining.filter((q) => !men.includes(q.player)).map((q) => q.name)

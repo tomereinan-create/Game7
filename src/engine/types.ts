@@ -1,3 +1,5 @@
+import type { Pos } from './positions'
+
 /**
  * The 17-attribute sheet, every number derived from real Basketball-Reference
  * statistics by data/build_ratings.py. Display and drafting information ONLY —
@@ -74,6 +76,13 @@ export interface Player {
   id: number
   pd: number
   attrs: Attrs
+  /**
+   * recal_232: the seat this man stands at OUTSIDE his listed positions, one step from one of them —
+   * set only on a COPY a team-season five makes when its strict walk leaves a hole (bestfive.ts
+   * `teamFive`, positions.ts `seatOutOfPosition`), never on a card. Each marked man adds
+   * MKNOBS.OOP_DRTG to the five's DRtg (offense.ts defenseVs / teamDefense). Absent = in position.
+   */
+  oop?: Pos
 }
 
 /**

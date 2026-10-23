@@ -2171,5 +2171,39 @@
     "round": 231,
     "ruling": "Push D",
     "note": "THE LARGEST CAP GAP ON THE BOARD, and the second subject of the same ruling. OFF 69 / DEF 93 blends to 81.00 and printed 79, clipped by 1.95 with the floor 79.05 sitting one tenth of a point over the gate 79 - the clamp was deciding his card by a tenth. His offence is three points over the measured starter knee of 66, so the ramp is whole, the floor equals the blend and he is not clipped. His DEF pin (92 +-1) is byte-identical at 93 and is NOT the subject: this round writes one expression that reads o_ovr and d_ovr and produces ovr, so OFF and DEF move on zero cards by construction. His neighbouring season '20 (OFF 66 / DEF 90), sitting exactly ON the knee, rises 76 -> 78 with him. OVR 79 -> 81."
+  },
+  {
+    "card": "Wizards '25 (re-solved five, Valanciunas at PF)",
+    "five": [
+      "Jordan Poole '25",
+      "Kyshawn George '25",
+      "Justin Champagnie '25",
+      "Jonas Valančiūnas '25@PF",
+      "Alex Sarr '25"
+    ],
+    "season": 2025,
+    "scale": "team:defdial",
+    "target": 39,
+    "tol": 1,
+    "round": 232,
+    "ruling": "yes, go with rule C for the 44 teams, but have this player penelised for playing oop / re-solve version, 0.13 penalty, build it",
+    "note": "THE SUBJECT. Wizards '25 have no PF on the card pool, so the strict walk left a hole and the Teams screen read 'needs five'. recal_232's re-solve (bestfive.ts teamFive) stands Jonas Valanciunas '25, listed C, one step out at PF, marked ('@PF' is the seat mark: a copy carrying oop, never the card), and MKNOBS.OOP_DRTG = 0.13 on the five's DRtg is his price: drtgRef 110.929 -> 111.059, DEF 41 -> 39 on the all-time dial, OFF 29 untouched. tol 1 on purpose: the same five unmarked reads 41, so a round that drops the penalty fails this pin. A later DEF round that legitimately moves this five should re-cut the target, not widen the tolerance."
+  },
+  {
+    "card": "Hawks '85 (re-solved five, two out of position)",
+    "five": [
+      "Doc Rivers '85",
+      "Dominique Wilkins '85@SG",
+      "Kevin Willis '85@SF",
+      "Cliff Levingston '85",
+      "Tree Rollins '85"
+    ],
+    "season": 1985,
+    "scale": "team:defdial",
+    "target": 58,
+    "tol": 2,
+    "round": 232,
+    "ruling": "yes, go with rule C for the 44 teams, but have this player penelised for playing oop / re-solve version, 0.13 penalty, build it",
+    "note": "THE TWO-MAN CASE. Five men on the pool and no strict board: the re-solve needs Wilkins (SF) at SG and Willis (PF) at SF, two marks, 0.26 on drtgRef (109.571 -> 109.831), DEF 63 -> 58, OFF 42 untouched. Unmarked it reads 63, five points outside this pin, so a penalty that stops counting per man fails here even where the one-man pin above would pass."
   }
 ]

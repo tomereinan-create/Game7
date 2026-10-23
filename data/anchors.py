@@ -104,6 +104,21 @@ def find_card(players, name, _cache={}):
     return sorted(same, key=lambda p: (p.get('talent', 0), p.get('ovr', 0)))[-1]
 
 
+_SEATED = re.compile(r'^(.*)@(PG|SG|SF|PF|C)$')
+
+
+def find_seated(players, name):
+    """find_card, plus recal_232's seat mark: "Jonas Valančiūnas '25@PF" is that card seated OUT OF
+    POSITION at PF — a COPY carrying 'oop', never the card — so a team pin can name a re-solved
+    five exactly as the Teams screen fields it, and team_rating.py charges MKNOBS['OOP_DRTG'] for him.
+    The same form scripts/receipts.ts and data/parity_check.py read."""
+    m = _SEATED.match(name)
+    if not m:
+        return find_card(players, name)
+    p = find_card(players, m.group(1))
+    return None if p is None else dict(p, oop=m.group(2))
+
+
 _GAUGE = None
 
 
@@ -288,8 +303,82 @@ def _optimal_sets(roster, elig, dp, left, target):
     return out or [[]]
 
 
+def _one_step_from(listed, slot):
+    """positions.ts oneStepFrom(): the listed position a man seated at `slot` steps from, or None
+    when he is listed there or no listed position is one step along PG-SG-SF-PF-C."""
+    if slot in listed:
+        return None
+    at = _POSITIONS.index(slot)
+    return next((x for x in listed if abs(_POSITIONS.index(x) - at) == 1), None)
+
+
+def team_five(roster):
+    """A 1:1 port of teamFive() in src/engine/bestfive.ts (recal_232), for the SET and its marks — the
+    five the Teams screen fields and seasonRank.ts pools. A club whose strict walk fields five, or
+    whose pool is short of five men, gets starting_five's own answer. Otherwise the re-solve: every
+    board letting a man stand ONE STEP from a listed position, (1) fewest such men, (2) highest total
+    OVR, (3) of tied sets recal_147's key on the five as it would stand (penalty included), raw net
+    beneath it. bestfive.ts's (4) kept seats and (5) PG assists only arrange that set's slots, and
+    every board at the optimum marks the same number of men, so no number here can depend on them."""
+    five = starting_five(roster)
+    if len(five) == 5 or len(roster) < 5:
+        return five
+    elig = [_pos_of(p['name']) for p in roster]
+    best = {'k': float('inf'), 's': -1, 'boards': []}
+    used = [False] * len(roster)
+    men, off = [], []
+
+    def walk(i, k, s):
+        if k > best['k']:
+            return
+        if i == 5:
+            if k < best['k'] or s > best['s']:
+                best.update(k=k, s=s, boards=[])
+            if s == best['s']:
+                best['boards'].append((list(men), list(off)))
+            return
+        slot = _POSITIONS[i]
+        for j, p in enumerate(roster):
+            if used[j]:
+                continue
+            inpos = slot in elig[j]
+            if not inpos and _one_step_from(elig[j], slot) is None:
+                continue
+            used[j] = True
+            men.append(p)
+            off.append(not inpos)
+            walk(i + 1, k if inpos else k + 1, s + p.get('ovr', 0))
+            used[j] = False
+            men.pop()
+            off.pop()
+
+    walk(0, 0, 0)
+    if not best['boards']:
+        return five
+
+    def mark(b):
+        return [dict(p, oop=_POSITIONS[i]) if b[1][i] else p for i, p in enumerate(b[0])]
+
+    sets = {}
+    for b in best['boards']:
+        sets.setdefault('|'.join(sorted(p['name'] for p in b[0])), b)
+    boards = list(sets.values())
+    pick = boards[0]
+    if len(boards) > 1:
+        best_key, best_net = float('-inf'), float('-inf')
+        for b in boards:
+            f = mark(b)
+            key = _dial_ovr_raw(f, _season_of(f))
+            o, d = team_raw(f)
+            if key > best_key or (key == best_key and o - d > best_net):
+                pick, best_key, best_net = b, key, o - d
+    return mark(pick)
+
+
 def season_board(players, season):
-    """[(ab, team, five)] for every team of `season` that can field a legal five, from the wheel."""
+    """[(ab, team, five)] for every team of `season` that fields a five, from the wheel — recal_232:
+    the team-season five (team_five), so a club whose strict walk leaves a hole is on its season's
+    board with its stand-in marked and penalised, exactly as seasonRank.ts pools it."""
     global _WHEEL
     if season in _BOARDS:
         return _BOARDS[season]
@@ -305,7 +394,7 @@ def season_board(players, season):
         roster = [idx[n] for n in t['p'] if n in idx]
         if len(roster) < 5:
             continue
-        five = starting_five(roster)
+        five = team_five(roster)
         if len(five) != 5:
             continue
         off, drtg = team_raw(five)
@@ -324,7 +413,7 @@ def team_rank(players, a):
     pin grades whatever bestfive.ts picks today, which is the original behaviour."""
     board = season_board(players, a['season'])
     if a.get('five'):
-        cards = [find_card(players, n) for n in a['five']]
+        cards = [find_seated(players, n) for n in a['five']]
         if any(c is None for c in cards) or len(cards) != 5:
             return None
         off, drtg = team_raw(cards)
@@ -349,7 +438,7 @@ def read_scale(players, a):
     """The measured value an anchor is about, or None if it cannot be read."""
     scale = a['scale']
     if scale.startswith('team:'):
-        five = [find_card(players, n) for n in a.get('five', [])]
+        five = [find_seated(players, n) for n in a.get('five', [])]
         if len(five) != 5 or any(p is None for p in five):
             return None
         if scale in ('team:offdial', 'team:defdial', 'team:ovrdial'):

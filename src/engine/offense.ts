@@ -309,6 +309,7 @@ export function teamDefense(five: Player[]): { didx: number; drtg: number } {
   let drtg = 118 - 0.14 * didx
   drtg -= (K.DRB_STOP * A.reduce((s, a) => s + Math.max(0, a.drb - 50), 0)) / 5
   drtg += (K.DISC_FREEPTS * A.reduce((s, a) => s + Math.max(0, 55 - a.discipline), 0) / 5) * 3
+  drtg += oopPenalty(five) // recal_232: the same MKNOBS.OOP_DRTG per out-of-position man; 0 when unmarked
   void n
   return { didx, drtg }
 }
@@ -353,7 +354,23 @@ export const MKNOBS = {
   // RE-DERIVED by recal_133 (1.0773 -> 0.4523) on the same rule: the pool's mean drtgRef is held at
   // 110.047736 to six places, because a smaller second-anchor credit lowers the whole board.
   DIDX_HOLD: 0.4523,
+  // recal_232 — A MAN OUT OF POSITION COSTS HIS FIVE ON DEFENCE. His rulings (2026-10-22): "yes, go
+  // with rule C for the 44 teams, but have this player penelised for playing oop" / "re-solve
+  // version, 0.13 penalty, build it". 44 team-seasons cannot field a strict PG-to-C five from their
+  // pool; bestfive.ts `teamFive` re-solves them letting a man stand ONE STEP from a listed position,
+  // and marks him (`Player.oop`, on a copy). Each marked man adds this to the five's DRtg, here and in
+  // teamDefense; offence is unpenalised. MEASURED, not guessed: over 1,110 real starting fives
+  // (bref games started, scripts/diag-team/realoop232.ts, within-season) each man started one step
+  // outside his listed positions costs +0.351 real DRtg (s.e. 0.129) with the five's own drtgRef,
+  // height and rim protection held, and real DRtg runs 2.786 points per drtgRef point there:
+  // 0.351 / 2.786 = 0.126, shipped as 0.13. (Offence: -0.10 real ORtg per seat, inside its noise —
+  // not priced.) An unmarked five adds exactly 0 — the 1,255 strictly fieldable fives, every card's
+  // marg and every drafted five read bit-identically.
+  OOP_DRTG: 0.13,
 } as const
+
+/** recal_232: the DRtg a five pays for the men it seats out of position (0 for every unmarked five). */
+export const oopPenalty = (five: readonly Player[]) => MKNOBS.OOP_DRTG * five.reduce((n, p) => n + (p.oop ? 1 : 0), 0)
 
 export interface DefenseVs {
   /** Points allowed per 100 by US defending THEM (lower = better). */
@@ -379,6 +396,8 @@ export interface DefenseVs {
   starPaint: number
   anchor: number
   huntPen: number
+  /** recal_232: MKNOBS.OOP_DRTG x the men this five seats out of position (already inside `drtg`). */
+  oopPen: number
   // display-only internals
   anchorIdx: number
   weakIdx: number
@@ -661,9 +680,11 @@ export function defenseVs(us: Player[], them: Player[], assignment: Assignment =
    */
   const didx =
     0.55 * effDi + 0.13 * anc * 0.9 + 0.12 * Math.min(99, steals) * 0.9 + 0.12 * Math.max(0, 60 + glass / 4) - K.DIDX_HOLD
-  const drtg = 110 - K.DRTG_COEF * (didx - 55) + huntPen
+  // recal_232: MKNOBS.OOP_DRTG per man seated out of position — 0 for every unmarked five
+  const oopPen = oopPenalty(us)
+  const drtg = 110 - K.DRTG_COEF * (didx - 55) + huntPen + oopPen
   void nA
-  return { drtg, steals: Math.min(99, steals), star, anchorOn, worstShooter, minOppOut, hide, paintOrient, starPaint, anchor, huntPen, anchorIdx, weakIdx, effDi, onball, team, glass, didx, map }
+  return { drtg, steals: Math.min(99, steals), star, anchorOn, worstShooter, minOppOut, hide, paintOrient, starPaint, anchor, huntPen, oopPen, anchorIdx, weakIdx, effDi, onball, team, glass, didx, map }
 }
 
 /** OFF + transition − DRtg, against this opponent. 1:1 with score_vs. */
