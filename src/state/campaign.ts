@@ -185,6 +185,8 @@ export const wornOut = (wear: Record<string, number>, five: string[], dur: (name
  */
 export const saveKey = (m: CampaignMode) => (isTutorial() ? `game7.tut.${m}.v2` : `game7.${m}.v2`)
 const key = saveKey
+/** The ladder's drafts in progress (state/draftsave.ts), kept beside its save and namespaced with it. */
+export const draftKey = (m: CampaignMode) => `${saveKey(m)}.draft`
 
 /**
  * ONE CLUB, ALL THREE LADDERS (his ruling, 2026-09-11: "Change it so there will be one team name,
@@ -253,6 +255,7 @@ const legacyKey = (m: CampaignMode) => (m === 'campaign' && !isTutorial() ? 'gam
 export function resetTutorialSaves() {
   try {
     for (const m of MODES) localStorage.removeItem(`game7.tut.${m}.v2`)
+    for (const m of MODES) localStorage.removeItem(`game7.tut.${m}.v2.draft`)
     localStorage.removeItem('game7.tut.team.v1')
   } catch {
     /* private mode — there was nothing saved to forget */
@@ -454,8 +457,9 @@ export function saveProgress(m: CampaignMode, p: Progress) {
 /**
  * A LADDER THAT HAS NEVER BEEN SAVED IS SAVED THE MOMENT ITS FIRST DRAFT OPENS (the live check,
  * 2026-10-22). Its seed — which deals the wheel — was only written at the first result, so a reload
- * mid-draft on a first visit drew a brand-new seed and a different wheel: a free re-roll past the rule
- * that walking out with men on the board spends the attempt. Written once; never over a real save.
+ * mid-draft on a first visit drew a brand-new seed and a different wheel: a free re-roll. (The draft
+ * itself is kept beside it since 2026-10-23 — see state/draftsave.ts — and its attempt is checked
+ * against this seed.) Written once; never over a real save.
  */
 export function saveIfNew(m: CampaignMode, p: Progress) {
   try {
@@ -499,6 +503,12 @@ export function starsFromUrl(all: Record<CampaignMode, Progress>): boolean {
 export function resetProgress(m: CampaignMode): Progress {
   const p = fresh()
   saveProgress(m, p)
+  // and any draft left open on the old ladder (it would not match the new seed anyway)
+  try {
+    localStorage.removeItem(draftKey(m))
+  } catch {
+    /* private mode — there was nothing kept to forget */
+  }
   return p
 }
 

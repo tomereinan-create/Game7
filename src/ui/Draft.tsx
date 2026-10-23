@@ -24,7 +24,7 @@ import { Matchups } from './Matchups'
 import { TacticsCalls, tacticsWorth, worthLine } from './TacticsPanel'
 import { MatchupPanel, TeamDials } from './MatchupPanel'
 import { compile, meanMargin } from '../engine/resolver'
-import { makeRng } from '../engine/rng'
+import { countedRng, type DraftState, type Wide } from '../state/draftsave'
 import type { Opponent, Player } from '../engine/types'
 import { DetailGrid, LINES, Mini, StatHead } from './Stat'
 import { useUserMode } from '../state/viewmode'
@@ -192,8 +192,8 @@ export function heldPool(held: 'team' | 'year' | null, last: TeamSeason | null):
 
 /** The decade block a season sits in, clipped to the data (the 2020s run 2020–2026 here). */
 const decadeOf = (y: number) => Math.floor(y / 10) * 10
-/** How wide the wheel's landing opens: the team, its decade (or three), its division (or conference). */
-type Wide = 'team' | 'decade' | 'decade3' | 'division' | 'conference'
+/* How wide the wheel's landing opens — the team, its decade (or three), its division (or conference) —
+   is `Wide`, typed beside the kept draft (state/draftsave.ts) that remembers it. */
 /** Every man who wore the shirt across that decade, or who played in that division that season. */
 function widenRoster(t: TeamSeason, mode: Wide): string[] {
   // a season with no division on file cannot widen to one — fall back to the roster itself
@@ -263,6 +263,8 @@ export function Draft({
   backLabel,
   creator = false,
   onPicks,
+  resume = null,
+  onSave,
 }: {
   opponent: Opponent
   seed: number
@@ -312,8 +314,11 @@ export function Draft({
    */
   onTactics?: (t: Tactics) => void
   onSim: (five: Player[], assignment: Assignment, toWin: number) => void
-  /** Leaving mid-draft: `started` says picks exist, so the attempt is spent and the wheel reseeds. */
-  onBack: (started: boolean) => void
+  /**
+   * Leaving mid-draft: `started` says picks exist; App's leave rule (state/draftsave.ts) decides what
+   * that costs. `ended` is the wheel running dry — that attempt is over whatever the rule says.
+   */
+  onBack: (started: boolean, ended?: boolean) => void
   /** What the corner's way out is called when it does not lead to the level map (a challenge's). */
   backLabel?: string
   onRoster: () => void
@@ -343,12 +348,22 @@ export function Draft({
   creator?: boolean
   /** How many men are on the board — App guards its Home button with it (the live check, 2026-10-22). */
   onPicks?: (n: number) => void
+  /**
+   * THE DRAFT IN PROGRESS (his report, 2026-10-23 — see state/draftsave.ts). `resume` is this level's
+   * kept draft, read once as the screen opens: the board, the reels and the wheel's stream all pick
+   * up where they stood. `onSave` is handed every change that matters; absent (the death match), the
+   * draft is not kept and opens fresh as it always did.
+   */
+  resume?: DraftState | null
+  onSave?: (s: DraftState) => void
 }) {
   // Death match starts with last level's five already placed; a normal draft starts empty.
   // The carried five arrives in SLOT ORDER (PG to C) — the order My team shows and the player can
   // rearrange by hand — so the seeding honors it verbatim when it is legal, and only a five whose
   // saved order cannot field falls back to a matching, then to force-fitting.
   const [slots, setSlots] = useState<Partial<Record<Pos, string>>>(() => {
+    // a kept draft comes back with its men in the rings they were in
+    if (resume) return { ...resume.slots }
     if (!carry?.length) return {}
     const start: Partial<Record<Pos, string>> = {}
     if (carry.length === POSITIONS.length && carry.every((p, i) => eligible(LINES[p.name]?.pos).includes(POSITIONS[i]))) {
@@ -378,15 +393,16 @@ export function Draft({
     }
     return start
   })
-  const [spun, setSpun] = useState<TeamSeason | null>(null)
-  const [display, setDisplay] = useState<TeamSeason | null>(null)
+  // a kept draft's landing comes back LANDED, even one that was caught with the reels still running
+  const [spun, setSpun] = useState<TeamSeason | null>(resume?.landed ?? null)
+  const [display, setDisplay] = useState<TeamSeason | null>(resume?.landed ?? null)
   const [spinning, setSpinning] = useState(false)
   /** The two reels: which rows are on them and which row each has to finish under the arrows. */
-  const [reels, setReels] = useState<ReelSpin | null>(null)
+  const [reels, setReels] = useState<ReelSpin | null>(resume?.reels ?? null)
   /** What the reels last stopped on — the half a held reel keeps for the next spin. */
-  const lastLanding = useRef<TeamSeason | null>(null)
+  const lastLanding = useRef<TeamSeason | null>(resume?.last ?? null)
   /** HIS RULING: "unless selected to spin 1 only". At most one reel is held; the other is spun. */
-  const [hold, setHold] = useState<Hold>(null)
+  const [hold, setHold] = useState<Hold>(resume?.hold ?? null)
   const [sel, setSel] = useState<string | null>(null)
   const [slot, setSlot] = useState<Pos | null>(null)
   const [info, setInfo] = useState<string | null>(null)
@@ -443,7 +459,7 @@ export function Draft({
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [])
-  const [board, setBoard] = useState<number[] | null>(null)
+  const [board, setBoard] = useState<number[] | null>(resume?.board ?? null)
   const [boardOpen, setBoardOpen] = useState(false)
   const toWin = 4 // best of seven, always
   /** The board before the tip: 0–0 with a full first quarter on the clock (his ruling). */
@@ -462,7 +478,7 @@ export function Draft({
    */
   const has = (id: NodeId) => owned(wallet, id)
   // Per-draft allowances: an owned Front-office node is one use every draft.
-  const [used, setUsed] = useState<Partial<Record<NodeId, number>>>({})
+  const [used, setUsed] = useState<Partial<Record<NodeId, number>>>(() => ({ ...resume?.used }))
   /** Per-draft allowances are the node's RANK: three ranks of Extra spin is three respins a draft. */
   const allowance = (id: NodeId) => (id === 'fo_spin' || id === 'fo_respin' ? rank(wallet, id) : has(id) ? 1 : 0)
   const charges = (id: NodeId) => allowance(id) - (used[id] ?? 0)
@@ -480,10 +496,13 @@ export function Draft({
   /** The press-and-hold timer, and the live finger position the edge-scroll loop reads. */
   const holdRef = useRef<number | null>(null)
   const pullXY = useRef({ x: 0, y: 0 })
-  const rng = useRef(makeRng(seed))
+  /* The wheel's stream: `makeRng(seed)`'s own numbers, counted, and for a kept draft replayed to where
+     it stood — so the next spin draws exactly what it would have drawn had nobody left (draftsave.ts). */
+  const [wheelRng] = useState(() => countedRng(seed, resume?.draws ?? 0))
+  const rng = useRef(wheelRng)
   const avoidRef = useRef<TeamSeason | null>(null)
   /** Decided ahead of the spin so the Wheel whisperer can show it; the spin just lands there. */
-  const [upcoming, setUpcoming] = useState<TeamSeason | null>(null)
+  const [upcoming, setUpcoming] = useState<TeamSeason | null>(resume?.upcoming ?? null)
   /** What the player is allowed to know about the next landing: Sight seeing, or nothing. */
   const seen = has('scout_wheel') ? upcoming : null
   /** Exact ratings rank 3: which opposing man has his sheet open. */
@@ -493,7 +512,7 @@ export function Draft({
    * should not have to press to see who he is playing. The bar still closes it.
    */
   /** No team-season on the wheel can legally fill an open slot (salary rules). */
-  const [dead, setDead] = useState(false)
+  const [dead, setDead] = useState(resume?.dead ?? false)
   /**
    * The draft takes the full width of a desktop — and, by his ruling ("Make the skill tree and the
    * drafting (spin) the same design as your current stage"), the SKIN of the block the campaign is
@@ -894,8 +913,11 @@ export function Draft({
 
   // Decide the next landing as soon as the wheel is idle (deterministic: the rng is
   // drawn in the same order either way). Shown only with the Wheel whisperer.
+  // (`dead` stops nothing in play — once the wheel is dry none of the four below can change, so this
+  // never ran again anyway — but it stops a kept dry draft drawing again as it reopens, which would
+  // move its stream)
   useEffect(() => {
-    if (spun || spinning || full || upcoming) return
+    if (spun || spinning || full || upcoming || dead) return
     const next = landOn(takenMen, open, () => rng.current.next(), avoidRef.current, (n) => !overCap(n))
     setUpcoming(next)
     setDead(!next)
@@ -1195,7 +1217,7 @@ export function Draft({
     setMoving(null)
   }
 
-  const [wide, setWide] = useState<Wide>('team')
+  const [wide, setWide] = useState<Wide>(resume?.wide ?? 'team')
   /**
    * WHO CAN ACTUALLY BE DRAFTED RIGHT NOW: a man who plays one of the open rings and, in the
    * salary cap, one this payroll can still afford. The rows have always DIMMED the rest; his
@@ -1240,7 +1262,7 @@ export function Draft({
    */
   const takeTheFloor = () => {
     if (!user || reduceMotion()) {
-      onSim(five, assignment, toWin)
+      sim()
       return
     }
     setShooting(true)
@@ -1249,17 +1271,38 @@ export function Draft({
         setBump(2)
         setFlash(true)
       }, 1520),
-      window.setTimeout(() => onSim(five, assignment, toWin), 2500),
+      window.setTimeout(sim, 2500),
     )
+  }
+  /** Once the five is handed to the sim this draft is over: App clears it, and nothing here writes it back. */
+  const handed = useRef(false)
+  const sim = () => {
+    handed.current = true
+    onSim(five, assignment, toWin)
   }
   useEffect(() => {
     onPicks?.(picks.length)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [picks.length])
 
-  /* P5: the funnel's third step — a five drafted in full (a death match's carried five does not count) */
+  /**
+   * KEEP THE DRAFT (his report, 2026-10-23 — see state/draftsave.ts). Written after every change
+   * that matters, with the wheel's stream counted AS THIS RENDER STANDS: the draws a spin's reels
+   * make land during the render, and the next landing is drawn in an effect after it, so the count
+   * read here is exactly the stream behind what this render shows.
+   */
+  const drawsNow = wheelRng.draws()
   useEffect(() => {
-    if (full && !carry && !creator) track('draft_complete', { level: opponent.round, salary, death })
+    if (!onSave || handed.current) return
+    onSave({ draws: drawsNow, slots, landed: display, last: lastLanding.current, upcoming, reels, hold, used, dead, wide, board })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [drawsNow, slots, display, upcoming, reels, hold, used, dead, wide, board])
+
+  /* P5: the funnel's third step — a five drafted in full (a death match's carried five does not count,
+     and nor does a kept draft that reopens already full: it was counted when it was drafted) */
+  const openedFull = useRef(full)
+  useEffect(() => {
+    if (full && !carry && !creator && !openedFull.current) track('draft_complete', { level: opponent.round, salary, death })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [full])
 
@@ -1272,7 +1315,8 @@ export function Draft({
   const spinNow = useRef(spin)
   spinNow.current = spin
   useEffect(() => {
-    if (!autoSpin || autoplay) return
+    // a kept draft that has been spun already is not arriving for its first spin
+    if (!autoSpin || autoplay || (resume && (resume.landed || Object.keys(resume.slots).length))) return
     const t = window.setTimeout(() => spinNow.current(), 650)
     return () => window.clearTimeout(t)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1357,7 +1401,7 @@ export function Draft({
       )
     if (dead)
       return (
-        <button className="btn ghost" onClick={() => onBack(true)}>
+        <button className="btn ghost" onClick={() => onBack(true, true)}>
           No legal team left — back to the map
         </button>
       )
@@ -1605,7 +1649,8 @@ export function Draft({
         one thing the strip alone said, so they moved down to the card that already explains them.
         The way back to the map is this button, pinned beside the global home button — it lives in
         THIS screen because only this screen knows whether picks are on the board, which is what
-        spends the attempt.
+        App's leave rule reads (state/draftsave.ts: the campaign and the cap keep the draft; the
+        death match spends the attempt).
       */}
       <button className={`map-fab ${skin}`} onClick={() => onBack(picks.length > 0)} aria-label={backLabel ?? 'Level map'} title={backLabel ?? 'Back to the level map'}>
         <svg viewBox="0 0 24 24" aria-hidden>
