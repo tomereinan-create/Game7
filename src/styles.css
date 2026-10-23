@@ -9822,6 +9822,37 @@ body:has(.fd-modes .fd-help) .coach-fab { display: none; }
   .draft.set.has-plan:not(.solo) > .col.c { grid-area: c; }
   .draft.set.has-plan:not(.solo) > .col.d { grid-area: d; }
 }
+/* THE OPPONENT IN SIGHT ON A LAPTOP (his report, 2026-10-23: "On a laptop you can't see the
+   opponent while you draft"). The two columns above put the opponent UNDER your five — measured at
+   1,440 x 900 it began at y 863, behind the dock — and the only way to it scrolled the roster being
+   picked from out of view. From 1,280, while the five is still being drafted, the draft is the
+   desk's three columns again: the opponent, the wheel, your five, all standing in the window; the
+   board measures itself to the dock (Draft.tsx `sheet`) and the floors take what the rows leave.
+   What made three columns unreadable here was the WORDS, so the two team columns give up the
+   season-line numbers — PTS · REB · AST and their caption — and the names take that width (still
+   one tap away: the row's chevron opens the season line, the name opens the card). Under 1,280 and
+   once the five is in, nothing changes. */
+@media (min-width: 1280px) and (max-width: 1799px) {
+  .draft:not(.set) {
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.3fr) minmax(0, 0.85fr);
+    grid-template-areas: "a b c";
+    align-items: stretch;
+  }
+  .draft:not(.set) .court-line { flex: 1 1 0; }
+  .draft:not(.set) .court-line > .court { max-width: 100%; }
+  .draft:not(.set) .col.a .rowhead.dr,
+  .draft:not(.set) .col.a .row.dr,
+  .draft:not(.set) .col.c .rowhead.dr,
+  .draft:not(.set) .col.c .row.dr { grid-template-columns: minmax(0, 1fr) 28px; }
+  .draft:not(.set) .col.a .mini,
+  .draft:not(.set) .col.c .mini,
+  .draft:not(.set) .col.a .rowhead.dr > :nth-child(2),
+  .draft:not(.set) .col.c .rowhead.dr > :nth-child(2),
+  .draft:not(.set) .col.a .card-head > .cap { display: none; }
+  /* the wheel's roster is the narrower middle now (514px at 1,280 against the desk's 900+), so its
+     names come down from the desk's 26px with the window instead of printing "Shawn Ke..." */
+  .draft:not(.set) .col.b .pname b { font-size: clamp(17px, 1.45vw, 26px); }
+}
 /* and under 1,150 two columns are still two narrow ones (1,024: "Mitch Richmond '...", "Draft a
    man he..."), so the draft is ONE column there, at the width a column reads at: the wheel, then
    your five, then the opponent - the order you use them in, top to bottom. */
