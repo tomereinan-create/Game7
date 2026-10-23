@@ -15,6 +15,11 @@
  * 1/60 s of page time and then drawn — CSS transitions and the reels included — so a 77 s run is
  * 4,620 real frames, rendered as fast as the machine allows.
  *
+ * THE GAME 7 INTRO IS A VIDEO, and video does not run on virtual time: the page would sit on a blank
+ * frame until its 15 s fallback. So when the intro mounts, the renderer ends it at exactly the clip's
+ * own length of page time (the `ended` event the game waits for), and afterwards lays the clip itself
+ * over those frames — scaled and centre-cropped as `object-fit: cover` shows it in the 9:16 frame.
+ *
  * Needs Playwright's chromium_headless_shell (HEADLESS_SHELL=<path>, or the one in ms-playwright)
  * and an ffmpeg (see browser.mjs).
  */
@@ -50,6 +55,7 @@ function headlessShell() {
 
 const ffmpeg = findFfmpeg()
 const SHELL = headlessShell()
+const INTRO = join(root, 'public', 'moments', 'game7-intro.mp4')
 if (!ffmpeg || !SHELL) {
   console.error(!ffmpeg ? 'No ffmpeg (see browser.mjs).' : 'No chromium_headless_shell: set HEADLESS_SHELL=<path to chrome-headless-shell.exe>.')
   process.exit(1)
@@ -128,6 +134,34 @@ function encoder(out) {
   return { write, end: async () => (p.stdin.end(), done) }
 }
 
+/** The intro clip's length in seconds, read off ffmpeg's banner. */
+function introSeconds() {
+  return new Promise((res) => {
+    if (!existsSync(INTRO)) return res(null)
+    const p = spawn(ffmpeg, ['-hide_banner', '-i', INTRO])
+    let err = ''
+    p.stderr.on('data', (d) => (err += d))
+    p.on('close', () => {
+      const m = /Duration: (\d+):(\d+):([\d.]+)/.exec(err)
+      res(m ? Number(m[1]) * 3600 + Number(m[2]) * 60 + Number(m[3]) : null)
+    })
+  })
+}
+
+/** Lay the intro clip over frames [from, to) of the render, as `object-fit: cover` fills the frame. */
+function overlayIntro(src, from, to, out) {
+  const a = (from / FPS).toFixed(4)
+  const b = (to / FPS).toFixed(4)
+  return new Promise((res, rej) => {
+    const p = spawn(ffmpeg, [
+      '-y', '-loglevel', 'error', '-i', src, '-itsoffset', a, '-i', INTRO,
+      '-filter_complex', `[1:v]scale=-2:${H},crop=${W}:${H},fps=${FPS},setsar=1[iv];[0:v][iv]overlay=0:0:eof_action=pass:enable='between(t,${a},${b})'[v]`,
+      '-map', '[v]', '-c:v', 'libx264', '-preset', 'medium', '-crf', '16', '-pix_fmt', 'yuv420p', '-r', String(FPS), '-movflags', '+faststart', out,
+    ], { stdio: 'inherit' })
+    p.on('close', (c) => (c === 0 ? res() : rej(new Error(`ffmpeg overlay exited ${c}`))))
+  })
+}
+
 function cut(src, from, to, out) {
   return new Promise((res, rej) => {
     const p = spawn(ffmpeg, ['-y', '-loglevel', 'error', '-ss', from.toFixed(3), '-to', to.toFixed(3), '-i', src, '-c:v', 'libx264', '-preset', 'medium', '-crf', '16', '-pix_fmt', 'yuv420p', '-r', String(FPS), '-movflags', '+faststart', out], { stdio: 'inherit' })
@@ -137,6 +171,8 @@ function cut(src, from, to, out) {
 
 async function render(run) {
   const out = resolve(run.out ?? join(root, 'clips', `render_s${run.seed}.mp4`))
+  const raw = out.replace(/\.mp4$/, '.raw.mp4')
+  const introLen = await introSeconds()
   const b = await cdpBrowser()
   try {
     const { targetId } = await b.send('Target.createTarget', { url: 'about:blank', enableBeginFrameControl: true, width: W, height: H })
@@ -152,7 +188,9 @@ async function render(run) {
     const evaluate = async (expr) => (await b.send('Runtime.evaluate', { expression: expr, returnByValue: true }, s)).result.value
     // the run lives in the creator frame's iframe; its beats are read there
     const inGame = (body) => `(() => { const f = document.querySelector('iframe'); const d = f && f.contentDocument ? f.contentDocument : document; ${body} })()`
-    const enc = encoder(out)
+    const enc = encoder(raw)
+    let introFrom = null
+    let introTo = null
     let ticks = 0
     let last = null
     let t = 0
@@ -172,6 +210,16 @@ async function render(run) {
         await enc.write(last)
         ticks++
       }
+      // between the strip and the settle, the intro is watched every frame: it is timed to the frame
+      if (beats.series !== undefined && introTo === null && ticks > 0) {
+        const on = await evaluate(inGame(`return !!d.querySelector('.g7-intro')`))
+        if (on && introFrom === null) {
+          introFrom = ticks - 1
+          // end it after exactly the clip's own length of page time, as playing it would
+          const ms = Math.round((introLen ?? 8.75) * 1000 - STEP)
+          await evaluate(inGame(`const v = d.querySelector('.g7-intro video'); if (v) { v.pause(); d.defaultView.setTimeout(() => v.dispatchEvent(new Event('ended')), ${ms}) } return true`))
+        } else if (!on && introFrom !== null) introTo = ticks - 1
+      }
       if (ticks % 6 === 0 && ticks > 0) {
         const st = await evaluate(inGame(`return { draft: !!d.querySelector('.cr-hud'), settle: !!d.querySelector('.cr-settle'), g7: !!d.querySelector('.g7-intro'), done: d.body && d.body.dataset.creatorDone === '1' }`))
         if (!st) continue
@@ -189,6 +237,15 @@ async function render(run) {
       }
     }
     await enc.end()
+    if (introFrom !== null && introLen) {
+      await overlayIntro(raw, introFrom, introTo ?? ticks, out)
+      rmSync(raw, { force: true })
+      console.log(`  intro clip laid over frames ${introFrom}–${introTo ?? ticks} (${(((introTo ?? ticks) - introFrom) / FPS).toFixed(2)} s)`)
+    } else {
+      rmSync(out, { force: true })
+      await new Promise((r, j) => spawn(ffmpeg, ['-y', '-loglevel', 'error', '-i', raw, '-c', 'copy', out]).on('close', (c) => (c === 0 ? r() : j(new Error('ffmpeg copy')))))
+      rmSync(raw, { force: true })
+    }
     const secs = ticks / FPS
     console.log(`  ${out}  ${secs.toFixed(1)} s · ${ticks} frames at ${FPS} fps (rendered in ${((Date.now() - t0) / 1000).toFixed(0)} s)`)
     console.log(`  beats: ${Object.entries(beats).map(([k, v]) => `${k} ${v.toFixed(1)}s`).join(' · ')}`)
