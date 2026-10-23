@@ -87,12 +87,14 @@ describe('A — the milder pricing: a rank costs its row in the branch plus one'
     for (const n of branch('Survival')) expect(price(n.id), n.id).toBe(1)
   })
 
-  it('the death match keeps one star a rank for EVERY node — its economy is not touched', () => {
-    for (const n of NODES) expect(price(n.id, true), n.id).toBe(1)
-    expect(treeCost(['Scout', 'Front office', 'Coach'], true)).toBe(25)
+  // his ruling, 2026-10-23: "No, same prices as the other modes"
+  it('the death match pays the same prices as the other modes; Survival stays one star a rank', () => {
+    for (const n of NODES) expect(price(n.id, true), n.id).toBe(price(n.id))
+    for (const n of branch('Survival')) expect(price(n.id, true), n.id).toBe(1)
+    expect(treeCost(['Scout', 'Front office', 'Coach'], true)).toBe(57)
     const w = wallet({ nodes: { fo_spin: 1, fo_respin: 1, fo_decade: 1 }, spent: 3 })
-    expect(buy(w, 'fo_division', true)!.spent).toBe(4) // one star, as it always was
-    expect(buy(w, 'fo_division')!.spent).toBe(7) // four on the ladders that have the new prices
+    expect(buy(w, 'fo_division', true)!.spent).toBe(7) // four, as on the ladders
+    expect(buy(w, 'fo_division')!.spent).toBe(7)
   })
 
   it('a buy charges the node its own price, and a balance short of it cannot buy', () => {
@@ -103,7 +105,7 @@ describe('A — the milder pricing: a rank costs its row in the branch plus one'
     const poor = { ...w, stars: [2, ...w.stars.slice(1)] } // one left
     expect(canBuy(poor, 'scout_wheel')).toBe(false)
     expect(buy(poor, 'scout_wheel')).toBeNull()
-    expect(canBuy(poor, 'scout_wheel', true)).toBe(true) // the death match still sells it for one
+    expect(canBuy(poor, 'scout_wheel', true)).toBe(false) // the death match charges the same two
   })
 })
 

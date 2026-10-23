@@ -79,9 +79,9 @@ export interface Node {
  * about level 10 of 150, after which stars bought nothing. Payroll room sits on its branch's top
  * row, so it stays one star. The Dynasty branch carries its own prices (3, 4 and 5 a rank).
  *
- * THE DEATH MATCH KEEPS ONE STAR A RANK, every node in it — Survival as the ruling names it, and the
- * staff it rebuilds after every death too. It is another session's lane and this change does not
- * touch its economy; `price(id, true)` is that flat star.
+ * THE DEATH MATCH PAYS THE SAME PRICES (his ruling, 2026-10-23: "No, same prices as the other
+ * modes") — Scout, Front office and Coach cost their row plus one there too. Survival, which only the
+ * death match has, stays one star a rank, as the spec he approved priced it.
  *
  * Prices apply to purchases from the day they changed: a rank bought before it was paid one star,
  * `spent` remembers what was actually paid, and a respec hands back exactly that (see `migrate`).
@@ -266,12 +266,12 @@ export const NODES: Node[] = [
 export const NODE = Object.fromEntries(NODES.map((n) => [n.id, n])) as Record<NodeId, Node>
 /**
  * Stars a rank of this node costs (see NODE_PRICE above for the ruling): its own `cost` where it has
- * one, one star flat on the Survival branch, and its row plus one everywhere else. `death` is the
- * death match, which keeps one star a rank for every node.
+ * one, one star flat on the Survival branch, and its row plus one everywhere else — in every mode,
+ * the death match included. `_death` is kept so callers that name the mode still read the same.
  */
-export const price = (id: NodeId, death = false): number => {
+export const price = (id: NodeId, _death = false): number => {
   const n = NODE[id]
-  if (death || !n) return NODE_PRICE
+  if (!n) return NODE_PRICE
   return n.cost ?? (n.branch === 'Survival' ? NODE_PRICE : n.depth + 1)
 }
 /** Every star the tree can absorb — over the branches given (every branch by default). */

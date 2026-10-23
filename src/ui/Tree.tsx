@@ -168,9 +168,10 @@ export function Tree({
       </div>
       <div className="lede tree-lede">
         {/* HIS RULING, 2026-10-23 ("Yes, the milder pricing"): a rank costs its row in the branch.
-            The death match keeps its one star a rank — see engine/tree.ts `price`. */}
+            The death match pays the same (his ruling: "No, same prices as the other modes"); its Survival
+            branch stays one star a rank — see engine/tree.ts `price`. */}
         {death
-          ? 'Stars come from the map — three for a sweep, two for a shorter win, one for going the distance. No skill is a one-time skill: every node holds several ranks, one star each, and every rank widens it further.'
+          ? 'Stars come from the map — three for a sweep, two for a shorter win, one for going the distance. No skill is a one-time skill: every node holds several ranks and every rank widens it further; a rank costs its row in the branch — one star on the top row, two on the next, and so on. Survival ranks are one star each.'
           : 'Stars come from the map — three for a sweep, two for a shorter win, one for going the distance. Every node holds ranks and every rank widens it further; a rank costs its row in the branch — one star on the top row, two on the next, and so on. The Dynasty branch opens a node at each new tier of the ladder.'}
       </div>
 

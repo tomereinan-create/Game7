@@ -205,7 +205,9 @@ export function ladderLesson(mode: CampaignMode, lives: number): Lesson | null {
 
 /** What a rank costs, said once for every lesson that says it (engine/tree.ts `price`, his ruling of 2026-10-23). */
 const PRICE_LINE = (death: boolean) =>
-  death ? 'every rank costs one star' : 'a rank costs its row in the branch — one star on the top row, two on the next, and so on'
+  death
+    ? 'a rank costs its row in the branch — one star on the top row, two on the next, and so on; Survival ranks are one star each'
+    : 'a rank costs its row in the branch — one star on the top row, two on the next, and so on'
 
 /**
  * STAFF, TOLD AFTER THE FIRST SERIES IS WON (his ruling, 2026-09-30: "Move Staff ... after you win
