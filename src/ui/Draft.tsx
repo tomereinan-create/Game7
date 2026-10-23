@@ -16,7 +16,7 @@ import { Ask } from './Ask'
 import { useCard } from './CardSheet'
 import { CourtFive, type Side } from './CourtFive'
 import { ChipRow } from './ChipRow'
-import { isRateable, naiveAssignment, solveBoard, type Assignment } from '../engine/offense'
+import { isRateable, naiveAssignment, type Assignment } from '../engine/offense'
 import { DEFAULT_TACTICS, gateTactics, reconcileTactics, styleFit, STYLES, type Tactics } from '../engine/tactics'
 import {
   balance,
@@ -38,7 +38,7 @@ import {
   type NodeId,
 } from '../engine/tree'
 import { WEAR_OUT, type Progress } from '../state/campaign'
-import { Matchups } from './Matchups'
+import { activeBoard, Matchups, sameBoard } from './Matchups'
 import { TacticsCalls, tacticsWorth, worthLine } from './TacticsPanel'
 import { MatchupPanel, TeamDials } from './MatchupPanel'
 import { compile, meanMargin } from '../engine/resolver'
@@ -926,8 +926,24 @@ export function Draft({
   /** In the Salary Cap campaign a player must have a salary on record and fit this pick's budget. */
   const unpriced = (name: string) => salary && capPct(name) === null
   const overCap = (name: string) => salary && ((capPct(name) ?? 0) > budget + 1e-9 || unpriced(name))
-  // Defensive assignment: naive until the Coach node; the board (if owned) overrides with the player's own map.
-  const assignment: Assignment = full && board && has('coach_manual') ? board : has('coach_optimal') ? 'optimal' : 'naive'
+  /**
+   * WHO GUARDS WHOM — ONE BOARD, READ BY EVERYTHING (his report, 2026-10-23; Matchups.tsx
+   * `activeBoard`). `assignment` is what the sim and every card are handed: naive until the Coach
+   * node, 'optimal' with it, and the player's own map only when it DIFFERS from the staff's board —
+   * a board left alone, solved, or put back is the staff's, and is played exactly as it. `boardMap`
+   * is that same board as five pairings: the Matchup board opens on it, the tip-off's ticker prints
+   * it and the coaching tips read it, so the three can no longer name three different boards.
+   * Memoised: solving walks all 120 boards and this renders on every keystroke of the draft.
+   */
+  const coached = has('coach_optimal')
+  const manual = has('coach_manual')
+  const active = useMemo(
+    () => activeBoard(full ? five : [], opponent.players, { optimal: coached, manual, board }),
+    // five and the opponent are the whole of what either solver reads
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [full, five.map((p) => p.name).join('|'), opponent, coached, manual, board],
+  )
+  const assignment: Assignment = active.assignment
   // PACE (recal_57): the AI answers the tempo call off the surpluses; the readout below shows both.
   // The card prices the night the sim plays: odds.ts `night`, the call App.tsx sims with (P8 — it
   // used to assume the AI was never the underdog, and so never answered a wash night slow).
@@ -936,24 +952,13 @@ export function Draft({
   const pc = nt?.pc ?? null
   const sigma = nt?.sigma ?? SIGMA
   /**
-   * THE SAME BOARD, AS FIVE PAIRINGS, for the tip-off's nameplates. `assignment` is what the sim
-   * is handed and it may be a WORD — 'optimal' is a board the engine solves at sim time, not a map
-   * — so the panel cannot read it directly. Resolved here, and memoised, because solving optimal
-   * walks all 120 permutations and this renders on every keystroke of the draft.
+   * THE SAME BOARD, AS FIVE PAIRINGS, for the tip-off's ticker, the Matchup board and the coaching
+   * tips. `assignment` is what the sim is handed and it may be a WORD — 'optimal' is a board the
+   * engine scores at sim time, not a map — so none of them can read it directly; `activeBoard`
+   * resolves it once, above.
    */
-  const boardMap = useMemo(
-    () =>
-      !full
-        ? null
-        : Array.isArray(assignment)
-          ? assignment
-          : assignment === 'optimal'
-            ? solveBoard(five, opponent.players)
-            : naiveAssignment(five, opponent.players),
-    // five and the opponent are the whole of what either solver reads
-    [full, assignment, five.map((p) => p.name).join('|'), opponent],
-  )
-  const naiveMap = full && assignment === 'naive' ? naiveAssignment(five, opponent.players) : null
+  const boardMap = active.map
+  const naiveMap = full && assignment === 'naive' ? boardMap : null
   /**
    * COACHING TIPS — the whole of user mode's third column now (his ruling, 2026-09-09: "Add
    * coacing tips category instead."). Three sentences off the five that is about to play and the
@@ -964,7 +969,7 @@ export function Draft({
    * Empty until BOTH fives are five — see `coachSays`, which returns nothing before then — so the
    * card that draws them simply is not there while the draft is still going on.
    */
-  const tips = user && full ? coachSays(five, opponent.players, assignment) : []
+  const tips = user && full ? coachSays(five, opponent.players, boardMap) : []
 
   /**
    * THE COACH'S LESSONS ON THIS SCREEN (tutorial mode — his ruling, 2026-09-30). Four states, one
@@ -2343,11 +2348,16 @@ export function Draft({
         </button>
       ) : null}
       {boardOpen && full ? (
+        /* the board opens on the matchups being played, and a change is made TO them: one swap
+           moves two men and leaves the other three where the staff had them (his report: the
+           sheet opened on the naive board, and one swap reset all five to naive plus that swap).
+           A change that puts the staff's board back keeps no board of his own at all. */
         <Matchups
           mine={five}
           theirs={opponent.players}
-          map={board ?? naiveAssignment(five, opponent.players)}
-          onChange={setBoard}
+          map={boardMap ?? naiveAssignment(five, opponent.players)}
+          playing={assignment}
+          onChange={(m) => setBoard(sameBoard(m, active.staff) ? null : m)}
           onBack={() => setBoardOpen(false)}
           canSolve={rank(wallet, 'coach_manual') >= 2}
         />
@@ -2410,7 +2420,9 @@ export function Draft({
         <div className="card staffbar">
           {has('coach_manual') ? (
             <button className="sortb on" onClick={() => setBoardOpen(true)}>
-              Matchup board{board ? ' · set' : ''}
+              {/* "set" when a board of his own is being played — not merely touched: one put
+                  back to the staff's is the staff's */}
+              Matchup board{Array.isArray(assignment) ? ' · set' : ''}
             </button>
           ) : null}
           {canCallPlan ? (

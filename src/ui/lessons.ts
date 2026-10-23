@@ -538,14 +538,14 @@ const WHERE: Record<NodeId, (r: number) => string[]> = {
   fo_division: (r) => [r === 1 ? "On the draft, under the wheel: a Division toggle opens that season's whole division." : "The toggle now opens that season's entire conference."],
   coach_optimal: (r) => [
     r === 1
-      ? 'On every night from here: your defensive assignments go from naive to optimal — the anchor hides on their worst shooter, the rest sort themselves. Nothing to press; it is how your five defends now.'
-      : 'Rank 2 prices the assignment on the draft, in points of margin.',
+      ? 'On every night from here: your defensive assignments go from naive to optimal — instead of position on position, every defender goes on the man he gives up least to, the best of the 120 boards. Nothing to press; it is how your five defends now.'
+      : 'Rank 2 prices the assignment on the draft, once the five is in: what it is worth against the naive board, in points of margin.',
     ...(r === 2 ? [`That price is a number, and ${BLIND.charAt(0).toLowerCase()}${BLIND.slice(1)}`] : []),
   ],
   coach_manual: (r) => [
     r === 1
-      ? 'On the draft, once the five is in: a Matchup board door. Drag a defender onto each of their men; the board you set is the board the night plays.'
-      : 'On the board: a Solve button fills the whole thing the way the engine would, for you to tweak.',
+      ? 'On the draft, once the five is in: a Matchup board door. It opens on the matchups your staff is playing; drag a defender onto one of their men to change one, and the board you set is the board the night plays. Left alone, or put back, it costs nothing.'
+      : 'On the board: a Solve button puts the engine’s best board back after you have changed it.',
   ],
   coach_sigma: (r) => [
     ['On the draft, a pace readout: both surpluses, so the tempo call reads the matchup.', 'A trained bench wastes less: the tempo deviation tax is halved, every night.', 'Your call carries the night: 85% of the pace is yours, however they answer.'][r - 1],

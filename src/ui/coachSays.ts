@@ -1,4 +1,3 @@
-import { naiveAssignment, type Assignment } from '../engine/offense'
 import type { Player } from '../engine/types'
 import { LINES } from './Stat'
 
@@ -19,7 +18,7 @@ const surname = (n: string) => {
  * theirs is and who has to answer him, and where the rebounding stands — and stated as sentences
  * a man would say in a huddle. Nothing here is a rating, a spread or an odds line.
  */
-export function coachSays(five: Player[], theirs: Player[], assignment: Assignment): string[] {
+export function coachSays(five: Player[], theirs: Player[], board: readonly number[] | null): string[] {
   if (five.length < 5 || theirs.length < 5) return []
   const out: string[] = []
   const ppg = (p: Player) => LINES[p.name]?.ppg ?? 0
@@ -33,12 +32,14 @@ export function coachSays(five: Player[], theirs: Player[], assignment: Assignme
   )
 
   // 2. THEIR MAN, AND WHO HAS HIM. The board is a permutation of our five onto theirs, so the man
-  //    who has to answer him is a lookup rather than a guess — and when the board is 'optimal' the
-  //    engine has not published one yet, so the naive board is the honest thing to name.
-  const board = Array.isArray(assignment) ? assignment : naiveAssignment(five, theirs)
+  //    who has to answer him is a lookup rather than a guess. It is the ACTIVE board, resolved by
+  //    Matchups.tsx `activeBoard` — the one the ticker prints and the sheet opens on. This used to
+  //    fall back to the naive board whenever the night was 'optimal', so with Matchup coaching
+  //    owned the tip named a man the ticker had on somebody else (his report, 2026-10-23: "Poole
+  //    has him" about Flagg while the ticker had Hibbert on him).
   const theirBest = [...theirs].sort((a, b) => ppg(b) - ppg(a))[0]
   const ti = theirs.indexOf(theirBest)
-  const mi = board.findIndex((t) => t === ti)
+  const mi = board ? board.findIndex((t) => t === ti) : -1
   const guard = mi >= 0 ? five[mi] : null
   out.push(
     guard

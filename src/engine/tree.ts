@@ -148,20 +148,29 @@ export const NODES: Node[] = [
     blurb: 'The wheel opens that season’s whole division, not one team.',
     rankBlurbs: ['That season’s division.', 'That season’s entire conference.'],
   },
+  /* WHAT THESE TWO RANKS ACTUALLY DO (his report, 2026-10-23: rank 1 said it makes "the anchor hide
+     on their worst shooter", which the free naive board often does already — the naive coach parks
+     the anchor on their most paint-bound man). What rank 1 buys is the other four: the naive coach
+     guards position on position, the optimal one plays the best of the 120 boards. And the board
+     opens on the matchups being played, so the solve button puts the best board back after a
+     change rather than filling an empty one. */
   {
     id: 'coach_optimal', branch: 'Coach', depth: 0, ranks: 2,
     name: 'Matchup coaching',
     blurb: 'Defensive assignments stop being naive.',
     rankBlurbs: [
-      'Assignments go from naive to optimal: the anchor hides on their worst shooter.',
-      'And the draft screen prices it — what the assignment is worth, in points of margin.',
+      'Assignments go from naive to optimal: instead of position on position, every defender goes on the man he gives up least to — the best of the 120 boards.',
+      'And the draft screen prices it — what your assignment is worth against the naive one, in points of margin.',
     ],
   },
   {
     id: 'coach_manual', branch: 'Coach', depth: 1, ranks: 2, requires: 'coach_optimal',
     name: 'Matchup board',
     blurb: 'Assign every defender yourself; the engine scores your board.',
-    rankBlurbs: ['The board: drag a defender onto a man.', 'A solve button — the engine fills its own board for you to tweak.'],
+    rankBlurbs: [
+      'The board, opened on the matchups your staff plays: drag a defender onto a man to change one. Left alone, or put back, it costs nothing.',
+      'A solve button — one press puts the engine’s best board back after you have changed it.',
+    ],
   },
   {
     id: 'coach_sigma', branch: 'Coach', depth: 2, ranks: 3, requires: 'coach_manual',
