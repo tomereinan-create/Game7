@@ -143,6 +143,8 @@ interface Pending {
   sigma: number
   plan: Tactics | null
   pc: { ours: number; theirs: number; margin: number } | null
+  /** A Hot hand boost's points on our margin, for Full analysis (his word, 2026-10-23: "Calculate it"). */
+  edge: number
   /**
    * THE LEVEL THE RESULT SCREEN MAY ADVANCE TO, or null. His ruling: "Add a rematch button, and
    * advance(If you win your latest stage(not if you go back to a stage you already won))."
@@ -623,6 +625,7 @@ function Game() {
       sigma: sig,
       plan,
       pc: pc ? { ours: pc.ours, theirs: pc.theirs, margin: pc.margin } : null,
+      edge: death ? 0 : edge,
       // read off the save as it stood BEFORE this series settled — see `advanceTo`
       next: advanceTo(prog, level, result.won),
       runEnded: death && !result.won && prog.lives === 0,
@@ -1081,6 +1084,7 @@ function Game() {
           seed={pending.seed}
           skin={skin}
           assignment={pending.assignment}
+          edge={pending.edge}
           onAdvance={finish}
           onSettled={() => {
             release()

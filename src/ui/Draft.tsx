@@ -2345,7 +2345,7 @@ export function Draft({
           was a gap; the bundle puts the man himself there instead: whose season is in front of
           you, what the tree says his shape is, and how many chairs are still empty. */}
       {analysis ? (
-        <Analysis mine={five} theirs={opponent.players} assignment={assignment} sigma={sigma} myName={teamName} theirName={opponent.team} onClose={() => setAnalysis(false)} />
+        <Analysis mine={five} theirs={opponent.players} assignment={assignment} sigma={sigma} edge={edge} myName={teamName} theirName={opponent.team} onClose={() => setAnalysis(false)} />
       ) : null}
       {five.length && !user ? (
         <button className="linkb" onClick={() => setAnalysis(true)}>
