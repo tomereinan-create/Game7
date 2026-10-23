@@ -212,11 +212,14 @@ describe('the lessons are built off the state', () => {
       }
   })
 
-  it('a node that buys numbers says the tutorial does not print them', () => {
-    // Exact ratings is the exception since 2026-10-22: its numbers are about THEIR five, and it
-    // shows them in every mode (his report: the node was dead in user mode)
+  it('a node that buys a readout says it shows in every mode', () => {
+    // Exact ratings since 2026-10-22: its numbers are about THEIR five, and it shows them in every
+    // mode (his report: the node was dead in user mode). The two coach readouts since 2026-10-23
+    // (his report: "In User mode two staff ranks cost a star and show nothing").
     expect(unlockLesson('scout_ratings', 1).steps[1].body.join(' ')).toContain('every mode')
-    expect(unlockLesson('coach_sigma', 1).steps[1].body.join(' ')).toContain('Scout mode')
+    expect(unlockLesson('coach_sigma', 1).steps[1].body.join(' ')).toContain('every mode')
+    expect(unlockLesson('coach_optimal', 2).steps[1].body.join(' ')).toContain('every mode')
+    for (const [id, r] of [['coach_sigma', 1], ['coach_optimal', 2]] as const) expect(unlockLesson(id, r).steps[1].body.join(' ')).not.toContain('Scout mode')
     // and one that buys a door does not
     expect(unlockLesson('fo_spin', 1).steps[1].body.join(' ')).not.toContain('Scout mode')
     expect(NODE.fo_spin.ranks).toBe(3)

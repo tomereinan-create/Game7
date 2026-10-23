@@ -12,6 +12,7 @@ import type { NodeId } from '../src/engine/tree'
 import type { Opponent, Player } from '../src/engine/types'
 import { freshProgress, levelSeed, type Progress } from '../src/state/campaign'
 import type { DraftState } from '../src/state/draftsave'
+import { setViewMode } from '../src/state/viewmode'
 import { coachSays } from '../src/ui/coachSays'
 import { Draft } from '../src/ui/Draft'
 import { activeBoard, Matchups, moveDefender, sameBoard } from '../src/ui/Matchups'
@@ -198,5 +199,79 @@ describe('a change is made TO the active board, and putting it back costs nothin
     const part = activeBoard(FIVE.slice(0, 4), THEM, { ...OWNED, board: swapped })
     expect(part.map).toBeNull()
     expect(part.assignment).toBe('optimal')
+  })
+})
+
+/**
+ * HIS REPORT, 2026-10-23: "In User mode two staff ranks cost a star and show nothing" — Tempo control
+ * rank 1 (the pace readout) and Matchup coaching rank 2 (what the assignment is worth, in points).
+ */
+describe('the two coach readouts show in user mode once bought', () => {
+  const wallet = (nodes: Partial<Record<NodeId, number>>): Progress => ({ ...freshProgress(), seed: 4242, plays: 2, nodes })
+  const draft = (nodes: Partial<Record<NodeId, number>>) => {
+    const w = wallet(nodes)
+    return renderToStaticMarkup(
+      createElement(Draft, {
+        opponent: DAL,
+        seed: levelSeed(w, 7),
+        teamName: 'Haifa Jets',
+        wallet: w,
+        tactics: DEFAULT_TACTICS,
+        onTactics: () => {},
+        onSim: () => {},
+        onBack: () => {},
+        onRoster: () => {},
+        resume: { draws: 30, slots: SLOTS, landed: null, last: null, upcoming: null, after: null, reels: null, hold: null, used: {}, dead: false, wide: 'team', board: null, boosts: [] },
+      }),
+    ).replace(/<!-- -->/g, '')
+  }
+  const user = (fn: () => void) => {
+    setViewMode('user')
+    try {
+      fn()
+    } finally {
+      setViewMode('scout')
+    }
+  }
+  /** The price of the board alone: the five on its assignment against the five on the naive one. */
+  const worth = () => {
+    const theirs = compile(THEM, FIVE)
+    const v = meanMargin(compile(FIVE, THEM, 'optimal'), theirs) - meanMargin(compile(FIVE, THEM, 'naive'), theirs)
+    return `${v >= 0 ? '+' : '−'}${Math.abs(v).toFixed(1)}`
+  }
+
+  // the Playbook too: in the campaign and the cap a night has a tempo (and so a pace to read) only
+  // once a plan can be called — App hands the draft no plan before it (state/campaign.ts callsPlan)
+  it('bought, both are on the user-mode draft', () =>
+    user(() => {
+      const html = draft({ coach_optimal: 2, coach_manual: 1, coach_sigma: 1, coach_tactics: 1 })
+      expect(html).toContain('<span class="label">Assignment</span>')
+      expect(html).toContain(`<b>${worth()}</b>`)
+      expect(html).toContain('class="card assignworth pacecard"')
+      expect(html).toContain('your surplus vs theirs')
+    }))
+
+  it('not bought, neither is — user mode still prints nothing it has not paid for', () =>
+    user(() => {
+      const html = draft({ coach_optimal: 1, coach_manual: 1 })
+      expect(html).not.toContain('<span class="label">Assignment</span>')
+      expect(html).not.toContain('pacecard')
+      expect(html).not.toContain('your surplus')
+    }))
+
+  it('scout mode is as it was: the price card, and the pace line in the win-chance card — not a second pace card', () => {
+    const html = draft({ coach_optimal: 2, coach_manual: 1, coach_sigma: 1, coach_tactics: 1 })
+    expect(html).toContain('<span class="label">Assignment</span>')
+    expect(html).toContain('Pace: your surplus')
+    expect(html).not.toContain('pacecard')
+  })
+
+  it('the price is the board alone — not the board plus the plan’s points and the pace margin', () => {
+    // with a plan called the night carries a pace margin, and the card used to add it to the price
+    const nt = night(FIVE, THEM, 'optimal', DEFAULT_TACTICS, 1, 0)
+    expect(nt.pc).not.toBeNull()
+    expect(Math.abs(nt.pc!.margin)).toBeGreaterThan(0.05)
+    const html = draft({ coach_optimal: 2, coach_manual: 1, coach_tactics: 1 })
+    expect(html).toContain(`<b>${worth()}</b>`)
   })
 })

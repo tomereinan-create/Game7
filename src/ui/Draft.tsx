@@ -1010,12 +1010,17 @@ export function Draft({
   const theirs = useMemo(() => compile(opponent.players, five.length ? five : undefined), [opponent, five])
   const mine = nt ? nt.mine : null
   const chance = full && mine ? odds(mine, theirs, sigma, toWin) : null
-  /** Matchup coaching rank 2: what the board you are playing is worth against a naive one. */
+  /**
+   * Matchup coaching rank 2: what the board you are playing is worth against a naive one. The
+   * board ALONE — `nt.base`, the five as compiled on this assignment, not `nt.mine`, which also
+   * carries the plan's points, the pace margin and a Hot hand, and so printed the assignment's
+   * worth plus whatever the Playbook and the tempo call were worth that night.
+   */
   const assignWorth = useMemo(() => {
-    if (!full || !mine) return null
+    if (!full || !nt) return null
     const naive = compile(five, opponent.players, 'naive')
-    return meanMargin(mine, theirs) - meanMargin(naive, theirs)
-  }, [full, mine, five, opponent, theirs])
+    return meanMargin(nt.base, theirs) - meanMargin(naive, theirs)
+  }, [full, nt, five, opponent, theirs])
 
   // Decide the next landing as soon as the wheel is idle (deterministic: the rng is
   // drawn in the same order either way). Shown only with the Wheel whisperer.
@@ -2432,7 +2437,15 @@ export function Draft({
           ) : null}
         </div>
       ) : null}
-      {full && !user && rank(wallet, 'coach_optimal') >= 2 && assignWorth !== null ? (
+      {/* TWO PAID READOUTS SHOW IN EVERY MODE (his report, 2026-10-23: "In User mode two staff
+          ranks cost a star and show nothing"). Matchup coaching rank 2 buys the assignment's price
+          and Tempo control rank 1 buys the pace read; both were drawn in scout mode only — the
+          price behind `!user`, the pace line inside the win-chance card user mode never draws —
+          so in user mode the star bought nothing. Shown the way Exact ratings was made to show
+          what it bought (8a7b121): a bought readout is the purchase, not a verdict the blindfold
+          keeps off. User mode's pace read stands as a card of the price's own shape beside it,
+          because the line scout mode carries has no card to ride in there. */}
+      {full && rank(wallet, 'coach_optimal') >= 2 && assignWorth !== null ? (
         <div className="card assignworth">
           <span className="label">Assignment</span>
           <b>
@@ -2440,6 +2453,23 @@ export function Draft({
             {Math.abs(assignWorth).toFixed(1)}
           </b>
           <i>points of margin against a naive board</i>
+        </div>
+      ) : null}
+      {full && user && pc && paceMastery(wallet) >= 1 ? (
+        <div className="card assignworth pacecard">
+          <span className="label">Pace</span>
+          {/* one line on a phone: the two surpluses are one reading, so the spaces do not break */}
+          <b>
+            {pc.ours >= 0 ? '+' : '−'}
+            {Math.abs(pc.ours).toFixed(0)}
+            {'\u00a0vs\u00a0'}
+            {pc.theirs >= 0 ? '+' : '−'}
+            {Math.abs(pc.theirs).toFixed(0)}
+          </b>
+          <i>
+            your surplus vs theirs — {Math.abs(pc.ours - pc.theirs) <= 2 ? 'a wash' : pc.ours > pc.theirs ? 'pace favors you' : 'pace favors them'}
+            {pc.lvl !== 0 ? ` · the night runs ${pc.lvl > 0 ? 'fast (variance shrinks)' : 'slow (variance grows)'}` : ''}
+          </i>
         </div>
       ) : null}
       {full && !user ? <MatchupPanel mine={five} theirs={opponent.players} myName={teamName} theirName={opponent.team} assignment={assignment} /> : null}

@@ -536,11 +536,14 @@ const WHERE: Record<NodeId, (r: number) => string[]> = {
     r === 1 ? "On the draft, under the wheel: a Decade toggle opens every man who wore the shirt in that landing's decade." : 'The Decade toggle now reaches the decade either side as well — thirty years of the franchise.',
   ],
   fo_division: (r) => [r === 1 ? "On the draft, under the wheel: a Division toggle opens that season's whole division." : "The toggle now opens that season's entire conference."],
+  /* THE TWO COACH READOUTS SHOW IN EVERY MODE (his report, 2026-10-23: "In User mode two staff ranks
+     cost a star and show nothing"). The assignment's price and the pace read are what those ranks
+     buy, so they print here the way Exact ratings does — the tutorial included. */
   coach_optimal: (r) => [
     r === 1
       ? 'On every night from here: your defensive assignments go from naive to optimal — instead of position on position, every defender goes on the man he gives up least to, the best of the 120 boards. Nothing to press; it is how your five defends now.'
       : 'Rank 2 prices the assignment on the draft, once the five is in: what it is worth against the naive board, in points of margin.',
-    ...(r === 2 ? [`That price is a number, and ${BLIND.charAt(0).toLowerCase()}${BLIND.slice(1)}`] : []),
+    ...(r === 2 ? ['That price is what the rank buys, so it shows in every mode — the tutorial included.'] : []),
   ],
   coach_manual: (r) => [
     r === 1
@@ -548,8 +551,8 @@ const WHERE: Record<NodeId, (r: number) => string[]> = {
       : 'On the board: a Solve button puts the engine’s best board back after you have changed it.',
   ],
   coach_sigma: (r) => [
-    ['On the draft, a pace readout: both surpluses, so the tempo call reads the matchup.', 'A trained bench wastes less: the tempo deviation tax is halved, every night.', 'Your call carries the night: 85% of the pace is yours, however they answer.'][r - 1],
-    ...(r === 1 ? [`The readout is numbers, and ${BLIND.charAt(0).toLowerCase()}${BLIND.slice(1)}`] : []),
+    ['On the draft, once the five is in, a pace readout: both surpluses, so the tempo call reads the matchup.', 'A trained bench wastes less: the tempo deviation tax is halved, every night.', 'Your call carries the night: 85% of the pace is yours, however they answer.'][r - 1],
+    ...(r === 1 ? ['The readout is what the rank buys, so it shows in every mode — the tutorial included.'] : []),
   ],
   coach_tactics: (r) => [
     `On the draft, once the five is in: a Playbook door${r === 1 ? ' — new with this rank' : ''}. In the Death match the same calls are made in My team. ${['Name your main scorer and main playmaker, and set the tempo.', 'The shot diet — a style — and crashing the glass.', 'The defensive scheme, and hunting the mismatch.'][r - 1]}`,
