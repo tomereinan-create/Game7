@@ -53,7 +53,7 @@ function urlFor(run) {
   const u = new URL(APP)
   u.searchParams.set('creator', '1')
   u.searchParams.set('auto', '1')
-  for (const k of ['seed', 'a', 'b', 'level', 'team']) if (run[k] !== undefined && run[k] !== null) u.searchParams.set(k, String(run[k]))
+  for (const k of ['seed', 'a', 'b', 'a5', 'b5', 'an', 'bn', 'aab', 'bab', 'level', 'team']) if (run[k] !== undefined && run[k] !== null) u.searchParams.set(k, String(run[k]))
   return u.href
 }
 

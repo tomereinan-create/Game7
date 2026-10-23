@@ -170,7 +170,7 @@ export default function App() {
      only then the game. Read once; the address keeps it until the challenge is left, so a reload
      mid-series comes back to it. */
   const [challenge, setChallenge] = useState(() => (CREATOR || typeof location === 'undefined' ? null : challengeFromUrl(location.href)))
-  if (CREATOR?.a && CREATOR.b) return <CreatorSettle />
+  if (CREATOR?.settle) return <CreatorSettle />
   if (challenge)
     return (
       <ChallengeView
