@@ -5,7 +5,8 @@
  *   node scripts/capture/render.mjs --app http://localhost:5195/ --a 1996-CHI --b 2017-GSW --seed 2969 --out clip.mp4
  *   node scripts/capture/render.mjs --app http://localhost:5195/ --batch clips.json     ([{a,b,a5,b5,an,bn,aab,bab,level,seed,team,out}, ...])
  *
- * Options: --fps 60 · --ending 7 (seconds for the "-ending" cut; 0 = none) · --hold 2.5 · --max 360 (s)
+ * Options: --fps 60 · --ending 7 (seconds of the "-ending" cut, ending 1 s after the strip settles; 0 = none)
+ *          · --hold 2.5 (seconds held on the result) · --max 360 (s)
  *
  * WHY. clip.mjs films the screencast in real time, and Chrome hands back only the frames it gets to —
  * 8–11 a second at 1080x1920 here, so a spinning reel stutters. This drives Chrome's headless shell
@@ -14,6 +15,11 @@
  * (HeadlessExperimental.beginFrame), at a frame time this script sets. Every frame is advanced exactly
  * 1/60 s of page time and then drawn — CSS transitions and the reels included — so a 77 s run is
  * 4,620 real frames, rendered as fast as the machine allows.
+ *
+ * CSS MOTION IS DRIVEN FROM THE SAME CLOCK. Transitions and keyframe animations (the reels) run on the
+ * compositor's own clock, not on virtual time, so before every frame each running one is paused and
+ * set to exactly the page time since it began (`document.getAnimations()`, both documents — the
+ * creator frame and the game inside it) — and finished when that time runs past its end.
  *
  * THE GAME 7 INTRO IS A VIDEO, and video does not run on virtual time: the page would sit on a blank
  * frame until its 15 s fallback. So when the intro mounts, the renderer ends it at exactly the clip's
@@ -118,6 +124,32 @@ async function cdpBrowser() {
   return { send, once, close }
 }
 
+/**
+ * Run in the page before each frame: every CSS animation and transition, in this document and any
+ * same-origin iframe, follows performance.now() — which is virtual time — instead of its own clock.
+ */
+const DRIVE = `(() => {
+  const docs = [document, ...[...document.querySelectorAll('iframe')].map((f) => { try { return f.contentDocument } catch { return null } }).filter(Boolean)]
+  for (const d of docs) {
+    const w = d.defaultView
+    if (!w || !d.getAnimations) continue
+    const now = w.performance.now()
+    for (const a of d.getAnimations()) {
+      if (a.__vt === undefined) {
+        if (a.playState !== 'running') continue
+        a.__vt = now - (a.currentTime ?? 0)
+        a.pause()
+      }
+      const end = a.effect ? a.effect.getComputedTiming().endTime : 0
+      const t = now - a.__vt
+      if (Number.isFinite(end) && t >= end) {
+        try { a.finish() } catch { a.currentTime = end }
+      } else a.currentTime = t
+    }
+  }
+  return true
+})()`
+
 function urlFor(run) {
   const u = new URL(APP)
   u.searchParams.set('creator', '1')
@@ -204,7 +236,8 @@ async function render(run) {
       await b.send('Emulation.setVirtualTimePolicy', { policy: 'advance', budget: STEP, maxVirtualTimeTaskStarvationCount: 100 }, s)
       await expired
       t += STEP
-      const f = await b.send('HeadlessExperimental.beginFrame', { frameTimeTicks: t, interval: STEP, noDisplayUpdates: false, screenshot: { format: 'jpeg', quality: 92 } }, s)
+      await b.send('Runtime.evaluate', { expression: DRIVE }, s).catch(() => {})
+      const f = await b.send('HeadlessExperimental.beginFrame', { ...(process.env.TICKS === 'own' ? {} : { frameTimeTicks: t + Number(process.env.TICKS_BASE ?? 0) }), interval: STEP, noDisplayUpdates: false, screenshot: { format: 'jpeg', quality: 92 } }, s)
       if (f.screenshotData) last = Buffer.from(f.screenshotData, 'base64')
       if (last) {
         await enc.write(last)
@@ -253,8 +286,9 @@ async function render(run) {
     if (beats.g7 !== undefined && beats.settled !== undefined) console.log(`  game 7 on screen: ${(beats.settled - beats.g7).toFixed(1)} s from its intro to the settled strip`)
     if (settledAt === null) console.warn('  the run did not settle within --max; the clip ends where it stopped')
     if (ENDING > 0 && settledAt !== null) {
-      const to = Math.min(secs, settledAt + HOLD)
-      const from = Math.max(beats.series ?? 0, settledAt - ENDING)
+      // exactly ENDING seconds, ending one second after the strip settles: the ticker's finish and the result
+      const to = Math.min(secs, settledAt + 1)
+      const from = Math.max(beats.series ?? 0, to - ENDING)
       const end = out.replace(/\.mp4$/, '-ending.mp4')
       await cut(out, from, to, end)
       console.log(`  ${end}  ${from.toFixed(1)}–${to.toFixed(1)} s`)
