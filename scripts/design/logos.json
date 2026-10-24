@@ -91,6 +91,17 @@
         "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/logo-today.jpg"
       ],
       "prompt": "Redraw the logo in the reference image as a clean, finished vector mark, keeping it exactly what it is - an orange basketball carrying a bold white 7, and the wordmark GAME7 with the 7 in orange - on a plain dark navy background, centred and large, nothing else in the frame. The one refinement: the ball and the wordmark are locked up as one mark - the ball sits snug against the G at the same height as the capitals, a thin orange rule under the wordmark, everything aligned on one baseline; the drawing itself unchanged. The only text is GAME7, spelled exactly."
+    },
+    {
+      "slug": "logo-clean",
+      "title": "logo-clean",
+      "look": "",
+      "tier": "logo",
+      "era": "",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/logo-game.jpg"
+      ],
+      "prompt": "Redraw the logo in the reference image at high resolution as a crisp vector mark, changing NOTHING about it: the same orange basketball with the same seam lines and the same bold white 7 in its centre, the same GAME7 wordmark to its right in the same typeface, weight, proportions and spacing, GAME in white and the 7 in the same orange, the same sizes relative to each other, on the same plain dark background. Only the quality changes: perfectly smooth edges, even strokes, exact circles, no blur, no noise, no gradient, no shadow, no extra element."
     }
   ]
 }
