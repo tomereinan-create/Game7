@@ -14,6 +14,7 @@ import { freshProgress, levelSeed, type Progress } from '../src/state/campaign'
 import type { DraftState } from '../src/state/draftsave'
 import { setViewMode } from '../src/state/viewmode'
 import { coachSays } from '../src/ui/coachSays'
+import { boardLesson, unlockLesson } from '../src/ui/lessons'
 import { Draft } from '../src/ui/Draft'
 import { activeBoard, Matchups, moveDefender, sameBoard } from '../src/ui/Matchups'
 
@@ -273,5 +274,61 @@ describe('the two coach readouts show in user mode once bought', () => {
     expect(Math.abs(nt.pc!.margin)).toBeGreaterThan(0.05)
     const html = draft({ coach_optimal: 2, coach_manual: 1, coach_tactics: 1 })
     expect(html).toContain(`<b>${worth()}</b>`)
+  })
+})
+
+/**
+ * SOLVE SHOWS IN USER MODE (his word, 2026-10-24: "Accept all (Recommended)"). Matchup board rank 2 was
+ * hidden in user mode by 9301a57, when the sheet opened on the naive board and Solve handed over the
+ * engine's answer. Since 3832a8a the board opens on the staff's matchups and Solve puts them back after
+ * a change — a control, which is what the rank buys — so, like the two readouts of 1e12101, a bought
+ * rank does something visible in every mode.
+ */
+describe('Solve is on the board in every mode once bought', () => {
+  const active = activeBoard(FIVE, THEM, { ...OWNED, board: null })
+  const own = moveDefender(active.map!, CADE, active.map![POOLE])
+  const sheet = (canSolve: boolean, user: boolean) => {
+    if (user) setViewMode('user')
+    try {
+      return renderToStaticMarkup(
+        createElement(Matchups, { mine: FIVE, theirs: THEM, map: own, playing: own, onChange: () => {}, onBack: () => {}, canSolve }),
+      ).replace(/<!-- -->/g, '')
+    } finally {
+      setViewMode('scout')
+    }
+  }
+
+  it('BEFORE: 9301a57 gated it on scout mode — the rank bought nothing in user mode', () => {
+    const src = readFileSync('src/ui/Matchups.tsx', 'utf8')
+    expect(src).not.toContain('canSolve && !user')
+  })
+
+  it('user mode: bought, the button is there; not bought, it is not', () => {
+    expect(sheet(true, true)).toContain('Solve the board')
+    expect(sheet(false, true)).not.toContain('Solve the board')
+    // scout mode as it was
+    expect(sheet(true, false)).toContain('Solve the board')
+    expect(sheet(false, false)).not.toContain('Solve the board')
+  })
+
+  it('and still no number beside it in user mode — the DRtg, the edges and the analysis stay scout mode’s', () => {
+    const html = sheet(true, true)
+    expect(html).not.toContain('DRtg')
+    expect(html).not.toContain('Engine’s optimal')
+    expect(html).not.toContain('What the board does')
+    expect(html).not.toMatch(/on their [^<]*: [+−]\d/)
+  })
+
+  it('the draft hands the board its Solve on the rank alone, in every mode — and Solve puts the staff’s board back, which costs nothing', () => {
+    const src = readFileSync('src/ui/Draft.tsx', 'utf8')
+    expect(src).toContain("canSolve={rank(wallet, 'coach_manual') >= 2}")
+    const solved = activeBoard(FIVE, THEM, { ...OWNED, board: solveBoard(FIVE, THEM) })
+    expect(solved.assignment).toBe('optimal')
+    expect(sameBoard(solveBoard(FIVE, THEM), solved.staff)).toBe(true)
+  })
+
+  it('the tutorial (user mode with a coach) says so', () => {
+    expect(unlockLesson('coach_manual', 2).steps[1].body.join(' ')).toContain('every mode')
+    expect(boardLesson(true).steps[0].body.join(' ')).toContain('Solve puts the engine’s best board back')
   })
 })

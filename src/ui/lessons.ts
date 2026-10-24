@@ -456,7 +456,7 @@ export function boardLesson(canSolve: boolean): Lesson {
         at: '.mboard',
         body: [
           'Every one of their men on the left, and a ring beside him for the man of yours who guards him. Drag a defender onto a man; every man needs one.',
-          canSolve ? 'Solve fills the whole board the way the engine would, for you to tweak.' : 'Rank 2 of the node adds Solve, which fills the board for you.',
+          canSolve ? 'Solve puts the engine’s best board back after you have changed one.' : 'Rank 2 of the node adds Solve, which puts the engine’s best board back after a change.',
           BLIND,
         ],
       },
@@ -547,10 +547,13 @@ const WHERE: Record<NodeId, (r: number) => string[]> = {
       : 'Rank 2 prices the assignment on the draft, once the five is in: what it is worth against the naive board, in points of margin.',
     ...(r === 2 ? ['That price is what the rank buys, so it shows in every mode — the tutorial included.'] : []),
   ],
+  /* SOLVE SHOWS IN EVERY MODE (his word, 2026-10-24): what rank 2 buys is a control, so it is on the
+     board in user mode and the tutorial too. */
   coach_manual: (r) => [
     r === 1
       ? 'On the draft, once the five is in: a Matchup board door. It opens on the matchups your staff is playing; drag a defender onto one of their men to change one, and the board you set is the board the night plays. Left alone, or put back, it costs nothing.'
       : 'On the board: a Solve button puts the engine’s best board back after you have changed it.',
+    ...(r === 2 ? ['The button is what the rank buys, so it shows in every mode — the tutorial included.'] : []),
   ],
   /* THE PLAYBOOK COMES FIRST NOW (his word, 2026-10-24): Tempo control sits below it, because the tempo
      it reads and masters is the one the Playbook calls. */
