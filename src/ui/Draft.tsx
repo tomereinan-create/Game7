@@ -165,6 +165,81 @@ const PLAYER_OF = new Map(PLAYERS.map((p) => [p.name, p.player]))
 export const bare = (name: string) => PLAYER_OF.get(name) ?? name
 
 /**
+ * THE DEATH MATCH'S CARRIED FIVE, SEATED (lifted out of the draft's own opening so a kept draft can be
+ * re-seated by the same rule — see `reseat`). The five arrives in SLOT ORDER (PG to C) — the order My
+ * team shows and the player can rearrange by hand — so it is honoured verbatim when it is legal, and
+ * only a five whose saved order cannot field falls back to a matching, then to force-fitting.
+ */
+export function seatCarry(carry: readonly string[]): Partial<Record<Pos, string>> {
+  const start: Partial<Record<Pos, string>> = {}
+  if (!carry.length) return start
+  if (carry.length === POSITIONS.length && carry.every((n, i) => posOf(n).includes(POSITIONS[i]))) {
+    carry.forEach((n, i) => (start[POSITIONS[i]] = n))
+    return start
+  }
+  const order = [...carry].sort((a, b) => posOf(a).length - posOf(b).length)
+  const fit = (i: number): boolean => {
+    if (i === order.length) return true
+    for (const x of posOf(order[i])) {
+      if (start[x]) continue
+      start[x] = order[i]
+      if (fit(i + 1)) return true
+      delete start[x]
+    }
+    return false
+  }
+  if (fit(0)) return start
+  for (const x of POSITIONS) delete start[x]
+  const free = [...POSITIONS]
+  for (const n of carry) {
+    const at = free.find((x) => posOf(n).includes(x)) ?? free[0]
+    if (at) {
+      start[at] = n
+      free.splice(free.indexOf(at), 1)
+    }
+  }
+  return start
+}
+
+/** The same five in the same order — or both none. */
+const sameFive = (a: readonly string[] | null, b: readonly string[] | null) =>
+  a === b || (!!a && !!b && a.length === b.length && a.every((n, i) => n === b[i]))
+
+/**
+ * A DEATH-MATCH DRAFT KEPT ACROSS MY TEAM (his word, 2026-10-24: the death match saves its draft in
+ * progress the same way). A carried five's draft is kept like any other — the seasons Version respin
+ * gave its men, the rings they were moved to, the charges spent, the matchup board — but the five
+ * itself is My team's: a change there (the round's spin, a rest on the bench, a man moved by hand, or
+ * a replay won with another five) happens on the map while the draft waits. So the kept board is read
+ * against the five carried NOW:
+ *   · the same five in the same order: the draft exactly as it was left;
+ *   · otherwise My team's word is the newer one — the five is seated as My team has it, and a season
+ *     respun on this draft for a man who is still carried keeps his ring (he was respun FROM that
+ *     man: same player, a card the five was not dealt), so a charge already spent is not undone;
+ *     the matchup board goes back to the staff's (it named the old five's men), and a landing left
+ *     over from a draft that began on an empty board goes with it — a carried five turns no wheel;
+ *   · no five carried any more: the board is emptied and the wheel picks up its stream where it was.
+ * The charges spent, the stream drawn and the staff the draft plays with are kept whatever happens,
+ * so walking to My team can neither refund a charge nor replay the respins it already rolled.
+ */
+export function reseat<D extends DraftState & { carry?: string[] | null }>(d: D, now: string[] | null): D {
+  const was = d.carry ?? null
+  if (sameFive(was, now)) return d
+  const empty = { landed: null, last: null, upcoming: null, after: null, reels: null, hold: null, dead: false, board: null }
+  if (!now) return { ...d, ...empty, slots: {}, carry: null }
+  const seats = seatCarry(now)
+  if (was) {
+    for (const k of Object.values(d.slots)) {
+      if (!k || was.includes(k) || now.includes(k)) continue
+      const from = now.find((n) => was.includes(n) && bare(n) === bare(k))
+      const x = from ? POSITIONS.find((p) => seats[p] === from) : undefined
+      if (x && posOf(k).includes(x)) seats[x] = k
+    }
+  }
+  return { ...d, ...empty, slots: seats, carry: [...now] }
+}
+
+/**
  * A team-season the five can still take a man from: one not already on it, who plays an open ring
  * and, in the salary cap, fits what is left of the payroll. The test every landing has to pass.
  */
@@ -419,8 +494,8 @@ export function Draft({
   /**
    * THE DRAFT IN PROGRESS (his report, 2026-10-23 — see state/draftsave.ts). `resume` is this level's
    * kept draft, read once as the screen opens: the board, the reels and the wheel's stream all pick
-   * up where they stood. `onSave` is handed every change that matters; absent (the death match), the
-   * draft is not kept and opens fresh as it always did.
+   * up where they stood. `onSave` is handed every change that matters — in all three ladders since
+   * 2026-10-24, the death match included; absent (a challenge's turn), the draft is not kept.
    */
   resume?: DraftState | null
   onSave?: (s: DraftState) => void
@@ -431,41 +506,12 @@ export function Draft({
    */
   onBoost?: (id: BoostId, held: BoostId[]) => boolean
 }) {
-  // Death match starts with last level's five already placed; a normal draft starts empty.
-  // The carried five arrives in SLOT ORDER (PG to C) — the order My team shows and the player can
-  // rearrange by hand — so the seeding honors it verbatim when it is legal, and only a five whose
-  // saved order cannot field falls back to a matching, then to force-fitting.
+  // Death match starts with last level's five already placed (`seatCarry`); a normal draft starts empty.
   const [slots, setSlots] = useState<Partial<Record<Pos, string>>>(() => {
-    // a kept draft comes back with its men in the rings they were in
+    // a kept draft comes back with its men in the rings they were in (a death-match draft has already
+    // been read against the five My team carries now — App runs `reseat` before handing it over)
     if (resume) return { ...resume.slots }
-    if (!carry?.length) return {}
-    const start: Partial<Record<Pos, string>> = {}
-    if (carry.length === POSITIONS.length && carry.every((p, i) => eligible(LINES[p.name]?.pos).includes(POSITIONS[i]))) {
-      carry.forEach((p, i) => (start[POSITIONS[i]] = p.name))
-      return start
-    }
-    const order = [...carry].sort((a, b) => eligible(LINES[a.name]?.pos).length - eligible(LINES[b.name]?.pos).length)
-    const fit = (i: number): boolean => {
-      if (i === order.length) return true
-      for (const x of eligible(LINES[order[i].name]?.pos)) {
-        if (start[x]) continue
-        start[x] = order[i].name
-        if (fit(i + 1)) return true
-        delete start[x]
-      }
-      return false
-    }
-    if (fit(0)) return start
-    for (const x of POSITIONS) delete start[x]
-    const free = [...POSITIONS]
-    for (const p of carry) {
-      const at = free.find((x) => eligible(LINES[p.name]?.pos).includes(x)) ?? free[0]
-      if (at) {
-        start[at] = p.name
-        free.splice(free.indexOf(at), 1)
-      }
-    }
-    return start
+    return carry?.length ? seatCarry(carry.map((p) => p.name)) : {}
   })
   // a kept draft's landing comes back LANDED, even one that was caught with the reels still running
   const [spun, setSpun] = useState<TeamSeason | null>(resume?.landed ?? null)
@@ -1870,8 +1916,8 @@ export function Draft({
         one thing the strip alone said, so they moved down to the card that already explains them.
         The way back to the map is this button, pinned beside the global home button — it lives in
         THIS screen because only this screen knows whether picks are on the board, which is what
-        App's leave rule reads (state/draftsave.ts: the campaign and the cap keep the draft; the
-        death match spends the attempt).
+        App's leave rule reads (state/draftsave.ts: every ladder keeps the draft, the death match
+        included since 2026-10-24).
       */}
       <button className={`map-fab ${skin}`} onClick={() => onBack(picks.length > 0)} aria-label={backLabel ?? 'Level map'} title={backLabel ?? 'Back to the level map'}>
         <svg viewBox="0 0 24 24" aria-hidden>

@@ -26,7 +26,7 @@ import {
 const BRANCHES: { key: Branch; blurb: string }[] = [
   { key: 'Scout', blurb: 'Know more before you draft.' },
   { key: 'Front office', blurb: 'More chances on the wheel.' },
-  { key: 'Coach', blurb: 'Assignments and the night’s noise.' },
+  { key: 'Coach', blurb: 'Assignments, the playbook and its pace.' },
   { key: 'Salary', blurb: 'Payroll room. Salary Cap campaign only.' },
   { key: 'Survival', blurb: 'Lives, checkpoints and substitutions. Death match only.' },
   { key: 'Dynasty', blurb: 'One node a tier: it opens when the ladder reaches it. Campaign and Salary Cap.' },
@@ -66,6 +66,7 @@ export function Tree({
   onBuy,
   onRespec,
   respecKeeps = 0,
+  underway = [],
   onBack,
 }: {
   wallet: Wallet
@@ -85,6 +86,12 @@ export function Tree({
    * "make used lives non-refundable"). Zero everywhere else.
    */
   respecKeeps?: number
+  /**
+   * The levels of this ladder whose draft is under way (state/draftsave.ts `draftsUnderway`). A rank
+   * bought now does not reach them — it starts with the next draft (his word, 2026-10-24) — and the
+   * lede says so, naming them.
+   */
+  underway?: number[]
   onBack: () => void
 }) {
   const refund = wallet.spent - respecKeeps
@@ -173,6 +180,13 @@ export function Tree({
         {death
           ? 'Stars come from the map — three for a sweep, two for a shorter win, one for going the distance. No skill is a one-time skill: every node holds several ranks and every rank widens it further; a rank costs its row in the branch — one star on the top row, two on the next, and so on. Survival ranks are one star each.'
           : 'Stars come from the map — three for a sweep, two for a shorter win, one for going the distance. Every node holds ranks and every rank widens it further; a rank costs its row in the branch — one star on the top row, two on the next, and so on. The Dynasty branch opens a node at each new tier of the ladder.'}
+        {/* A RANK BOUGHT MID-DRAFT STARTS WITH THE NEXT DRAFT (his word, 2026-10-24): a draft keeps the
+            staff it began with, so a landing seen, a walk out and a purchase here buy nothing on that
+            wheel. Said every time, and the drafts it holds for are named. Survival is the run, not the
+            draft, and counts at once. */}
+        {` A rank bought mid-draft starts with the next draft${death ? '; Survival ranks count at once' : ''}${
+          underway.length ? ` — ${underway.length === 1 ? `level ${underway[0]}’s is` : `levels ${underway.slice(0, -1).join(', ')} and ${underway[underway.length - 1]} have theirs`} under way` : ''
+        }.`}
       </div>
 
       <div className="treewrap">

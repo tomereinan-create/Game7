@@ -172,18 +172,16 @@ export const NODES: Node[] = [
       'A solve button — one press puts the engine’s best board back after you have changed it.',
     ],
   },
+  /* THE PLAYBOOK COMES BEFORE TEMPO CONTROL (his word, 2026-10-24: "Accept all (Recommended)"). It
+     stood at the end of the chain behind Tempo control from 9fcd1b0, when only the death match had
+     a plan; since 48eecc9 the campaign and the salary cap have a plan — and so a tempo, and a pace
+     to read — only from Playbook rank 1 (state/campaign.ts `callsPlan`), so Tempo control rank 1
+     bought nothing there until the node BELOW it was owned. Now the Playbook is row 2 and Tempo
+     control row 3, priced by the row rule like every other node (3★ and 4★ a rank). A save that
+     already owns Tempo control without the Playbook keeps its ranks — `requires` gates the buying,
+     never what is owned — and `spent` keeps what each rank was paid. */
   {
-    id: 'coach_sigma', branch: 'Coach', depth: 2, ranks: 3, requires: 'coach_manual',
-    name: 'Tempo control',
-    blurb: 'Pace is a read — surpluses, not noise. Master the call.',
-    rankBlurbs: [
-      'The pace readout: both surpluses show at the draft, so the call reads the matchup.',
-      'A trained bench wastes less — the tempo deviation tax is halved.',
-      'Your call carries the night: 85% of the pace is yours, however they answer.',
-    ],
-  },
-  {
-    id: 'coach_tactics', branch: 'Coach', depth: 3, ranks: 3, requires: 'coach_sigma',
+    id: 'coach_tactics', branch: 'Coach', depth: 2, ranks: 3, requires: 'coach_manual',
     name: 'Playbook',
     /* IT WAS NEVER THE DEATH MATCH'S ALONE — the node has always been on the Coach branch, which
        every mode is offered (his report: "Tactics arent visable in boths campaigns(Salary and
@@ -194,6 +192,16 @@ export const NODES: Node[] = [
       'Name your main scorer and main playmaker, and set the tempo.',
       'The shot diet, and crashing the glass.',
       'The defensive scheme, and hunting the mismatch.',
+    ],
+  },
+  {
+    id: 'coach_sigma', branch: 'Coach', depth: 3, ranks: 3, requires: 'coach_tactics',
+    name: 'Tempo control',
+    blurb: 'The tempo the Playbook calls, mastered: pace is a read — surpluses, not noise.',
+    rankBlurbs: [
+      'The pace readout: both surpluses show at the draft, so the tempo you call reads the matchup.',
+      'A trained bench wastes less — the tempo deviation tax is halved.',
+      'Your call carries the night: 85% of the pace is yours, however they answer.',
     ],
   },
   {
@@ -359,6 +367,32 @@ export const scoutsPicks = (w: Wallet, death = false) => (death ? 0 : rank(w, 'd
  * are the boosts — they were used up by the attempts they were bought for (`boosted`).
  */
 export const respec = <W extends Wallet>(w: W): W => ({ ...w, spent: 0, nodes: {} })
+
+/**
+ * THE STAFF A DRAFT UNDER WAY PLAYS WITH (his word, 2026-10-24: "Accept all (Recommended)" — a node
+ * bought during a draft in progress applies from the NEXT draft). `ranks` is what the tree held when
+ * that draft began (state/draftsave.ts keeps it with the draft); this is the wallet the draft and its
+ * sim read instead of the live one:
+ *   · a rank bought since is not there — it starts with the next draft, so a landing seen, a walk out
+ *     to the map and a purchase cannot be turned back on the same wheel;
+ *   · a rank handed back since (a respec) is gone at once — each node holds the SMALLER of the two,
+ *     so a respec mid-draft can never leave a draft holding staff whose stars came back;
+ *   · the Survival branch reads live: an Extra life, a Saving point, Iron men and the bench are the
+ *     death match's RUN, not its draft, and take effect the moment they are bought (state/campaign.ts
+ *     `afterBuy`; Iron men "helps the CURRENT five too"), on the map, in My team and here alike.
+ * Everything else about the wallet — the stars, the spend, the boosts — is the live one, so a balance
+ * read off it is the real balance. Null `ranks` is a draft that has not begun: the live wallet.
+ */
+export function staffAt<W extends Wallet>(w: W, ranks: Partial<Record<NodeId, number>> | null | undefined): W {
+  if (!ranks) return w
+  const nodes: Partial<Record<NodeId, number>> = {}
+  for (const n of NODES) {
+    const live = rank(w, n.id)
+    const r = n.branch === 'Survival' ? live : Math.min(live, Math.max(0, ranks[n.id] ?? 0))
+    if (r > 0) nodes[n.id] = r
+  }
+  return { ...w, nodes }
+}
 
 /** The price list `spent` is kept at from 2026-10-23 on — see `Wallet.pricing`. */
 export const PRICING = 2

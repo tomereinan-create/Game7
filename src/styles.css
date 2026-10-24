@@ -9852,6 +9852,12 @@ body:has(.fd-modes .fd-help) .coach-fab { display: none; }
   /* the wheel's roster is the narrower middle now (514px at 1,280 against the desk's 900+), so its
      names come down from the desk's 26px with the window instead of printing "Shawn Ke..." */
   .draft:not(.set) .col.b .pname b { font-size: clamp(17px, 1.45vw, 26px); }
+  /* and the two team columns take the phone's 46px row, not the desk's 58: with men drafted your
+     column grows by its analysis door and its dials, and at 1,440 x 900 the opponent's fifth row went
+     under the dock (the payroll's taller rows in the Salary Cap keep their height) */
+  .draft:not(.set):not(.cap) { --drow: 46px; }
+  /* the analysis door over your five keeps its words and loses its 42px of air */
+  .draft:not(.set) > .col.c > .linkb { margin: 0 0 6px; padding: 0; }
 }
 /* and under 1,150 two columns are still two narrow ones (1,024: "Mitch Richmond '...", "Draft a
    man he..."), so the draft is ONE column there, at the width a column reads at: the wheel, then

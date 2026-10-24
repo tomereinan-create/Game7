@@ -90,7 +90,7 @@ export function Matchups({
   playing?: Assignment
   onChange: (map: number[]) => void
   onBack: () => void
-  /** Matchup board rank 2: the engine will fill the board for you to tweak. */
+  /** Matchup board rank 2: one press puts the engine's best board back — in every mode. */
   canSolve?: boolean
 }) {
   const [picked, setPicked] = useState<number | null>(null)
@@ -181,7 +181,14 @@ export function Matchups({
           <div className="lede">Drag a defender onto the man you want him on, or tap a defender then an opponent. Lower is better.</div>
         </>
       )}
-      {canSolve && !user ? (
+      {/* SOLVE SHOWS IN EVERY MODE ONCE BOUGHT (his word, 2026-10-24: "Accept all (Recommended)" — like
+          the assignment's price and the pace read in 1e12101, a rank bought must do something visible
+          in every mode). 9301a57 hid it in user mode when Solve handed over a board nobody had: the
+          sheet opened on the naive board and Solve was the engine's answer to it. Since 3832a8a the
+          board opens on the staff's own matchups and Solve PUTS THEM BACK after a change — a reset
+          control, not a verdict — so it is the purchase, and user mode gets it. The numbers around
+          it (DRtg, the edges) stay scout mode's. */}
+      {canSolve ? (
         <div className="solvebar">
           <button className="sortb on" onClick={() => onChange(solveBoard(mine, theirs))}>
             Solve the board

@@ -456,7 +456,7 @@ export function boardLesson(canSolve: boolean): Lesson {
         at: '.mboard',
         body: [
           'Every one of their men on the left, and a ring beside him for the man of yours who guards him. Drag a defender onto a man; every man needs one.',
-          canSolve ? 'Solve fills the whole board the way the engine would, for you to tweak.' : 'Rank 2 of the node adds Solve, which fills the board for you.',
+          canSolve ? 'Solve puts the engine’s best board back after you have changed one.' : 'Rank 2 of the node adds Solve, which puts the engine’s best board back after a change.',
           BLIND,
         ],
       },
@@ -492,7 +492,7 @@ export function staffLesson(ctx: { bal: number; earned: number; branches: Branch
   const names: Record<Branch, string> = {
     Scout: 'Scout — know more before you draft',
     'Front office': 'Front office — more chances on the wheel',
-    Coach: 'Coach — assignments, pace and the playbook',
+    Coach: 'Coach — assignments, then the playbook and its pace',
     Salary: 'Salary — payroll room',
     Survival: 'Survival — lives, checkpoints and substitutions',
     Dynasty: 'Dynasty — one node a tier, opened as the ladder reaches it',
@@ -547,18 +547,24 @@ const WHERE: Record<NodeId, (r: number) => string[]> = {
       : 'Rank 2 prices the assignment on the draft, once the five is in: what it is worth against the naive board, in points of margin.',
     ...(r === 2 ? ['That price is what the rank buys, so it shows in every mode — the tutorial included.'] : []),
   ],
+  /* SOLVE SHOWS IN EVERY MODE (his word, 2026-10-24): what rank 2 buys is a control, so it is on the
+     board in user mode and the tutorial too. */
   coach_manual: (r) => [
     r === 1
       ? 'On the draft, once the five is in: a Matchup board door. It opens on the matchups your staff is playing; drag a defender onto one of their men to change one, and the board you set is the board the night plays. Left alone, or put back, it costs nothing.'
       : 'On the board: a Solve button puts the engine’s best board back after you have changed it.',
+    ...(r === 2 ? ['The button is what the rank buys, so it shows in every mode — the tutorial included.'] : []),
   ],
+  /* THE PLAYBOOK COMES FIRST NOW (his word, 2026-10-24): Tempo control sits below it, because the tempo
+     it reads and masters is the one the Playbook calls. */
   coach_sigma: (r) => [
-    ['On the draft, once the five is in, a pace readout: both surpluses, so the tempo call reads the matchup.', 'A trained bench wastes less: the tempo deviation tax is halved, every night.', 'Your call carries the night: 85% of the pace is yours, however they answer.'][r - 1],
+    ['On the draft, once the five is in, a pace readout: both surpluses, so the tempo you call in the Playbook reads the matchup.', 'A trained bench wastes less: the tempo deviation tax is halved, every night.', 'Your call carries the night: 85% of the pace is yours, however they answer.'][r - 1],
     ...(r === 1 ? ['The readout is what the rank buys, so it shows in every mode — the tutorial included.'] : []),
   ],
   coach_tactics: (r) => [
     `On the draft, once the five is in: a Playbook door${r === 1 ? ' — new with this rank' : ''}. In the Death match the same calls are made in My team. ${['Name your main scorer and main playmaker, and set the tempo.', 'The shot diet — a style — and crashing the glass.', 'The defensive scheme, and hunting the mismatch.'][r - 1]}`,
     'The plan persists and is re-read against every five that plays; a named man who is not on the floor is not heard.',
+    ...(r === 1 ? ['Tempo control, below it on the branch, reads that tempo and masters it.'] : []),
   ],
   cap: (r) => [`The Salary cap: your payroll ceiling is ${5 * r}% higher from the next draft. The cap line on the draft head reads the new room.`],
   surv_life: (r) => [`The Death match: ${plural(r, 'loss')} absorbed before the run ends. The map's head counts the lives in hand.`],

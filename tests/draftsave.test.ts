@@ -183,6 +183,9 @@ describe('a reload continues the same draft (his report)', () => {
       wide: 'decade',
       board: [4, 3, 2, 1, 0],
       boosts: ['film', 'hothand'],
+      // the staff it began with (2026-10-24) — and a ladder's draft is seated from no carried five
+      ranks: { fo_spin: 2, fo_respin: 3, coach_optimal: 1 },
+      carry: null,
     }
     saveDraft('salary', s)
     expect(loadDraft('salary', 9, p)).toEqual(s)
@@ -317,14 +320,19 @@ describe('walking out of a draft (one rule, his call)', () => {
     expect(out.keep).toBe(false)
   })
 
-  it('the death match is as it was: no kept draft, and a walk out with men on the board spends the attempt', () => {
-    expect(keepsDraft('death')).toBe(false)
+  // his word, 2026-10-24, on the coordinator's item: "fix it the same way, save the draft in progress"
+  it('the death match keeps its draft the same way: kept, a walk out spends nothing, Home in one tap', () => {
+    expect(keepsDraft('death')).toBe(true)
     saveDraft('death', { ...draftAttempt(p, 1), draws: 0, slots: {}, landed: null, last: null, upcoming: null, after: null, reels: null, hold: null, used: {}, dead: false, wide: 'team', board: null, boosts: [] })
-    expect(store.has(draftKey('death'))).toBe(false)
-    expect(loadDraft('death', 1, p)).toBeNull()
-    expect(afterLeave('death', p, true)).toEqual({ progress: { ...p, plays: 8 }, keep: false })
-    expect(afterLeave('death', p, false)).toEqual({ progress: p, keep: false })
-    expect(leaveLoses('death')).toBe(true) // Home still asks twice there
+    expect(store.has(draftKey('death'))).toBe(true)
+    expect(loadDraft('death', 1, p)).not.toBeNull()
+    // walking out with men on the board: no attempt spent — so no brand-new wheel — and the draft kept
+    expect(afterLeave('death', p, true)).toEqual({ progress: p, keep: true })
+    expect(afterLeave('death', p, false)).toEqual({ progress: p, keep: true })
+    expect(leaveLoses('death')).toBe(false) // Home leaves in one tap there too
+    // a dry wheel still ends the attempt, as on the ladders
+    expect(afterLeave('death', p, true, true)).toEqual({ progress: { ...p, plays: 8 }, keep: false })
+    clearDraft('death', 1)
   })
 })
 
