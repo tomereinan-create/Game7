@@ -6,6 +6,11 @@
  *     Cloudflare's email obfuscation.
  *   · With VITE_MOMENTS=0 (the AI posters left out of the build), no poster and no intro clip
  *     slipped into dist/moments — the CI check the launch plan asks for.
+ *   · On a public build, no provenance.json (launch plan P2: 6.1 MB of every card's formula inputs,
+ *     read only by the Advanced window, which is Scout mode's and so staff's — his ruling,
+ *     2026-10-24: "Scout mode is only for me. Once I publish the game, only the user mode matters").
+ *     The same rule as src/site.ts `provenance`: VITE_PROVENANCE when it is set (0 = left out),
+ *     else every CI build is public. Run here with neither, a local dist/ keeps the file and passes.
  */
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
@@ -33,6 +38,12 @@ if (process.env.VITE_MOMENTS === '0') {
   const dir = join(dist, 'moments')
   const posters = existsSync(dir) ? readdirSync(dir).filter((f) => /^the-.*\.(jpe?g|png|webp)$/i.test(f) || f === 'game7-intro.mp4') : []
   if (posters.length) fail.push(`VITE_MOMENTS=0 but dist/moments still has: ${posters.join(', ')}`)
+}
+{
+  const env = process.env
+  const provenanceOff = env.VITE_PROVENANCE ? env.VITE_PROVENANCE === '0' : !!env.CI
+  if (provenanceOff && existsSync(join(dist, 'provenance.json')))
+    fail.push('dist/provenance.json is in a public build (the Advanced window is staff-only; see src/site.ts `provenance`)')
 }
 if (fail.length) {
   console.error(`check-dist failed:\n  ${fail.join('\n  ')}`)

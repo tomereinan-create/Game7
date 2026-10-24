@@ -122,16 +122,28 @@ Sitemap: ${site.url}sitemap.xml
       })
     },
     /**
+     * TWO THINGS A PUBLIC BUILD CAN LEAVE OUT, each checked on its own (neither may return early
+     * past the other). scripts/check-dist.mjs fails a build that was told to leave one out and did not.
+     *
      * THE AI POSTERS, BEHIND A FLAG. `VITE_MOMENTS=0` leaves the iconic-moments pictures and the
      * Game 7 intro clip out of dist/ and empties the manifest the ladder reads, so nothing asks
-     * for them. scripts/check-dist.mjs fails a build that was told to leave them out and did not.
+     * for them.
+     *
+     * THE PROVENANCE FILE (launch plan P2; his ruling, 2026-10-24: "Scout mode is only for me. Once
+     * I publish the game, only the user mode matters"). Only the Advanced window reads it, and that
+     * window is Scout mode's, which is staff's: a public build (`deploy.provenance` off — every CI
+     * build, see src/site.ts) drops the 6.1 MB file, and the `VITE_PROVENANCE` define below takes the
+     * window's buttons away with it, so nothing asks for a file that is not there.
      */
     closeBundle() {
-      if (deploy.moments) return
-      const dir = join(root, outDir, 'moments')
-      if (!existsSync(dir)) return
-      for (const f of readdirSync(dir)) if (/^the-.*\.(jpe?g|png|webp)$/i.test(f) || f === 'game7-intro.mp4') rmSync(join(dir, f))
-      writeFileSync(join(dir, 'manifest.json'), '{}\n')
+      if (!deploy.provenance) rmSync(join(root, outDir, 'provenance.json'), { force: true })
+      if (!deploy.moments) {
+        const dir = join(root, outDir, 'moments')
+        if (existsSync(dir)) {
+          for (const f of readdirSync(dir)) if (/^the-.*\.(jpe?g|png|webp)$/i.test(f) || f === 'game7-intro.mp4') rmSync(join(dir, f))
+          writeFileSync(join(dir, 'manifest.json'), '{}\n')
+        }
+      }
     },
   }
 }
@@ -146,6 +158,8 @@ export default defineConfig(({ mode }) => {
     base: deploy.base,
     define: {
       'import.meta.env.VITE_MOMENTS': JSON.stringify(deploy.moments ? '1' : '0'),
+      // '1' when dist/ carries provenance.json, which the Advanced window's buttons wait on
+      'import.meta.env.VITE_PROVENANCE': JSON.stringify(deploy.provenance ? '1' : '0'),
     },
     build: {
       rollupOptions: {
