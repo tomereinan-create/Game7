@@ -4802,25 +4802,12 @@ body.offstage #root { position: relative; z-index: 1; }
   flex: 0 0 auto;
   border-radius: 50%;
   overflow: hidden;
-  background: radial-gradient(circle at 32% 26%, #f39a4a 0%, #de7326 42%, #b2521a 78%, #8a3d12 100%);
-  box-shadow: inset -0.11em -0.15em 0.26em rgba(0, 0, 0, 0.45);
+  /* the leather, the light, the seams and the 7 are the picture (public/ball7.png, his ruling of
+     2026-10-24); the gradient, the three seams and the typeset 7 that used to be drawn here are gone */
+  background: none;
+  box-shadow: none;
 }
-.ball7 i { position: absolute; }
-.ball7 .seam-v { left: 50%; top: 0; bottom: 0; width: 0.048em; margin-left: -0.024em; background: linear-gradient(180deg, #5c2a0b 0 26%, transparent 34%, transparent 66%, #5c2a0b 74%); }
-.ball7 .seam-h { top: 50%; left: 0; right: 0; height: 0.048em; margin-top: -0.024em; background: linear-gradient(90deg, #5c2a0b 0 24%, transparent 33%, transparent 67%, #5c2a0b 76%); }
-.ball7 .seam-c { top: -6%; bottom: -6%; left: 12%; right: 12%; border-radius: 50%; border-left: 0.048em solid #5c2a0b; border-right: 0.048em solid #5c2a0b; }
-.ball7 b {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--serif);
-  font-size: 0.546em;
-  font-weight: 400;
-  color: #fff;
-  padding-top: 0.05em;
-}
+.ball7 img { display: block; width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
 /* THE BOUNCE IS IN em, WHICH IS THE BALL'S OWN WIDTH. It was a flat 24px, tuned against the one
    size the mark was ever drawn at; the front door hands `size` a clamp now and a 24px bounce on a
    34px ball leaves the band it is standing in and lands on the rail above. In em it is the same

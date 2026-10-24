@@ -1,6 +1,11 @@
 /**
  * Writes game7.ico and the PWA icons in public/. The drawing lives in icon.mjs.
  * Run: node scripts/make-icon.mjs
+ *
+ * RETIRED FOR THE PNGs, 2026-10-24: the home-screen icons and public/ball7.png are cut from the Grok
+ * render of the mark he took (scripts/design/candidates/logo-ball-hq/grok-1.png, the cut in
+ * ball-1024.png beside it), not drawn here; only game7.ico is still written. Re-run the cut, not
+ * this, when the mark changes.
  */
 import { writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
@@ -32,12 +37,4 @@ dir.writeUInt32LE(ico.length, 14)
 dir.writeUInt32LE(dir.length, 18)
 write('game7.ico', Buffer.concat([dir, ico]))
 
-// Home-screen icons. The "any" pair keeps the transparent corners iOS wants
-// behind its own rounded mask; the maskable one is opaque and shrinks the ball
-// so Android's circle crop never bites into it.
-write('public/icon-192.png', ball(192))
-write('public/icon-512.png', ball(512))
-write('public/icon-maskable-512.png', ball(512, { fill: 190 / 256, bg: NIGHT }))
-// iOS's Home Screen icon (P4): opaque, because iOS paints a transparent corner black, at the 180px
-// iOS asks for, with the ball pulled in from the edge the way its rounded mask wants
-write('public/apple-touch-icon.png', ball(180, { fill: 150 / 180, bg: NIGHT }))
+// The home-screen icons are the render now (see the header); nothing more is written here.

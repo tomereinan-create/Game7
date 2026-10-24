@@ -28,12 +28,14 @@ export function Ball({
   dribble?: boolean
   className?: string
 }) {
+  /* THE BALL IS A PICTURE NOW - his ruling, 2026-10-24, on the Grok render of the mark ("Take it"):
+     the leather, the light and the seams are public/ball7.png, cut from that render as a circle on
+     transparency, and the 7 is printed on it. The CSS seams and the typeset 7 stood down with it.
+     Everything a caller could do before it can still do: `size` is the box, `dribble` bounces it,
+     the front door's rolling ball turns it on its own rule. */
   return (
     <span className={`ball7 ${dribble ? 'dribble' : ''} ${className}`} style={{ width: size, height: size, fontSize: size }} aria-hidden>
-      <i className="seam-v" />
-      <i className="seam-h" />
-      <i className="seam-c" />
-      <b>7</b>
+      <img src={`${import.meta.env.BASE_URL}ball7.png`} alt="" draggable={false} />
     </span>
   )
 }
