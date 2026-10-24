@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import PIPELINE from '../data/pipeline.json'
 import type { AttrKey, Player } from '../engine/types'
-import { useUserMode } from '../state/viewmode'
+import { useUserMode, useViewMode } from '../state/viewmode'
+import { STAFF } from '../state/staff'
 
 /**
  * The "how every number is made" window. For each of the 17 attributes it shows
@@ -161,6 +162,20 @@ const SECTIONS: Section[] = [
   single('discipline', 'discipline', 'PF /100', n1),
   single('durability', 'durability', 'minutes', (x) => (x === null ? '—' : String(x))),
 ]
+
+/**
+ * WHO IS SHOWN THE DOOR TO THIS WINDOW — the card's "ADVANCED →" and the attribute sheet's
+ * "Advanced — how every number is made →". Staff, in Scout mode, on a build that carries
+ * provenance.json. His ruling, 2026-10-24: "Scout mode is only for me. Once I publish the game, only
+ * the user mode matters" — so the window is staff's, and a public build leaves its 6.1 MB file out
+ * (src/site.ts `provenance`; `VITE_PROVENANCE` is written by vite.config.ts). The sheet's door used
+ * to reach user mode through the opponent's sheets bought with Exact ratings rank 3 (Draft.tsx);
+ * this is what closes it there too.
+ */
+export function useAdvancedDoor(): boolean {
+  const scout = useViewMode() === 'scout'
+  return STAFF && scout && import.meta.env.VITE_PROVENANCE === '1'
+}
 
 export function Advanced({ p, onClose }: { p: Player; onClose: () => void }) {
   const [prov, setProv] = useState<Prov | null>(cache)

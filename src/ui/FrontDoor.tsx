@@ -4,6 +4,7 @@ import { DEFAULT_ORDER, PLAYERS } from '../engine/pool'
 import { ROUNDS } from '../config'
 import { clubCode, currentLevel, totalStars, clearedCount, type Progress, type CampaignMode, type Team } from '../state/campaign'
 import { setViewMode, useViewMode } from '../state/viewmode'
+import { STAFF } from '../state/staff'
 import { openIndex, tutorialLock, useLesson } from '../state/tutorial'
 import { doorLesson } from './lessons'
 import { achCount } from '../state/achievements'
@@ -715,9 +716,15 @@ export function FrontDoor({
           <button className={`fd-mode${vm === 'tutorial' ? ' on' : ''}`} onClick={() => setViewMode('tutorial')} aria-pressed={vm === 'tutorial'}>
             Tutorial
           </button>
-          <button className={`fd-mode${vm === 'scout' ? ' on' : ''}`} onClick={() => setViewMode('scout')} aria-pressed={vm === 'scout'}>
-            Scout
-          </button>
+          {/* SCOUT IS STAFF'S ALONE (his ruling, 2026-10-24: "Scout mode is only for me. Once I
+              publish the game, only the user mode matters"). The published game offers the other
+              two; this machine, the dev server and a browser opened with ?scout=1 see all three
+              (state/staff.ts). */}
+          {STAFF ? (
+            <button className={`fd-mode${vm === 'scout' ? ' on' : ''}`} onClick={() => setViewMode('scout')} aria-pressed={vm === 'scout'}>
+              Scout
+            </button>
+          ) : null}
           {/* THE COACH'S ? ON THE DOOR: every other screen floats it under the home fab, and on
               this one, at phone width, that corner is where the chips wrap to — so the door
               carries it here, beside the choice that switched the coach on. */}

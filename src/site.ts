@@ -91,6 +91,16 @@ export interface Deploy {
    * and the ladder hangs nothing (see vite.config.ts and src/ui/moments.ts).
    */
   moments: boolean
+  /**
+   * Whether public/provenance.json — 6.1 MB of every card's formula inputs, read only by the
+   * Advanced window — ships in the build (launch plan P2). Advanced lives inside Scout mode, and
+   * Scout mode is staff's alone (his ruling, 2026-10-24: "Scout mode is only for me. Once I publish
+   * the game, only the user mode matters"), so a public build leaves the file out and the window's
+   * buttons with it. OFF on every CI build — Cloudflare Pages for game7draft.com, publish.yml's
+   * previews, apk.yml: each one is public. ON for a local `npm run build` (the localhost:5178 build
+   * he plays) and the dev server. VITE_PROVENANCE=1 or 0 overrides; empty counts as unset.
+   */
+  provenance: boolean
 }
 
 type Env = Record<string, string | undefined>
@@ -103,6 +113,7 @@ export function deployFor(env: Env): Deploy {
     posthogHost: env.VITE_POSTHOG_HOST || 'https://eu.i.posthog.com',
     cfBeacon: env.VITE_CF_BEACON || '',
     moments: env.VITE_MOMENTS !== '0',
+    provenance: env.VITE_PROVENANCE ? env.VITE_PROVENANCE !== '0' : !env.CI,
   }
 }
 

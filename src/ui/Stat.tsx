@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import STATS from '../data/stats.json'
 import type { AttrKey, Player, StatLine } from '../engine/types'
-import { Advanced } from './Advanced'
+import { Advanced, useAdvancedDoor } from './Advanced'
 import { HeatHex } from './HeatHex'
 
 export const LINES = STATS as Record<string, StatLine | null>
@@ -166,6 +166,7 @@ export function DetailGrid({ p, mode = 'full', onCard }: { p: Player; mode?: 'fu
   const inferred = !p.attrs.rim_mid_measured
   const line = LINES[p.name] ?? null
   const [adv, setAdv] = useState(false)
+  const advDoor = useAdvancedDoor()
   const lgTS = leagueTS(p)
   const who = seasonWho(p)
   return (
@@ -199,7 +200,7 @@ export function DetailGrid({ p, mode = 'full', onCard }: { p: Player; mode?: 'fu
       {inferred ? <span className="dnote">* rim/mid inferred (pre-1997)</span> : null}
       <span className="dnote">
         Ratings below are a season blend — 60% {p.peak_season}, 20% each side. The box line above is the real season,
-        never blended. Advanced shows the exact weights.
+        never blended.{advDoor ? ' Advanced shows the exact weights.' : null}
       </span>
       {GROUPS.map((g) => (
         <span className="dcat" key={g.title}>
@@ -226,15 +227,19 @@ export function DetailGrid({ p, mode = 'full', onCard }: { p: Player; mode?: 'fu
           </span>
         </span>
       ))}
-      <button
-        className="adv-open"
-        onClick={(e) => {
-          e.stopPropagation()
-          setAdv(true)
-        }}
-      >
-        Advanced — how every number is made →
-      </button>
+      {/* staff's alone, in Scout mode, where the file shipped (his ruling, 2026-10-24: "Scout mode
+          is only for me. Once I publish the game, only the user mode matters") — `useAdvancedDoor` */}
+      {advDoor ? (
+        <button
+          className="adv-open"
+          onClick={(e) => {
+            e.stopPropagation()
+            setAdv(true)
+          }}
+        >
+          Advanced — how every number is made →
+        </button>
+      ) : null}
       {adv ? <Advanced p={p} onClose={() => setAdv(false)} /> : null}
         </>
       )}

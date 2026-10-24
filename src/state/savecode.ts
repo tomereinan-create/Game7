@@ -6,14 +6,15 @@
  * gaps by hand, or in a link's #import=<code>.
  *
  * WHAT IS IN IT: every key the game writes — all of them start `game7.` — and nothing else. The
- * analytics off switch (`game7.analytics`) stays with the browser it was set in.
+ * analytics off switch (`game7.analytics`) stays with the browser it was set in, and so does the
+ * staff flag (`game7.staff`, state/staff.ts): a code he hands someone must not hand them Scout mode.
  *
  * FORMAT: `1.` + base64url(deflate-raw(JSON)) where the browser has CompressionStream (every
  * current one), `0.` + base64url(JSON) where it does not. Both decode everywhere the game runs.
  * No DOM here beyond the storage passed in, so the mover page bundles this same file.
  */
 export const PREFIX = 'game7.'
-const SKIP = new Set(['game7.analytics'])
+const SKIP = new Set(['game7.analytics', 'game7.staff'])
 
 export type SaveData = Record<string, string>
 

@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useMemo, useState } from 'react'
 import { archetype, PLAYERS } from '../engine/pool'
 import type { Player } from '../engine/types'
-import { Advanced } from './Advanced'
+import { Advanced, useAdvancedDoor } from './Advanced'
 import { RULE } from './Archetypes'
 import { SeasonStrip, useYearKeys } from './SeasonStrip'
 import { TeamBanner } from './TeamBanner'
@@ -198,6 +198,7 @@ export function CardSheet({ p: opened, onClose }: { p: Player; onClose: () => vo
   // Advanced. The engine keeps every number; the card just stops showing its hand. The terminal
   // itself stays: it is how a card looks now, in both modes, and the club lights it either way.
   const user = useUserMode()
+  const advDoor = useAdvancedDoor()
   const line = LINES[p.name] ?? null
   const tag = archetype(p)
   const inferred = !p.attrs.rim_mid_measured
@@ -407,10 +408,15 @@ export function CardSheet({ p: opened, onClose }: { p: Player; onClose: () => vo
                   right below to the attributes". It used to be the last item of the shape's own
                   block, which on a wide desk parks it at the far end of a strip in the foot of the
                   card and on a phone beside the hexagon. What is behind that door is how the
-                  attributes were made, so it belongs at the end of them. */}
-              <button className="pc-adv" onClick={() => setAdv(true)}>
-                ADVANCED &rarr;
-              </button>
+                  attributes were made, so it belongs at the end of them.
+                  STAFF'S ALONE, AND ONLY WHERE THE FILE SHIPPED (his ruling, 2026-10-24: "Scout
+                  mode is only for me. Once I publish the game, only the user mode matters") — see
+                  `useAdvancedDoor`. */}
+              {advDoor ? (
+                <button className="pc-adv" onClick={() => setAdv(true)}>
+                  ADVANCED &rarr;
+                </button>
+              ) : null}
             </>
           )}
         </div>

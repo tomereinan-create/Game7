@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from 'react'
+import { STAFF } from './staff'
 
 /**
  * THE VIEW MODE — three of them since 2026-09-30, and the third is the second with a coach.
@@ -22,6 +23,14 @@ import { useSyncExternalStore } from 'react'
  * name. The old key is read only when the new one is absent, so a player who was in user mode
  * yesterday is in user mode today, and it is still WRITTEN so that nothing else that reads it
  * (nothing does, today) sees a stale answer.
+ *
+ * SCOUT MODE IS STAFF-ONLY (his ruling, 2026-10-24: "Scout mode is only for me. Once I publish the
+ * game, only the user mode matters"). On the published site a fresh browser opens in User mode, a
+ * stored Scout (a visit from before the launch, an old save code) reads as User, and asking for
+ * Scout lands on User; the front door offers it only to staff (state/staff.ts: the dev server, this
+ * machine, or a browser opened once with `?scout=1`). On staff nothing changed: a fresh browser
+ * still opens in Scout. The stored key is not rewritten on read — a browser that is later let in
+ * gets its Scout back. `resolveMode` is the whole rule, pure, so the tests can read it.
  */
 export type ViewMode = 'scout' | 'user' | 'tutorial'
 const KEY = 'game7.viewmode'
@@ -29,13 +38,21 @@ const LEGACY = 'game7.usermode'
 
 const isMode = (v: unknown): v is ViewMode => v === 'scout' || v === 'user' || v === 'tutorial'
 
+/**
+ * The mode a browser is in: the stored name when it is one; else the old boolean ('1' user, '0'
+ * scout); else the default — Scout for staff, User for everyone else. Scout is staff's alone, so
+ * for anyone else it reads as User.
+ */
+export function resolveMode(stored: string | null, legacy: string | null, staff: boolean): ViewMode {
+  const m: ViewMode = isMode(stored) ? stored : legacy === '1' ? 'user' : legacy === '0' ? 'scout' : staff ? 'scout' : 'user'
+  return m === 'scout' && !staff ? 'user' : m
+}
+
 let cur: ViewMode = (() => {
   try {
-    const v = localStorage.getItem(KEY)
-    if (isMode(v)) return v
-    return localStorage.getItem(LEGACY) === '1' ? 'user' : 'scout'
+    return resolveMode(localStorage.getItem(KEY), localStorage.getItem(LEGACY), STAFF)
   } catch {
-    return 'scout'
+    return resolveMode(null, null, STAFF)
   }
 })()
 const subs = new Set<() => void>()
@@ -46,10 +63,11 @@ export const isUserMode = () => cur !== 'scout'
 export const isTutorial = () => cur === 'tutorial'
 
 export function setViewMode(v: ViewMode) {
-  cur = v
+  // Scout is staff's alone (see the head of this file): anyone else asking for it gets User
+  cur = resolveMode(v, null, STAFF)
   try {
-    localStorage.setItem(KEY, v)
-    localStorage.setItem(LEGACY, v === 'scout' ? '0' : '1')
+    localStorage.setItem(KEY, cur)
+    localStorage.setItem(LEGACY, cur === 'scout' ? '0' : '1')
   } catch {
     /* private mode — the toggle still works for the session */
   }
