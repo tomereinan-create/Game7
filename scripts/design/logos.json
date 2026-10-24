@@ -102,6 +102,17 @@
         "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/logo-game.jpg"
       ],
       "prompt": "Redraw the logo in the reference image at high resolution as a crisp vector mark, changing NOTHING about it: the same orange basketball with the same seam lines and the same bold white 7 in its centre, the same GAME7 wordmark to its right in the same typeface, weight, proportions and spacing, GAME in white and the 7 in the same orange, the same sizes relative to each other, on the same plain dark background. Only the quality changes: perfectly smooth edges, even strokes, exact circles, no blur, no noise, no gradient, no shadow, no extra element."
+    },
+    {
+      "slug": "logo-ball-hq",
+      "title": "logo-ball-hq",
+      "look": "",
+      "tier": "logo",
+      "era": "",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/logo-game.jpg"
+      ],
+      "prompt": "Redraw the logo in the reference image at high resolution, keeping its layout exactly - the basketball on the left with the bold white 7 in its centre, the GAME7 wordmark to its right in the same typeface, weight, spacing and sizes, GAME in white and the 7 in warm gold, on the same plain dark background. The wordmark stays flat and clean. THE BALL is now rendered as a real, premium object: a perfect sphere in rich burnt orange, soft studio light from the upper left giving it a smooth highlight and a deep shadow on the lower right, fine pebbled leather grain visible up close, the black seams crisp and following the sphere's curve, a subtle rim light on its edge; the white 7 printed on its surface, sharp and perfectly centred. Photoreal ball, graphic wordmark, nothing else in the frame."
     }
   ]
 }
