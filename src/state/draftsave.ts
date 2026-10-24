@@ -1,7 +1,7 @@
 import { WHEEL, type TeamSeason } from '../data/wheel'
 import { POSITIONS, type Pos } from '../engine/positions'
 import { makeRng, type Rng } from '../engine/rng'
-import { BOOST_MAX, isBoost, type BoostId, type NodeId } from '../engine/tree'
+import { BOOST_MAX, isBoost, NODE, type BoostId, type NodeId } from '../engine/tree'
 import type { Hold, ReelSpin } from '../ui/SpinReels'
 import { draftKey, levelSeed, type CampaignMode, type Progress } from './campaign'
 
@@ -33,11 +33,17 @@ import { draftKey, levelSeed, type CampaignMode, type Progress } from './campaig
  */
 
 /**
- * WHICH LADDERS KEEP A DRAFT. The death match does not, by design of this change rather than by
- * accident: it carries one five level to level and is another session's lane ("Death Match permadeath
- * exploits"), so its draft, its leave rule and its two-tap Home are exactly as they were.
+ * WHICH LADDERS KEEP A DRAFT: ALL THREE. The death match was left out of 167d3ad by design ("another
+ * session's lane"), so a reload there still re-dealt the same five landings onto an empty board and
+ * a walk out with men in cost no life and dealt a brand-new wheel. His word, 2026-10-24, on the
+ * coordinator's item ("fix it the same way, save the draft in progress"; nobody else holds the death
+ * match now): it keeps its draft exactly as the ladders do, under its own key, with its own state
+ * read against it — the carried five it was seated from (`DraftMeta.carry`, re-read against My team
+ * by Draft.tsx `reseat`), cleared at the sim like any other, and all of the ladder's drafts cleared
+ * when a run ends (`clearDrafts`). Wear, lives, the bench and the round's changes live in the save,
+ * not here, and are banked at the sim as before; nothing kept here can take one of them back.
  */
-export const keepsDraft = (m: CampaignMode) => m !== 'death'
+export const keepsDraft = (_m: CampaignMode) => true
 
 /**
  * WALKING OUT OF A DRAFT — HIS CALL, AND THIS IS THE ONE PLACE IT IS MADE.
@@ -49,10 +55,14 @@ export const keepsDraft = (m: CampaignMode) => m !== 'death'
  * away, so the level deals a brand-new wheel on the way back in — the instant reroll of his report
  * ("Philly '03 became Dallas '92"). A reload still continues the draft either way.
  *
- * What false gives up, said plainly: walking out used to spend the attempt so that nobody could see a
+ * What false gave up, said plainly: walking out used to spend the attempt so that nobody could see a
  * landing, buy a node on the map (the Staff tree lives there) and come back to the same spin — the
  * anti-peek rule, in the code since the v41 snapshot. A kept draft comes back to the same spin, so
- * that peek is open again for a draft with men in it (it always was for one with none).
+ * that peek was open again — and is closed the other way since 2026-10-24: a draft keeps the staff it
+ * began with (`DraftMeta.ranks`, `begun`), so a rank bought on the way out starts with the next draft.
+ *
+ * The death match reads the same rule since 2026-10-24 (it used to spend the attempt on a walk out
+ * with men in, and its Home asked twice): its draft is kept and Home leaves in one tap.
  */
 export const LEAVE_SPENDS_ATTEMPT = false
 
@@ -63,6 +73,11 @@ export const leaveLoses = (m: CampaignMode, spends = LEAVE_SPENDS_ATTEMPT) => !k
  * The save after walking out of a draft, and whether the draft is kept. `ended` is the wheel running
  * dry ("No legal team left") — that attempt is over whatever the rule says, so it is counted and the
  * draft goes, or the level would reopen on a dead wheel forever.
+ *
+ * A DEATH-MATCH LOSS IS NOT A WALK OUT, and nothing here touches one. Results are banked at the sim
+ * (state/campaign.ts `settledProgress`), and the sim clears the level's draft before the night is
+ * committed — so a reload after a loss finds the life spent (or the run over, and every draft of it
+ * gone) and no draft to resume.
  */
 export function afterLeave(
   m: CampaignMode,
@@ -74,6 +89,7 @@ export function afterLeave(
   const spend = ended || (started && leaveLoses(m, spends))
   return { progress: spend ? { ...p, plays: p.plays + 1 } : p, keep: keepsDraft(m) && !spend }
 }
+
 
 /** How wide the wheel's landing opens (the Decade / Division nodes). */
 export type Wide = 'team' | 'decade' | 'decade3' | 'division' | 'conference'
@@ -118,7 +134,27 @@ export interface DraftAttempt {
   seed: number
 }
 
-export type DraftSave = DraftAttempt & DraftState
+/**
+ * What App writes beside the draft screen's own state — things the draft is played WITH rather than
+ * things it does. Absent on a draft kept before them; it reads back as null.
+ */
+export interface DraftMeta {
+  /**
+   * THE STAFF THIS DRAFT PLAYS WITH (his word, 2026-10-24: a node bought during a draft in progress
+   * applies from the NEXT draft). The tree's ranks as they stood while the draft was opened, taken
+   * again each time it is opened until it has BEGUN (`begun`) and kept from then on; the draft and its
+   * sim read engine/tree.ts `staffAt(save, ranks)`. Null: not taken yet — the live tree.
+   */
+  ranks?: Partial<Record<NodeId, number>> | null
+  /**
+   * Death match: the carried five the board was seated from, by card name in slot order — null for a
+   * draft dealt onto an empty board. My team can change the five while the draft is kept; Draft.tsx
+   * `reseat` reads the kept board against the five it carries now.
+   */
+  carry?: string[] | null
+}
+
+export type DraftSave = DraftAttempt & DraftState & DraftMeta
 
 /** The attempt a draft opened NOW would be dealt in. */
 export const draftAttempt = (p: Progress, level: number): DraftAttempt => ({ level, base: p.seed, plays: p.plays, seed: levelSeed(p, level) })
@@ -129,7 +165,8 @@ const BY_ID = new Map(WHEEL.map((t) => [ID(t), t]))
 
 /**
  * As written. `after` and `boosts` came in after the first drafts were kept (2026-10-23, the boosts and
- * the Dynasty branch); a draft written without them reads back with none — the shape is the same v1.
+ * the Dynasty branch), `ranks` and `carry` the day after (the next-draft rule, the death match); a draft
+ * written without them reads back with none — the shape is the same v1.
  */
 interface Stored extends DraftAttempt, Omit<DraftState, 'landed' | 'last' | 'upcoming' | 'after' | 'boosts'> {
   v: 1
@@ -138,6 +175,8 @@ interface Stored extends DraftAttempt, Omit<DraftState, 'landed' | 'last' | 'upc
   upcoming: string | null
   after?: string | null
   boosts?: BoostId[]
+  ranks?: Partial<Record<NodeId, number>> | null
+  carry?: string[] | null
 }
 
 const readAll = (m: CampaignMode): Record<string, unknown> => {
@@ -168,6 +207,8 @@ export function saveDraft(m: CampaignMode, d: DraftSave) {
     upcoming: d.upcoming && ID(d.upcoming),
     after: d.after && ID(d.after),
     boosts: [...d.boosts],
+    ranks: d.ranks ? { ...d.ranks } : null,
+    carry: d.carry ? [...d.carry] : null,
   }
   writeAll(m, { ...readAll(m), [d.level]: s })
 }
@@ -178,6 +219,15 @@ export function clearDraft(m: CampaignMode, level: number) {
   if (!(level in all)) return
   delete all[level]
   writeAll(m, all)
+}
+
+/**
+ * EVERY DRAFT THIS LADDER KEEPS, GONE — a death-match run that ended. `die` hands back a fresh ladder
+ * (a new seed, or the Saving point's rung on one), so no draft of the dead run would match it anyway;
+ * they are dropped outright rather than left to be ignored.
+ */
+export function clearDrafts(m: CampaignMode) {
+  writeAll(m, {})
 }
 
 const isInt = (n: unknown, lo = 0): n is number => Number.isInteger(n) && (n as number) >= lo
@@ -210,6 +260,15 @@ export function loadDraft(m: CampaignMode, level: number, p: Progress): DraftSav
   const reels = s.reels && isReel(s.reels.team) && isReel(s.reels.year) && isHold(s.reels.held) && typeof s.reels.nonce === 'number' ? s.reels : null
   const used = s.used && typeof s.used === 'object' && Object.values(s.used).every((n) => isInt(n)) ? s.used : {}
   const board = Array.isArray(s.board) && s.board.length === POSITIONS.length && s.board.every((n) => isInt(n)) ? s.board : null
+  // the staff it plays with: a list that does not read back exactly is the one thing here that is not
+  // thrown away whole — it is taken again from the live tree (null), which is what a draft kept before
+  // the rule reads as too
+  const ranks =
+    s.ranks && typeof s.ranks === 'object' && !Array.isArray(s.ranks) && Object.entries(s.ranks).every(([k, n]) => k in NODE && isInt(n))
+      ? (s.ranks as Partial<Record<NodeId, number>>)
+      : null
+  // the five it was seated from: five card names, or none. Anything else cannot be read against My team
+  if (s.carry !== undefined && s.carry !== null && !(Array.isArray(s.carry) && s.carry.length === POSITIONS.length && s.carry.every((n) => typeof n === 'string'))) return null
   return {
     level,
     base: s.base,
@@ -228,6 +287,8 @@ export function loadDraft(m: CampaignMode, level: number, p: Progress): DraftSav
     wide: WIDES.includes(s.wide as Wide) ? (s.wide as Wide) : 'team',
     board,
     boosts: [...boosts],
+    ranks: ranks ? { ...ranks } : null,
+    carry: s.carry ? [...s.carry] : null,
   }
 }
 
@@ -239,6 +300,41 @@ export function loadDraft(m: CampaignMode, level: number, p: Progress): DraftSav
  */
 export const hasSpun = (d: Pick<DraftState, 'reels' | 'slots' | 'landed' | 'last'>) =>
   !!d.reels || !!d.landed || !!d.last || Object.keys(d.slots).length > 0
+
+/**
+ * WHETHER THE DRAFT HAS BEGUN — the line a rank bought on the map stops reaching it (his word,
+ * 2026-10-24: a node bought during a draft in progress applies from the NEXT draft).
+ *
+ * A draft dealt onto an empty board begins at its first spin: the line the boosts are bought behind
+ * (`hasSpun`), and the moment the wheel starts giving anything away. Until then nothing has landed,
+ * so a rank bought before it — the level opened, the map visited, a node bought — is a rank this
+ * draft was always going to have. A carried five (the death match after level 1) is on the board
+ * from the start and turns no wheel; it begins the first time it spends a charge (a Version respin's
+ * season), which is the only thing on it a rank could be bought to answer.
+ */
+export const begun = (d: Pick<DraftState, 'reels' | 'slots' | 'landed' | 'last' | 'used'> & Partial<Pick<DraftMeta, 'carry'>>) =>
+  d.carry ? Object.values(d.used).some((n) => (n ?? 0) > 0) : hasSpun(d)
+
+/**
+ * THE RANKS A DRAFT OPENED NOW PLAYS WITH: a kept draft's own, once it has begun; otherwise the tree as
+ * it stands (taken again every time the draft opens until it begins — the tree cannot change while the
+ * draft is on the screen, so what is taken at the opening of the visit it begins in is what it began
+ * with). Handed to engine/tree.ts `staffAt` and written back with the draft.
+ */
+export const draftStaff = (d: Pick<DraftSave, 'reels' | 'slots' | 'landed' | 'last' | 'used' | 'carry' | 'ranks'> | null, live: Partial<Record<NodeId, number>>) =>
+  d && d.ranks && begun(d) ? { ...d.ranks } : { ...live }
+
+/** The levels of this ladder with a kept draft that has begun — the staff tree names them (Tree.tsx). */
+export function draftsUnderway(m: CampaignMode, p: Progress): number[] {
+  return Object.keys(readAll(m))
+    .map(Number)
+    .filter((l) => Number.isInteger(l) && l >= 1)
+    .filter((l) => {
+      const d = loadDraft(m, l, p)
+      return !!d && begun(d)
+    })
+    .sort((a, b) => a - b)
+}
 
 /**
  * THE WHEEL'S STREAM, COUNTED. The same numbers `makeRng(seed)` gives, in the same order — the

@@ -368,6 +368,32 @@ export const scoutsPicks = (w: Wallet, death = false) => (death ? 0 : rank(w, 'd
  */
 export const respec = <W extends Wallet>(w: W): W => ({ ...w, spent: 0, nodes: {} })
 
+/**
+ * THE STAFF A DRAFT UNDER WAY PLAYS WITH (his word, 2026-10-24: "Accept all (Recommended)" — a node
+ * bought during a draft in progress applies from the NEXT draft). `ranks` is what the tree held when
+ * that draft began (state/draftsave.ts keeps it with the draft); this is the wallet the draft and its
+ * sim read instead of the live one:
+ *   · a rank bought since is not there — it starts with the next draft, so a landing seen, a walk out
+ *     to the map and a purchase cannot be turned back on the same wheel;
+ *   · a rank handed back since (a respec) is gone at once — each node holds the SMALLER of the two,
+ *     so a respec mid-draft can never leave a draft holding staff whose stars came back;
+ *   · the Survival branch reads live: an Extra life, a Saving point, Iron men and the bench are the
+ *     death match's RUN, not its draft, and take effect the moment they are bought (state/campaign.ts
+ *     `afterBuy`; Iron men "helps the CURRENT five too"), on the map, in My team and here alike.
+ * Everything else about the wallet — the stars, the spend, the boosts — is the live one, so a balance
+ * read off it is the real balance. Null `ranks` is a draft that has not begun: the live wallet.
+ */
+export function staffAt<W extends Wallet>(w: W, ranks: Partial<Record<NodeId, number>> | null | undefined): W {
+  if (!ranks) return w
+  const nodes: Partial<Record<NodeId, number>> = {}
+  for (const n of NODES) {
+    const live = rank(w, n.id)
+    const r = n.branch === 'Survival' ? live : Math.min(live, Math.max(0, ranks[n.id] ?? 0))
+    if (r > 0) nodes[n.id] = r
+  }
+  return { ...w, nodes }
+}
+
 /** The price list `spent` is kept at from 2026-10-23 on — see `Wallet.pricing`. */
 export const PRICING = 2
 

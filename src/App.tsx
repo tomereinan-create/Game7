@@ -8,7 +8,7 @@ import type { Tactics } from './engine/tactics'
 import CAMPAIGNS from './data/campaigns.json'
 import { canBetter, simSeries, starsFor } from './engine/resolver'
 import { boxContext, reconcileTactics } from './engine/tactics'
-import { balance, benchHeal, buy, buyBoost, capBonus, duraBoost, earned, paceMastery, playbookRank, rank, respec, subsPerRound, type Branch } from './engine/tree'
+import { balance, benchHeal, buy, buyBoost, capBonus, duraBoost, earned, paceMastery, playbookRank, rank, respec, staffAt, subsPerRound, type Branch } from './engine/tree'
 import { teach, teachOnce, tutorialLock, useLesson, useTutor } from './state/tutorial'
 import { Coach } from './ui/Coach'
 import { auctionLesson, customLesson, eraLesson, ladderLesson, lifeLesson, mapLesson, myTeamLesson, runOverLesson, spendLesson, staffLesson, teamLesson, trophyLesson, unlockLesson, versusLesson } from './ui/lessons'
@@ -43,10 +43,10 @@ import {
   type Progress,
   type Team,
 } from './state/campaign'
-import { afterLeave, clearDraft, draftAttempt, keepsDraft, leaveLoses, loadDraft, saveDraft } from './state/draftsave'
+import { afterLeave, clearDraft, clearDrafts, draftAttempt, draftStaff, draftsUnderway, keepsDraft, leaveLoses, loadDraft, saveDraft } from './state/draftsave'
 import { isTutorial, useTutorial, useUserMode } from './state/viewmode'
 import { requestTeam, useTeamRequest } from './state/openteam'
-import { Draft } from './ui/Draft'
+import { Draft, reseat } from './ui/Draft'
 import { Home, type Mode } from './ui/Home'
 import { LevelMap, skinAt } from './ui/LevelMap'
 import { MyTeam, orderFive } from './ui/MyTeam'
@@ -484,6 +484,8 @@ function Game() {
     if (screen === 'draft' && cm && prog && !auto) saveIfNew(cm, prog)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [screen, cm, level])
+  /* the death match's carried five, by name in slot order — what a kept draft of it is read against */
+  const carryNames = carry ? carry.map((p) => p.name) : null
   /**
    * THIS LEVEL'S DRAFT IN PROGRESS, when one is kept (his report, 2026-10-23 — state/draftsave.ts).
    * Read as the draft screen opens, and the Draft takes it once. A kept draft brings its own attempt —
@@ -491,11 +493,28 @@ function Game() {
    * not re-deal it.
    */
   const resume = useMemo(
-    () => (screen === 'draft' && cm && level && prog ? loadDraft(cm, level, prog) : null),
-    // the ladder's seed and play count are all of the save it reads
+    () => {
+      if (screen !== 'draft' || !cm || !level || !prog) return null
+      const kept = loadDraft(cm, level, prog)
+      // THE DEATH MATCH'S KEPT DRAFT IS READ AGAINST THE FIVE MY TEAM CARRIES NOW (Draft.tsx `reseat`):
+      // a change made there while the draft waited is the newer word about who is on the board
+      return kept && death ? reseat(kept, carryNames) : kept
+    },
+    // the ladder's seed and play count are all of the save it reads, and the carried five all of My team
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [screen, cm, level, prog?.seed, prog?.plays],
+    [screen, cm, level, prog?.seed, prog?.plays, carryNames?.join('|')],
   )
+  /**
+   * THE STAFF THIS DRAFT PLAYS WITH (his word, 2026-10-24: "Accept all (Recommended)" — a node bought
+   * during a draft in progress applies from the NEXT draft). A kept draft that has begun brings the
+   * ranks it began with; any other draft takes the tree as it stands as it opens, and they are written
+   * back with it (state/draftsave.ts `draftStaff`, `begun`). The draft is handed the save AS THAT STAFF
+   * (`staffAt`: a rank bought since is not there, a rank handed back since is gone, Survival is live),
+   * and the sim plans and paces off the same — so the card and the night agree, and a landing seen, a
+   * walk out to the map and a purchase there buy nothing on the wheel that was seen.
+   */
+  const draftRanks = prog ? draftStaff(resume, prog.nodes) : null
+  const staffed = prog ? staffAt(prog, draftRanks) : null
   const bal = prog ? balance(prog) : 0
   /* THE COACH'S LESSONS, ONE PER ROOM (tutorial mode). Each is told the first time its room is on
      the screen, built off what App knows about it then. The draft and the result hook their own
@@ -539,18 +558,19 @@ function Game() {
   }, [tutorial, screen, prog])
 
   const sim = (five: Player[], assignment: Assignment, toWin: number, edge = 0) => {
-    if (!opponent || !prog || !cm || !level) return
+    if (!opponent || !prog || !cm || !level || !staffed) return
     // Our defense is whatever the board assigned; the AI always plays optimal. On top of it comes
     // the PLAN, priced in points of spread like every other modifier — in ALL THREE MODES now (his
     // report: "Tactics arent visable in boths campaigns(Salary and normal)"). `planFor` is the one
     // rule: the death match always has a plan, everywhere else the Playbook node opens one, and
     // the names are read against the five that is actually playing. See state/campaign.ts.
-    const plan = planFor(cm, prog, five.map((p) => p.name))
+    // Read off the staff THIS DRAFT plays with (`staffed`, above) — the card was priced off it too.
+    const plan = planFor(cm, staffed, five.map((p) => p.name))
     // PACE (recal_57): both teams pick a tempo — the AI reads the surpluses and answers — and the
     // night gets a relative volume-surplus term plus a variance shift, replacing the flat sigma map.
     // Built by odds.ts `night`, the same call the draft card makes, so the card prices this night —
     // a Hot hand boost's points (`edge`) included, handed over by the draft that priced them.
-    const { mine, theirs, pc, sigma: sig } = night(five, opponent.players, assignment, plan, paceMastery(prog), death ? 0 : edge)
+    const { mine, theirs, pc, sigma: sig } = night(five, opponent.players, assignment, plan, paceMastery(staffed), death ? 0 : edge)
     // creator mode: the series is a function of the run's seed and the attempt, so a filmed run replays
     const seed = CREATOR ? (levelSeed(prog, level) ^ 0x5bd1e995) >>> 0 || 1 : randomSeed()
     // Every mode sims the series entirely — the death match included (his ruling). Its wear is
@@ -588,6 +608,8 @@ function Game() {
     held.current = { toasts: [], lesson: null }
     // the night is banked, so its draft is over: the next attempt here deals a new wheel
     clearDraft(cm, level)
+    // a death-match run that ended takes every draft it kept with it (state/draftsave.ts `clearDrafts`)
+    if (death && !result.won && prog.lives === 0) clearDrafts(cm)
     commit(cm, settled)
     achSettleSeries({
       mode: cm,
@@ -811,10 +833,10 @@ function Game() {
   /**
    * WALKING OUT OF A DRAFT, by Home or by the map. What it costs is one rule in state/draftsave.ts,
    * `LEAVE_SPENDS_ATTEMPT` — his call (his report, 2026-10-23: walking out after one pick "counts as
-   * an attempt with no loss and no star cost, and gives a completely new wheel"). As shipped, the
-   * campaign and the cap keep the draft as it stands and do not count it, and opening the level again
-   * carries on with it; the death match spends the attempt as it always has. A wheel that ran dry
-   * ends its attempt whatever the rule.
+   * an attempt with no loss and no star cost, and gives a completely new wheel"). As shipped, every
+   * ladder keeps the draft as it stands and does not count it, and opening the level again carries on
+   * with it — the death match too since 2026-10-24 (it spent the attempt until then: no life, and a
+   * brand-new wheel). A wheel that ran dry ends its attempt whatever the rule.
    */
   const walkOut = (started: boolean, ended = false) => {
     if (!cm || !prog || !level) return
@@ -825,7 +847,7 @@ function Game() {
   /**
    * HOME DOES NOT THROW A DRAFT AWAY ON ONE TAP (the live check, 2026-10-22: a toast's close button
    * sat under this button, and one stray tap took a first-time visitor home and lost his picks).
-   * Where walking out loses the men on the board (the death match, or the rule above flipped), the
+   * Where walking out loses the men on the board (only with the rule above flipped), the
    * first tap only asks — "Tap again to leave" — and the second leaves. Three seconds, then it
    * forgets. No popup: window.confirm never renders on his phone. Where the draft is kept, there is
    * nothing to lose and one tap goes home.
@@ -995,6 +1017,8 @@ function Game() {
           }}
           onRespec={() => commit(cm, death ? afterRespec(prog) : respec(prog))}
           respecKeeps={death ? respecKeeps(prog) : 0}
+          /* the drafts under way on this ladder: a rank bought now starts with their NEXT draft */
+          underway={draftsUnderway(cm, prog)}
           onBack={() => setStaff(false)}
         />
       </>
@@ -1123,12 +1147,18 @@ function Game() {
         opponent={opponent}
         seed={attempt.seed}
         resume={resume}
-        onSave={keepsDraft(cm) ? (s) => saveDraft(cm, { level, base: attempt.base, plays: attempt.plays, seed: attempt.seed, ...s }) : undefined}
+        /* written with the staff it plays with and, in the death match, the five it was seated from */
+        onSave={
+          keepsDraft(cm)
+            ? (s) => saveDraft(cm, { level, base: attempt.base, plays: attempt.plays, seed: attempt.seed, ranks: draftRanks, carry: carryNames, ...s })
+            : undefined
+        }
         /* THE BOOSTS (his ruling, 2026-10-23): paid out of the save's stars into `boosted`, which no
            respec hands back; the draft holds the boost itself, kept beside it, until the sim. The
-           campaign and the cap only — the ladders that keep a draft — and never in creator mode. */
+           campaign and the cap only — the death match keeps a draft now too, but sells no boosts —
+           and never in creator mode. */
         onBoost={
-          keepsDraft(cm) && !CREATOR
+          !death && !CREATOR
             ? (id, held) => {
                 const next = buyBoost(prog, id, held)
                 if (!next) return false
@@ -1141,7 +1171,8 @@ function Game() {
         teamAb={clubCode(team)}
         salary={capped}
         skin={skin}
-        wallet={prog}
+        /* the save as the staff this draft began with (see `staffed`): its stars are the live ones */
+        wallet={staffed!}
         carry={carry}
         wear={prog.wear}
         spinLeft={death && !!carry && subsPerRound(prog) - prog.subsUsed > 0}
@@ -1150,7 +1181,7 @@ function Game() {
            visable in boths campaigns(Salary and normal)"). `callsPlan` is the same rule the sim
            reads, so the odds card here and the margin there can never disagree; the draft gates
            and reconciles it against its own five, which is the only five it knows. */
-        tactics={callsPlan(cm, prog) ? prog.tactics : null}
+        tactics={callsPlan(cm, staffed!) ? prog.tactics : null}
         /* AND THE CAMPAIGN AND THE CAP CALL IT HERE. My team is the death match's room — it exists
            for a five that is carried, its durability, the one change a round and the bench — and a
            mode that drafts a fresh five every level has none of that. But a PLAN is not a roster:
@@ -1161,16 +1192,17 @@ function Game() {
         onSim={sim}
         onBack={(started, ended) => {
           // The staff tree lives on the map only. What walking out costs is `walkOut`'s one rule
-          // (above): the campaign and the cap keep the draft and carry on with it on the way back
-          // in, the death match spends the attempt. No popup — window.confirm never renders on his
-          // phone, which froze the Map button (his report).
+          // (above): every ladder — the death match too, since 2026-10-24 — keeps the draft and carries
+          // on with it on the way back in. No popup — window.confirm never renders on his phone, which
+          // froze the Map button (his report).
           walkOut(started, ended)
           setLevel(null)
         }}
         onRoster={() => setRoster(true)}
         /* The worn-out door. My team only renders with no level open (it is the map's room, not
-           the draft's), so this closes the level on the way — and it does NOT spend the attempt
-           the way walking out does: a five with a worn-out man in it cannot take the floor at
+           the draft's), so this closes the level on the way — and spends nothing, like any walk out:
+           the draft is kept, and when the level opens again it is read against the five My team
+           hands back (Draft.tsx `reseat`). A five with a worn-out man in it cannot take the floor at
            all, so this is not a peek at the roster, it is the only move left. */
         onMyTeam={death && prog.roster ? () => { setLevel(null); setMyTeam(true) } : undefined}
         autoSpin={autoSpin}

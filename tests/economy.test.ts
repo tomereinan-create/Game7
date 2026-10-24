@@ -352,7 +352,8 @@ describe('the boosts — single use, bought before the first spin, at most two t
 
   it('App sims the night the draft card priced: the draft hands its edge over, App hands it to `night`', () => {
     const app = readFileSync('src/App.tsx', 'utf8')
-    expect(app).toMatch(/night\(five, opponent\.players, assignment, plan, paceMastery\(prog\), death \? 0 : edge\)/)
+    // paced off the staff the draft plays with (2026-10-24: a rank bought mid-draft starts with the next draft)
+    expect(app).toMatch(/night\(five, opponent\.players, assignment, plan, paceMastery\(staffed\), death \? 0 : edge\)/)
     const draft = readFileSync('src/ui/Draft.tsx', 'utf8')
     expect(draft).toMatch(/night\(five, opponent\.players, assignment, plan, paceMastery\(wallet\), edge\)/)
     expect(draft).toMatch(/onSim\(five, assignment, toWin, edge\)/)
@@ -440,7 +441,8 @@ describe('kept with the draft in progress', () => {
   })
 
   it('every new charge and the boosts round-trip: Same roster, Scout’s pick, Extra spin with a Timeout, the Film session’s second look', () => {
-    const s = base({
+    const s: DraftSave = {
+      ...base({
       draws: 512,
       slots: { PG: WHEEL[3].p[0] },
       landed: null,
@@ -450,7 +452,11 @@ describe('kept with the draft in progress', () => {
       reels: { team: { rows: ['A', 'B'], at: 0 }, year: { rows: ['2001'], at: 0 }, nonce: 3, held: 'team' },
       used: { fo_spin: 4, dyn_same: 1, dyn_pick: 1, fo_respin: 2 },
       boosts: ['timeout', 'film'],
-    })
+      }),
+      // and the staff the draft began with (2026-10-24), which is where the Dynasty ranks it spends come from
+      ranks: { fo_spin: 3, dyn_spin: 2, dyn_same: 1, dyn_pick: 1, fo_respin: 2 },
+      carry: null,
+    }
     saveDraft('campaign', s)
     expect(loadDraft('campaign', 33, p)).toEqual(s)
     clearDraft('campaign', 33)
