@@ -172,18 +172,16 @@ export const NODES: Node[] = [
       'A solve button — one press puts the engine’s best board back after you have changed it.',
     ],
   },
+  /* THE PLAYBOOK COMES BEFORE TEMPO CONTROL (his word, 2026-10-24: "Accept all (Recommended)"). It
+     stood at the end of the chain behind Tempo control from 9fcd1b0, when only the death match had
+     a plan; since 48eecc9 the campaign and the salary cap have a plan — and so a tempo, and a pace
+     to read — only from Playbook rank 1 (state/campaign.ts `callsPlan`), so Tempo control rank 1
+     bought nothing there until the node BELOW it was owned. Now the Playbook is row 2 and Tempo
+     control row 3, priced by the row rule like every other node (3★ and 4★ a rank). A save that
+     already owns Tempo control without the Playbook keeps its ranks — `requires` gates the buying,
+     never what is owned — and `spent` keeps what each rank was paid. */
   {
-    id: 'coach_sigma', branch: 'Coach', depth: 2, ranks: 3, requires: 'coach_manual',
-    name: 'Tempo control',
-    blurb: 'Pace is a read — surpluses, not noise. Master the call.',
-    rankBlurbs: [
-      'The pace readout: both surpluses show at the draft, so the call reads the matchup.',
-      'A trained bench wastes less — the tempo deviation tax is halved.',
-      'Your call carries the night: 85% of the pace is yours, however they answer.',
-    ],
-  },
-  {
-    id: 'coach_tactics', branch: 'Coach', depth: 3, ranks: 3, requires: 'coach_sigma',
+    id: 'coach_tactics', branch: 'Coach', depth: 2, ranks: 3, requires: 'coach_manual',
     name: 'Playbook',
     /* IT WAS NEVER THE DEATH MATCH'S ALONE — the node has always been on the Coach branch, which
        every mode is offered (his report: "Tactics arent visable in boths campaigns(Salary and
@@ -194,6 +192,16 @@ export const NODES: Node[] = [
       'Name your main scorer and main playmaker, and set the tempo.',
       'The shot diet, and crashing the glass.',
       'The defensive scheme, and hunting the mismatch.',
+    ],
+  },
+  {
+    id: 'coach_sigma', branch: 'Coach', depth: 3, ranks: 3, requires: 'coach_tactics',
+    name: 'Tempo control',
+    blurb: 'The tempo the Playbook calls, mastered: pace is a read — surpluses, not noise.',
+    rankBlurbs: [
+      'The pace readout: both surpluses show at the draft, so the tempo you call reads the matchup.',
+      'A trained bench wastes less — the tempo deviation tax is halved.',
+      'Your call carries the night: 85% of the pace is yours, however they answer.',
     ],
   },
   {

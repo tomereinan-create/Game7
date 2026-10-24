@@ -25,6 +25,7 @@ import {
   migrate,
   NODE,
   NODES,
+  paceMastery,
   price,
   PRICING,
   respec,
@@ -32,13 +33,14 @@ import {
   scoutsPicks,
   tierOpen,
   treeCost,
+  unlocked,
   type Branch,
   type BoostId,
   type NodeId,
   type Wallet,
 } from '../src/engine/tree'
 import type { Opponent } from '../src/engine/types'
-import { freshProgress, levelSeed, loadProgress, saveKey, saveProgress, type Progress } from '../src/state/campaign'
+import { callsPlan, freshProgress, levelSeed, loadProgress, planFor, saveKey, saveProgress, type CampaignMode, type Progress } from '../src/state/campaign'
 import { afterLeave, clearDraft, countedRng, draftAttempt, hasSpun, loadDraft, saveDraft, type DraftSave, type DraftState } from '../src/state/draftsave'
 import { bare, Draft, fillQueue, franchiseLanding, landable, landOn, posOf } from '../src/ui/Draft'
 import { Tree } from '../src/ui/Tree'
@@ -106,6 +108,84 @@ describe('A — the milder pricing: a rank costs its row in the branch plus one'
     expect(canBuy(poor, 'scout_wheel')).toBe(false)
     expect(buy(poor, 'scout_wheel')).toBeNull()
     expect(canBuy(poor, 'scout_wheel', true)).toBe(false) // the death match charges the same two
+  })
+})
+
+/**
+ * THE PLAYBOOK BEFORE TEMPO CONTROL (his word, 2026-10-24: "Accept all (Recommended)"). In the campaign
+ * and the cap a plan — and so a tempo, and a pace to read — exists only from Playbook rank 1, and the
+ * Playbook stood BELOW Tempo control, so Tempo control rank 1 bought nothing there until it was owned.
+ */
+describe('the Coach branch: Matchup coaching, Matchup board, Playbook, Tempo control', () => {
+  const coach = () => NODES.filter((n) => n.branch === 'Coach').sort((a, b) => a.depth - b.depth)
+  const five = PLAYERS.slice(0, 5)
+  const them = PLAYERS.slice(100, 105)
+
+  it('in that order, each needing the one above, at 1★, 2★, 3★ and 4★ a rank — in every mode', () => {
+    expect(coach().map((n) => n.id)).toEqual(['coach_optimal', 'coach_manual', 'coach_tactics', 'coach_sigma'])
+    expect(coach().map((n) => n.depth)).toEqual([0, 1, 2, 3])
+    expect(coach().map((n) => n.requires ?? null)).toEqual([null, 'coach_optimal', 'coach_manual', 'coach_tactics'])
+    expect(coach().map((n) => price(n.id))).toEqual([1, 2, 3, 4])
+    expect(coach().map((n) => price(n.id, true))).toEqual([1, 2, 3, 4]) // the death match's tree is the same tree
+    // the two three-rank nodes traded rows, so the branch costs what it cost
+    expect(sum('Coach')).toBe(27)
+    expect(treeCost(['Scout', 'Front office', 'Coach'])).toBe(57)
+  })
+
+  it('the Playbook is bought straight after the board, and Tempo control waits for it', () => {
+    const w = wallet({ stars: cleared(10), nodes: { coach_optimal: 1, coach_manual: 1 }, spent: 3 })
+    expect(canBuy(w, 'coach_sigma')).toBe(false)
+    expect(canBuy(w, 'coach_sigma', true)).toBe(false)
+    const pb = buy(w, 'coach_tactics')!
+    expect(pb.spent).toBe(3 + 3)
+    expect(buy(pb, 'coach_sigma')!.spent).toBe(3 + 3 + 4)
+  })
+
+  it('and by the time Tempo control can be bought, the campaign and the cap have a tempo for it to read', () => {
+    for (const mode of ['campaign', 'salary', 'death'] as CampaignMode[]) {
+      const p = { ...freshProgress(), stars: cleared(20), nodes: { coach_optimal: 1, coach_manual: 1 } }
+      const pb = buy(p, 'coach_tactics')!
+      const tc = buy(pb, 'coach_sigma')!
+      expect(callsPlan(mode, tc), mode).toBe(true)
+      const plan = planFor(mode, tc, five.map((x) => x.name))
+      expect(night(five, them, 'optimal', plan, paceMastery(tc)).pc, mode).not.toBeNull()
+    }
+  })
+
+  const put = (raw: Record<string, unknown>) => store.set(saveKey('campaign'), JSON.stringify(raw))
+
+  it('a save that bought Tempo control before the Playbook keeps its ranks — not re-charged, not refunded — and they still read the pace', () => {
+    // under the old order and prices: Matchup coaching 1★, the board 2★, Tempo control 3★ a rank
+    const nodes = { coach_optimal: 2, coach_manual: 2, coach_sigma: 2 }
+    put({ coach: null, stars: cleared(20), seed: 7, plays: 20, spent: 2 + 4 + 6, nodes, pricing: PRICING, ladder: 2 })
+    const p = loadProgress('campaign')
+    expect(p.nodes).toEqual(nodes)
+    expect(p.spent).toBe(12) // the ledger, untouched — at the new prices those ranks would be 14
+    expect(balance(p)).toBe(40 - 12)
+    expect(paceMastery(p)).toBe(2)
+    // the gate governs buying only: a third Tempo rank waits for the Playbook, the two owned stay owned
+    expect(unlocked(p, 'coach_sigma')).toBe(false)
+    expect(buy(p, 'coach_sigma')).toBeNull()
+    const pb = buy(p, 'coach_tactics')!
+    expect(pb.spent).toBe(12 + 3)
+    expect(buy(pb, 'coach_sigma')!.spent).toBe(12 + 3 + 4)
+    // a respec hands back exactly what was paid
+    expect(balance(respec(pb))).toBe(40)
+    // the tree draws it: Tempo control owned below a Playbook that is open to buy
+    const html = renderToStaticMarkup(createElement(Tree, { wallet: p, onBuy: () => {}, onRespec: () => {}, onBack: () => {} }))
+    expect(html).toContain('aria-label="Playbook, 0 of 3 ranks, 3 stars a rank"')
+    expect(html).toContain('aria-label="Tempo control, 2 of 3 ranks, 4 stars a rank"')
+    expect(html).toMatch(/class="treenode part"[^>]*aria-label="Tempo control/)
+    store.delete(saveKey('campaign'))
+  })
+
+  it('a save from before the per-node prices that owns Tempo control is re-derived at one star a rank, exactly as before', () => {
+    put({ coach: null, stars: cleared(8), seed: 7, plays: 8, spent: 6, nodes: { coach_optimal: 2, coach_manual: 2, coach_sigma: 2 }, ladder: 2 })
+    const p = loadProgress('campaign')
+    expect(p.spent).toBe(6)
+    expect(p.nodes.coach_sigma).toBe(2)
+    expect(balance(p)).toBe(16 - 6)
+    store.delete(saveKey('campaign'))
   })
 })
 

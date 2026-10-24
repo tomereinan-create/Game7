@@ -26,7 +26,7 @@ import {
 const BRANCHES: { key: Branch; blurb: string }[] = [
   { key: 'Scout', blurb: 'Know more before you draft.' },
   { key: 'Front office', blurb: 'More chances on the wheel.' },
-  { key: 'Coach', blurb: 'Assignments and the night’s noise.' },
+  { key: 'Coach', blurb: 'Assignments, the playbook and its pace.' },
   { key: 'Salary', blurb: 'Payroll room. Salary Cap campaign only.' },
   { key: 'Survival', blurb: 'Lives, checkpoints and substitutions. Death match only.' },
   { key: 'Dynasty', blurb: 'One node a tier: it opens when the ladder reaches it. Campaign and Salary Cap.' },

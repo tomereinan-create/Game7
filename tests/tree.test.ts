@@ -6,7 +6,7 @@ import { bestBoard, defenseVs, naiveAssignment, pairingTable } from '../src/engi
 import { DEFAULT_ORDER, PLAYERS, setTagOrder, tagOrder } from '../src/engine/pool'
 import { starsFor } from '../src/engine/resolver'
 import { makeRng } from '../src/engine/rng'
-import { balance, buy, capBonus, earned, maxed, migrate, NODES, parIncome, price, rank, respec, respinSeason, treeCost, unlocked, type Wallet } from '../src/engine/tree'
+import { balance, buy, capBonus, earned, maxed, migrate, NODE, NODES, paceMastery, parIncome, playbookRank, price, rank, respec, respinSeason, treeCost, unlocked, type Wallet } from '../src/engine/tree'
 import type { Opponent, StatLine } from '../src/engine/types'
 
 const by = new Map(PLAYERS.map((p) => [p.name, p]))
@@ -58,6 +58,30 @@ describe('staff tree — stars as a campaign currency', () => {
     expect(balance(back)).toBe(ROUNDS * 2)
     expect(back.nodes).toEqual({})
     expect(earned(back)).toBe(ROUNDS * 2)
+  })
+
+  // his word, 2026-10-24: "Accept all (Recommended)" — the Playbook before Tempo control
+  it('the Coach chain runs Matchup coaching, Matchup board, Playbook, Tempo control — the plan before the pace it reads', () => {
+    expect([NODE.coach_optimal, NODE.coach_manual, NODE.coach_tactics, NODE.coach_sigma].map((n) => [n.depth, n.requires ?? null])).toEqual([
+      [0, null],
+      [1, 'coach_optimal'],
+      [2, 'coach_manual'],
+      [3, 'coach_tactics'],
+    ])
+    let w: Wallet = { stars: Array.from({ length: ROUNDS }, () => 2), spent: 0, nodes: {} }
+    w = buy(buy(w, 'coach_optimal')!, 'coach_manual')!
+    expect(unlocked(w, 'coach_tactics')).toBe(true)
+    expect(unlocked(w, 'coach_sigma')).toBe(false)
+    expect(buy(w, 'coach_sigma')).toBeNull()
+    w = buy(w, 'coach_tactics')!
+    expect(playbookRank(w)).toBe(1)
+    w = buy(w, 'coach_sigma')!
+    expect(paceMastery(w)).toBe(1)
+    expect(w.spent).toBe(1 + 2 + 3 + 4)
+    // an owned rank is never taken away by the gate: a Tempo rank without the Playbook still counts
+    const legacy: Wallet = { stars: [9], spent: 3, nodes: { coach_optimal: 1, coach_manual: 1, coach_sigma: 1 } }
+    expect(paceMastery(migrate({ ...legacy, pricing: 2 }))).toBe(1)
+    expect(unlocked(legacy, 'coach_sigma')).toBe(false)
   })
 
   it('a wallet saved before the tree was ranked is migrated, not charged for nodes that no longer exist', () => {

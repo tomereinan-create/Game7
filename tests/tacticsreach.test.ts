@@ -38,10 +38,14 @@ const wallet = (nodes: Partial<Record<NodeId, number>> = {}, tactics: Tactics = 
   bench: null,
   record: { w: 0, l: 0 },
 })
-/** The whole Coach branch, which is the only way to reach the Playbook at all. */
-const COACH_TO_PLAYBOOK: NodeId[] = ['coach_optimal', 'coach_manual', 'coach_sigma']
+/**
+ * The Coach branch down to the Playbook, which is the only way to reach it at all — Matchup coaching,
+ * then the Matchup board. Tempo control sits BELOW the Playbook since 2026-10-24 (his word: "Accept all
+ * (Recommended)"), so it is no longer on the way.
+ */
+const COACH_TO_PLAYBOOK: NodeId[] = ['coach_optimal', 'coach_manual']
 const withPlaybook = (rank: number, tactics: Tactics = DEFAULT_TACTICS) =>
-  wallet({ coach_optimal: 1, coach_manual: 1, coach_sigma: 1, ...(rank ? { coach_tactics: rank } : {}) }, tactics)
+  wallet({ coach_optimal: 1, coach_manual: 1, ...(rank ? { coach_tactics: rank } : {}) }, tactics)
 
 /** A plan with something called at every rank, so the gate can be read off the result. */
 const FULL: Tactics = {
