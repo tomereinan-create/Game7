@@ -17,17 +17,35 @@ const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').repl
  */
 function sitePages(site: Site, deploy: Deploy): Plugin {
   // THE PRIVACY PAGE SAYS WHAT RUNS (the live check, 2026-10-22: it described PostHog as running
-  // and Cloudflare as "may", the reverse of the live site). Written from the deploy's own settings.
+  // and Cloudflare as "may", the reverse of the live site). Written from the deploy's own settings —
+  // and, with a PostHog key, it explains the anonymous ID that only a yes to the one-time ask stores
+  // (his decision, 2026-10-24: "ID after a one-time yes (Recommended)"; see src/analytics.ts).
   const cf = deploy.cfBeacon || site.cfBeacon
   const analyticsHtml = [
     cf
       ? `<p>We count visits with <b>Cloudflare Web Analytics</b>: a page-view counter that sets no cookies and stores nothing on your device. It records the page address, where the visit came from, the kind of browser and device, the country, and how fast the page loaded, and shows us totals, never a person.</p>`
       : '',
     deploy.posthogKey
-      ? `<p>To learn whether people reach the first spin and finish a series, the game also sends a handful of anonymous events (for example: the game was opened, the first spin happened, a series finished, a share button was pressed) to <b>PostHog</b>, hosted in the EU. Each event carries the page address, where the visit came from (for example the <code>ref</code> or <code>s</code> tag on a shared link), the kind of browser and device, and the game's own facts (level, result). PostHog runs in its cookieless mode: no cookies, no local storage, no identifier on your device; it derives a short-lived anonymous count on its own servers, builds no profile of you, and we never identify you. These events are kept for up to 12 months.</p>`
+      ? `<p>To learn whether people reach the first spin and finish a series, the game also sends a handful of anonymous events (for example: the game was opened, the first spin happened, a series finished, a share button was pressed) to <b>PostHog</b>, hosted in the EU. Each event carries the page address, where the visit came from (for example the <code>ref</code> or <code>s</code> tag on a shared link), the kind of browser and device, and the game's own facts (level, result). By default PostHog runs in its cookieless mode: no cookies, no local storage, no identifier on your device; it derives a short-lived anonymous count on its own servers, builds no profile of you, and we never identify you.</p>
+      <p><b>An anonymous ID, only if you say yes.</b> After your first series the game asks once: “Share anonymous stats to help improve the game?” If you say yes, a random anonymous ID — letters and numbers made up in your browser, which say nothing about you — is stored with your game save in this browser, and the events carry it. It travels with your save: in a save code, and in the link that carries your progress to another browser or to the game's new address. It is used only to count returning players (how many come back the next day, or the next week): never to identify you, never combined with other data, and no profile is built from it. If you say no, or do not answer, nothing changes: no ID is stored, and the game does not ask again. To remove the ID, use the switches below; deleting your save (clearing this site's data in your browser) deletes it too.</p>
+      <p>These events are kept for up to 12 months.</p>`
       : '',
     !cf && !deploy.posthogKey ? '<p>The game sends no analytics at all.</p>' : '',
   ].join('\n      ')
+  // the short version's analytics line, true to the same settings
+  const shortHtml = deploy.posthogKey
+    ? 'We count how the game is used with anonymous analytics. By default nothing is stored on your device for that. Only if you say yes to sharing anonymous stats, a random ID is kept with your save so we can count returning players. You can switch it all off below.'
+    : cf
+      ? 'We count visits with anonymous, cookieless analytics. Nothing is stored on your device for that, and you can switch it off below.'
+      : 'The game sends no analytics at all.'
+  // the switch's own line for the ID, where there can be one (see privacy/index.html's script)
+  const idHtml = deploy.posthogKey
+    ? `<div id="aid" class="aid">
+          <p>Anonymous ID in this browser: <b id="aidstate">none</b></p>
+          <button id="aidremove" type="button" hidden>Remove the ID</button>
+          <p class="muted" style="margin-bottom: 0">Turning analytics off removes the ID too. If you also want the events sent with your ID deleted, write to us with the ID shown here before you remove it.</p>
+        </div>`
+    : ''
   const vars: Record<string, string> = {
     SITE_NAME: site.name,
     SITE_SHORT: site.shortName,
@@ -41,6 +59,8 @@ function sitePages(site: Site, deploy: Deploy): Plugin {
     OG_IMAGE: `${site.url}og-image.png`,
     OG_ALT: site.ogImageAlt,
     HTML_ANALYTICS: analyticsHtml,
+    HTML_ANALYTICS_SHORT: shortHtml,
+    HTML_ANALYTICS_ID: idHtml,
   }
   // the manifest's start_url and scope follow the base: './' serves from any folder (GitHub Pages'
   // /Game7/), '/' from a domain's root (P3)

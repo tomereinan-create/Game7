@@ -23,19 +23,23 @@
       button { font: inherit; padding: 10px 16px; border-radius: 8px; border: 1px solid var(--you); background: transparent; color: var(--ink); cursor: pointer; }
       button[aria-pressed='true'] { background: var(--you); color: #141008; }
       footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line); }
+      .aid { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
+      .aid p:first-child { margin-top: 0; }
+      .aid b { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; word-break: break-all; }
+      .aid button { margin-bottom: 4px; }
     </style>
   </head>
   <body>
     <main>
       <a class="back" href="../">← Back to the game</a>
       <h1>Privacy</h1>
-      <p class="muted">%SITE_NAME% · last updated 22 October 2026</p>
+      <p class="muted">%SITE_NAME% · last updated 24 October 2026</p>
 
       <h2>The short version</h2>
       <ul>
         <li>No accounts, no sign-up, no ads, no ad trackers, no tracking pixels.</li>
         <li>Your progress stays in your own browser. We never receive it.</li>
-        <li>We count how the game is used with anonymous, cookieless analytics. Nothing is stored on your device for that, and you can switch it off below.</li>
+        <li>%HTML_ANALYTICS_SHORT%</li>
       </ul>
 
       <h2>Your saves</h2>
@@ -43,12 +47,13 @@
 
       <h2>Analytics</h2>
       %HTML_ANALYTICS%
-      <p>Your save data is never read for analytics. If your browser sends Global Privacy Control or Do Not Track, or you switch analytics off below, none of the above is loaded or sent.</p>
+      <p>Your progress in the game is never read for analytics. If your browser sends Global Privacy Control or Do Not Track, or you switch analytics off below, none of the above is loaded, stored or sent.</p>
 
       <div class="opt">
         <p style="margin-top: 0">Analytics in this browser: <b id="state">on</b></p>
         <button id="toggle" type="button" aria-pressed="false">Turn analytics off</button>
         <p class="muted" style="margin-bottom: 0">Turning them off keeps one small "off" setting in this browser so the choice is remembered.</p>
+        %HTML_ANALYTICS_ID%
       </div>
 
       <h2>Hosting and fonts</h2>
@@ -70,24 +75,53 @@
     <script>
       ;(function () {
         var KEY = 'game7.analytics'
+        // the anonymous ID and the answer to the game's one-time ask (src/analytics.ts); both travel
+        // with the save, and only a yes ever stores the ID
+        var AID = 'game7.aid'
+        var ASK = 'game7.statsConsent'
         var state = document.getElementById('state')
         var btn = document.getElementById('toggle')
+        var aidState = document.getElementById('aidstate')
+        var aidRemove = document.getElementById('aidremove')
+        function get(k) {
+          try { return localStorage.getItem(k) } catch (e) { return null }
+        }
         function read() {
-          try { return localStorage.getItem(KEY) === 'off' } catch (e) { return false }
+          return get(KEY) === 'off'
+        }
+        // taking the ID away takes the yes with it: the game makes no new one and does not ask again
+        function forget() {
+          try {
+            localStorage.removeItem(AID)
+            if (localStorage.getItem(ASK) === 'yes') localStorage.setItem(ASK, 'no')
+          } catch (e) {}
         }
         function paint() {
           var off = read()
           state.textContent = off ? 'off' : 'on'
           btn.textContent = off ? 'Turn analytics back on' : 'Turn analytics off'
           btn.setAttribute('aria-pressed', off ? 'true' : 'false')
+          if (aidState) {
+            var id = get(AID)
+            aidState.textContent = id || 'none'
+            if (aidRemove) aidRemove.hidden = !id
+          }
         }
         btn.addEventListener('click', function () {
           try {
             if (read()) localStorage.removeItem(KEY)
-            else localStorage.setItem(KEY, 'off')
+            else {
+              localStorage.setItem(KEY, 'off')
+              forget()
+            }
           } catch (e) {}
           paint()
         })
+        if (aidRemove)
+          aidRemove.addEventListener('click', function () {
+            forget()
+            paint()
+          })
         paint()
       })()
     </script>
