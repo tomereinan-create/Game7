@@ -16,6 +16,7 @@ import { useUserMode } from '../state/viewmode'
 import { useLesson } from '../state/tutorial'
 import { mapDoorLesson } from './lessons'
 import { ShareButton } from './ShareSheet'
+import { StatsAsk } from './StatsAsk'
 
 /** Whether this machine has asked for less motion. The draft reads it the same way. */
 const reduceMotion = () => {
@@ -1061,6 +1062,10 @@ export function Series({
         </div>
       ) : null}
       <div className="dock">
+        {/* P5, his decision of 2026-10-24: the one-time "Share anonymous stats?" ask, on the first
+            settled night he played himself — not on someone else's series replayed from a link. It
+            renders nothing unless PostHog runs and no answer is stored (see StatsAsk). */}
+        {done && settled && !replay ? <StatsAsk /> : null}
         {!done || !settled ? (
           /* The ways on are not offered until the series has one - a NEXT LEVEL under a 2-1 strip
              is a door out of a night that has not finished happening. On a game 1-6 tape there is

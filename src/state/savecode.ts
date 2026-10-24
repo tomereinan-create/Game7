@@ -8,6 +8,10 @@
  * WHAT IS IN IT: every key the game writes — all of them start `game7.` — and nothing else. The
  * analytics off switch (`game7.analytics`) stays with the browser it was set in, and so does the
  * staff flag (`game7.staff`, state/staff.ts): a code he hands someone must not hand them Scout mode.
+ * The answer to the one-time stats ask and the anonymous ID a yes makes (`game7.statsConsent`,
+ * `game7.aid`) DO travel — his decision, 2026-10-24: "Yes stores a random ID in the save (it travels
+ * with save codes and the mover)" — so a player who moves browsers is still one returning player.
+ * A browser that has switched analytics off deletes an ID that arrives this way (src/analytics.ts).
  *
  * FORMAT: `1.` + base64url(deflate-raw(JSON)) where the browser has CompressionStream (every
  * current one), `0.` + base64url(JSON) where it does not. Both decode everywhere the game runs.
