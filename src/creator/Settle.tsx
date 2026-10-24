@@ -5,7 +5,7 @@ import { makeRng } from '../engine/rng'
 import { Series } from '../ui/Series'
 import { seriesSeed } from '../engine/batch'
 import { CREATOR } from './params'
-import { asOpponent, fiveFor, seasonName, teamSeason } from './teams'
+import { creatorSide } from './teams'
 
 /** How many series the win-chance bar is the share of. The videos say the number; it must be true. */
 export const SIMS = 10_000
@@ -25,16 +25,15 @@ export const BATCH_BASE = 1
  */
 export function CreatorSettle() {
   const c = CREATOR!
-  const A = teamSeason(c.a!)
-  const B = teamSeason(c.b!)
   const sides = useMemo(() => {
+    // B loads with A's men sitting out when it is a team-season — Custom's rule, and
+    // scripts/batch-sim.ts's default — so the bar on screen and the script's table are the same
+    // 10,000 series. A ladder level or a hand-built five plays as written (teams.ts creatorSide).
+    const A = creatorSide({ id: c.a, five: c.aFive, name: c.aName, ab: c.aAb })
+    const B = A && creatorSide({ id: c.b, five: c.bFive, name: c.bName, ab: c.bAb }, new Set(A.five.map((p) => p.player)))
     if (!A || !B) return null
-    // B loads with A's men sitting out — Custom's rule, and scripts/batch-sim.ts's default — so
-    // the bar on screen and the script's table are the same 10,000 series
-    const fa = fiveFor(A)
-    const fb = fiveFor(B, new Set(fa.map((p) => p.player)))
-    return { fa, fb, mine: compile(fa, fb), theirs: compile(fb, fa) }
-  }, [A, B])
+    return { A, B, fa: A.five, fb: B.five, mine: compile(A.five, B.five), theirs: compile(B.five, A.five) }
+  }, [c])
   const [done, setDone] = useState(0)
   const [wins, setWins] = useState(0)
   const [play, setPlay] = useState(false)
@@ -64,25 +63,27 @@ export function CreatorSettle() {
     return () => window.clearTimeout(t)
   }, [c.auto, done, play])
 
-  if (!A || !B || !sides) {
+  if (!sides) {
     return (
       <div className="cr-settle">
         <p className="cr-err">
-          Unknown team-season. Use the season's closing year and the club's letters, e.g. <code>a=1996-CHI&amp;b=2017-GSW</code>.
+          Unknown side. Use a team-season (the season's closing year and the club's letters, e.g. <code>a=1996-CHI&amp;b=2017-GSW</code>), a ladder
+          level (<code>a=L113</code>), or five card names (<code>a5=…</code>).
         </p>
       </div>
     )
   }
+  const { A, B } = sides
 
   if (play) {
     const result = simSeries(sides.mine, sides.theirs, makeRng(c.seed), SIGMA)
     return (
       <Series
-        opponent={asOpponent(B, 1)}
+        opponent={B.opponent(1)}
         five={sides.fa}
         mine={sides.mine}
         theirs={sides.theirs}
-        teamName={seasonName(A)}
+        teamName={A.label}
         teamAb={A.ab}
         result={result}
         seed={c.seed}
@@ -97,8 +98,8 @@ export function CreatorSettle() {
   const pct = done ? (100 * wins) / done : 50
   const side = (t: typeof A, five: typeof sides.fa, tone: 'a' | 'b') => (
     <div className={`cr-side ${tone}`}>
-      <b className="cr-team">{seasonName(t)}</b>
-      <i className="cr-rec">{t.rec ? `${t.rec} that season` : ''}</i>
+      <b className="cr-team">{t.label}</b>
+      <i className="cr-rec">{t.sub}</i>
       <ul>
         {five.map((p) => (
           <li key={p.name}>{p.name}</li>
@@ -110,7 +111,7 @@ export function CreatorSettle() {
     <div className="cr-settle">
       <span className="cr-kicker">Settle it · {SIMS.toLocaleString('en-US')} sims</span>
       {side(A, sides.fa, 'a')}
-      <div className="cr-bar" role="img" aria-label={`${seasonName(A)} win ${pct.toFixed(0)}% of ${done} simulated series`}>
+      <div className="cr-bar" role="img" aria-label={`${A.label} win ${pct.toFixed(0)}% of ${done} simulated series`}>
         <div className="cr-bar-a" style={{ width: `${pct}%` }} />
         <span className="cr-pa">{pct.toFixed(0)}%</span>
         <span className="cr-pb">{(100 - pct).toFixed(0)}%</span>

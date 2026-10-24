@@ -1,0 +1,1853 @@
+{
+  "name": "The All-Time Cup (since 1980)",
+  "frozen": "2026-10-23",
+  "engine": {
+    "commit": "e98a4e8",
+    "sigma": 10,
+    "call": "simSeries(compile(A,B), compile(B,A), makeRng(seed), SIGMA)"
+  },
+  "seeds": {
+    "base": 20261024,
+    "rule": "seed = base + game number; group games 1-60 in schedule order, QF 61-64, SF 65-66, final 67"
+  },
+  "clubs": {
+    "MEM": {
+      "team": "All-time Grizzlies",
+      "level": "L91",
+      "five": [
+        "Mike Conley '17",
+        "Desmond Bane '23",
+        "Shareef Abdur-Rahim '01",
+        "Pau Gasol '06",
+        "Marc Gasol '15"
+      ]
+    },
+    "CHO": {
+      "team": "All-time Hornets",
+      "level": "L92",
+      "five": [
+        "Kemba Walker '17",
+        "Eddie Jones '00",
+        "Gerald Wallace '08",
+        "Alonzo Mourning '95",
+        "Elden Campbell '02"
+      ]
+    },
+    "ATL": {
+      "team": "All-time Hawks",
+      "level": "L93",
+      "five": [
+        "Trae Young '22",
+        "Eddie Johnson '80",
+        "Dominique Wilkins '91",
+        "Dan Roundfield '81",
+        "Al Horford '15"
+      ]
+    },
+    "SAC": {
+      "team": "All-time Kings",
+      "level": "L94",
+      "five": [
+        "De'Aaron Fox '23",
+        "Mitch Richmond '97",
+        "Metta World Peace '07",
+        "Chris Webber '01",
+        "Domantas Sabonis '24"
+      ]
+    },
+    "WAS": {
+      "team": "All-time Wizards",
+      "level": "L95",
+      "five": [
+        "Gilbert Arenas '06",
+        "Bradley Beal '20",
+        "Larry Hughes '05",
+        "Kristaps Porziņģis '23",
+        "Chris Webber '95"
+      ]
+    },
+    "DET": {
+      "team": "All-time Pistons",
+      "level": "L96",
+      "five": [
+        "Chauncey Billups '06",
+        "Joe Dumars '90",
+        "Grant Hill '97",
+        "Blake Griffin '19",
+        "Bob Lanier '80"
+      ]
+    },
+    "DAL": {
+      "team": "All-time Mavericks",
+      "level": "L97",
+      "five": [
+        "Jason Kidd '09",
+        "Luka Dončić '23",
+        "Mark Aguirre '84",
+        "Dirk Nowitzki '05",
+        "Kristaps Porziņģis '22"
+      ]
+    },
+    "POR": {
+      "team": "All-time Trail Blazers",
+      "level": "L98",
+      "five": [
+        "Damian Lillard '18",
+        "Clyde Drexler '88",
+        "Jim Paxson '83",
+        "Rasheed Wallace '01",
+        "Arvydas Sabonis '96"
+      ]
+    },
+    "NYK": {
+      "team": "All-time Knicks",
+      "level": "L99",
+      "five": [
+        "Michael Ray Richardson '80",
+        "Ray Williams '80",
+        "Bernard King '84",
+        "Carmelo Anthony '14",
+        "Patrick Ewing '91"
+      ]
+    },
+    "BRK": {
+      "team": "All-time Nets",
+      "level": "L100",
+      "five": [
+        "James Harden '21",
+        "Jason Kidd '06",
+        "Kevin Durant '23",
+        "Vince Carter '05",
+        "Derrick Coleman '93"
+      ]
+    },
+    "DEN": {
+      "team": "All-time Nuggets",
+      "level": "L101",
+      "five": [
+        "Jamal Murray '26",
+        "Chauncey Billups '09",
+        "Alex English '83",
+        "Dan Issel '83",
+        "Nikola Jokić '22"
+      ]
+    },
+    "IND": {
+      "team": "All-time Pacers",
+      "level": "L102",
+      "five": [
+        "Tyrese Haliburton '25",
+        "Victor Oladipo '18",
+        "Metta World Peace '04",
+        "Paul George '16",
+        "Jermaine O'Neal '04"
+      ]
+    },
+    "UTA": {
+      "team": "All-time Jazz",
+      "level": "L103",
+      "five": [
+        "John Stockton '95",
+        "Jeff Hornacek '96",
+        "Adrian Dantley '81",
+        "Karl Malone '97",
+        "Carlos Boozer '07"
+      ]
+    },
+    "TOR": {
+      "team": "All-time Raptors",
+      "level": "L104",
+      "five": [
+        "Kyle Lowry '17",
+        "Vince Carter '01",
+        "Kawhi Leonard '19",
+        "Scottie Barnes '26",
+        "Chris Bosh '08"
+      ]
+    },
+    "MIN": {
+      "team": "All-time Timberwolves",
+      "level": "L105",
+      "five": [
+        "Sam Cassell '04",
+        "Jimmy Butler '18",
+        "Kevin Garnett '04",
+        "Karl-Anthony Towns '17",
+        "Kevin Love '12"
+      ]
+    },
+    "CLE": {
+      "team": "All-time Cavaliers",
+      "level": "L106",
+      "five": [
+        "Mark Price '93",
+        "Ron Harper '89",
+        "LeBron James '09",
+        "Larry Nance '92",
+        "Brad Daugherty '92"
+      ]
+    },
+    "NOP": {
+      "team": "All-time Pelicans",
+      "level": "L107",
+      "five": [
+        "Chris Paul '09",
+        "Jrue Holiday '18",
+        "David West '11",
+        "Anthony Davis '18",
+        "DeMarcus Cousins '18"
+      ]
+    },
+    "ORL": {
+      "team": "All-time Magic",
+      "level": "L108",
+      "five": [
+        "Anfernee Hardaway '96",
+        "Tracy McGrady '03",
+        "Grant Hill '05",
+        "Dwight Howard '11",
+        "Shaquille O'Neal '94"
+      ]
+    },
+    "PHO": {
+      "team": "All-time Suns",
+      "level": "L109",
+      "five": [
+        "Paul Westphal '80",
+        "Walter Davis '80",
+        "Charles Barkley '93",
+        "Larry Nance '87",
+        "Amar'e Stoudemire '08"
+      ]
+    },
+    "MIL": {
+      "team": "All-time Bucks",
+      "level": "L110",
+      "five": [
+        "Jrue Holiday '22",
+        "Sidney Moncrief '83",
+        "Marques Johnson '80",
+        "Giannis Antetokounmpo '19",
+        "Brook Lopez '23"
+      ]
+    },
+    "GSW": {
+      "team": "All-time Warriors",
+      "level": "L111",
+      "five": [
+        "Stephen Curry '16",
+        "Kevin Durant '17",
+        "Chris Mullin '90",
+        "Draymond Green '16",
+        "Chris Webber '94"
+      ]
+    },
+    "CHI": {
+      "team": "All-time Bulls",
+      "level": "L112",
+      "five": [
+        "Derrick Rose '11",
+        "Michael Jordan '89",
+        "Scottie Pippen '95",
+        "Jimmy Butler '17",
+        "Pau Gasol '15"
+      ]
+    },
+    "BOS": {
+      "team": "All-time Celtics",
+      "level": "L113",
+      "five": [
+        "Kyrie Irving '19",
+        "Paul Pierce '02",
+        "Larry Bird '86",
+        "Kevin McHale '87",
+        "Kevin Garnett '08"
+      ]
+    },
+    "HOU": {
+      "team": "All-time Rockets",
+      "level": "L114",
+      "five": [
+        "Chris Paul '18",
+        "James Harden '19",
+        "Tracy McGrady '05",
+        "Moses Malone '82",
+        "Hakeem Olajuwon '94"
+      ]
+    },
+    "LAC": {
+      "team": "All-time Clippers",
+      "level": "L115",
+      "five": [
+        "Chris Paul '15",
+        "Paul George '20",
+        "Kawhi Leonard '20",
+        "Elton Brand '06",
+        "Blake Griffin '12"
+      ]
+    },
+    "OKC": {
+      "team": "All-time Thunder",
+      "level": "L116",
+      "five": [
+        "Gary Payton '98",
+        "Shai Gilgeous-Alexander '25",
+        "Kevin Durant '13",
+        "Paul George '19",
+        "Shawn Kemp '94"
+      ]
+    },
+    "PHI": {
+      "team": "All-time 76ers",
+      "level": "L117",
+      "five": [
+        "Ben Simmons '18",
+        "Julius Erving '80",
+        "Charles Barkley '91",
+        "Moses Malone '83",
+        "Joel Embiid '22"
+      ]
+    },
+    "SAS": {
+      "team": "All-time Spurs",
+      "level": "L118",
+      "five": [
+        "Tony Parker '06",
+        "Manu Ginóbili '08",
+        "Kawhi Leonard '17",
+        "Tim Duncan '04",
+        "David Robinson '94"
+      ]
+    },
+    "MIA": {
+      "team": "All-time Heat",
+      "level": "L119",
+      "five": [
+        "Dwyane Wade '10",
+        "LeBron James '12",
+        "Jimmy Butler '21",
+        "Alonzo Mourning '00",
+        "Shaquille O'Neal '05"
+      ]
+    },
+    "LAL": {
+      "team": "All-time Lakers",
+      "level": "L120",
+      "five": [
+        "Magic Johnson '89",
+        "Kobe Bryant '03",
+        "LeBron James '19",
+        "Anthony Davis '20",
+        "Shaquille O'Neal '00"
+      ]
+    }
+  },
+  "groups": [
+    {
+      "id": "East A",
+      "conf": "East",
+      "clubs": [
+        "DET",
+        "TOR",
+        "ORL",
+        "MIL",
+        "BRK"
+      ]
+    },
+    {
+      "id": "East B",
+      "conf": "East",
+      "clubs": [
+        "NYK",
+        "CLE",
+        "PHI",
+        "MIA",
+        "IND"
+      ]
+    },
+    {
+      "id": "East C",
+      "conf": "East",
+      "clubs": [
+        "BOS",
+        "ATL",
+        "CHO",
+        "CHI",
+        "WAS"
+      ]
+    },
+    {
+      "id": "West A",
+      "conf": "West",
+      "clubs": [
+        "DEN",
+        "HOU",
+        "PHO",
+        "DAL",
+        "UTA"
+      ]
+    },
+    {
+      "id": "West B",
+      "conf": "West",
+      "clubs": [
+        "OKC",
+        "MIN",
+        "LAC",
+        "NOP",
+        "MEM"
+      ]
+    },
+    {
+      "id": "West C",
+      "conf": "West",
+      "clubs": [
+        "SAS",
+        "LAL",
+        "POR",
+        "GSW",
+        "SAC"
+      ]
+    }
+  ],
+  "games": [
+    {
+      "no": 1,
+      "date": "2026-10-30",
+      "group": "East C",
+      "a": "WAS",
+      "b": "CHO",
+      "seed": 20261025,
+      "winner": "CHO",
+      "series": "3-4",
+      "games": "97-105 100-99 105-91 97-102 92-106 104-101 95-106",
+      "pointsA": 690,
+      "pointsB": 710,
+      "creator": "https://game7draft.com/?creator=1&a=L95&b=L92&seed=20261025"
+    },
+    {
+      "no": 2,
+      "date": "2026-10-30",
+      "group": "East C",
+      "a": "BOS",
+      "b": "CHI",
+      "seed": 20261026,
+      "winner": "BOS",
+      "series": "4-2",
+      "games": "103-104 97-109 106-89 105-102 103-95 109-90",
+      "pointsA": 623,
+      "pointsB": 589,
+      "creator": "https://game7draft.com/?creator=1&a=L113&b=L112&seed=20261026"
+    },
+    {
+      "no": 3,
+      "date": "2026-10-30",
+      "group": "East A",
+      "a": "BRK",
+      "b": "DET",
+      "seed": 20261027,
+      "winner": "DET",
+      "series": "3-4",
+      "games": "104-97 104-101 101-102 99-109 109-99 96-102 100-107",
+      "pointsA": 713,
+      "pointsB": 717,
+      "creator": "https://game7draft.com/?creator=1&a=L100&b=L96&seed=20261027"
+    },
+    {
+      "no": 4,
+      "date": "2026-10-30",
+      "group": "East B",
+      "a": "PHI",
+      "b": "NYK",
+      "seed": 20261028,
+      "winner": "NYK",
+      "series": "3-4",
+      "games": "97-99 108-89 108-91 93-110 99-106 105-101 98-99",
+      "pointsA": 708,
+      "pointsB": 695,
+      "creator": "https://game7draft.com/?creator=1&a=L117&b=L99&seed=20261028"
+    },
+    {
+      "no": 5,
+      "date": "2026-10-30",
+      "group": "East A",
+      "a": "TOR",
+      "b": "ORL",
+      "seed": 20261029,
+      "winner": "TOR",
+      "series": "4-1",
+      "games": "100-94 95-97 101-98 106-92 111-95",
+      "pointsA": 513,
+      "pointsB": 476,
+      "creator": "https://game7draft.com/?creator=1&a=L104&b=L108&seed=20261029"
+    },
+    {
+      "no": 6,
+      "date": "2026-10-30",
+      "group": "East B",
+      "a": "MIA",
+      "b": "IND",
+      "seed": 20261030,
+      "winner": "MIA",
+      "series": "4-2",
+      "games": "105-94 94-106 107-87 101-102 99-96 111-91",
+      "pointsA": 617,
+      "pointsB": 576,
+      "creator": "https://game7draft.com/?creator=1&a=L119&b=L102&seed=20261030"
+    },
+    {
+      "no": 7,
+      "date": "2026-10-30",
+      "group": "West A",
+      "a": "DAL",
+      "b": "HOU",
+      "seed": 20261031,
+      "winner": "HOU",
+      "series": "3-4",
+      "games": "85-112 103-97 102-97 92-105 93-99 102-101 95-110",
+      "pointsA": 672,
+      "pointsB": 721,
+      "creator": "https://game7draft.com/?creator=1&a=L97&b=L114&seed=20261031"
+    },
+    {
+      "no": 8,
+      "date": "2026-10-30",
+      "group": "West B",
+      "a": "MIN",
+      "b": "LAC",
+      "seed": 20261032,
+      "winner": "LAC",
+      "series": "1-4",
+      "games": "96-105 93-105 97-95 100-102 100-108",
+      "pointsA": 486,
+      "pointsB": 515,
+      "creator": "https://game7draft.com/?creator=1&a=L105&b=L115&seed=20261032"
+    },
+    {
+      "no": 9,
+      "date": "2026-10-30",
+      "group": "West C",
+      "a": "GSW",
+      "b": "LAL",
+      "seed": 20261033,
+      "winner": "LAL",
+      "series": "0-4",
+      "games": "96-104 93-101 96-101 90-104",
+      "pointsA": 375,
+      "pointsB": 410,
+      "creator": "https://game7draft.com/?creator=1&a=L111&b=L120&seed=20261033"
+    },
+    {
+      "no": 10,
+      "date": "2026-10-30",
+      "group": "West A",
+      "a": "PHO",
+      "b": "DEN",
+      "seed": 20261034,
+      "winner": "PHO",
+      "series": "4-2",
+      "games": "102-93 98-97 100-97 97-108 100-102 104-99",
+      "pointsA": 601,
+      "pointsB": 596,
+      "creator": "https://game7draft.com/?creator=1&a=L109&b=L101&seed=20261034"
+    },
+    {
+      "no": 11,
+      "date": "2026-11-06",
+      "group": "East C",
+      "a": "ATL",
+      "b": "WAS",
+      "seed": 20261035,
+      "winner": "WAS",
+      "series": "3-4",
+      "games": "93-100 107-98 101-103 111-95 110-95 97-107 85-110",
+      "pointsA": 704,
+      "pointsB": 708,
+      "creator": "https://game7draft.com/?creator=1&a=L93&b=L95&seed=20261035"
+    },
+    {
+      "no": 12,
+      "date": "2026-11-06",
+      "group": "East C",
+      "a": "CHO",
+      "b": "BOS",
+      "seed": 20261036,
+      "winner": "BOS",
+      "series": "3-4",
+      "games": "101-96 99-101 99-98 109-100 100-105 103-104 88-107",
+      "pointsA": 699,
+      "pointsB": 711,
+      "creator": "https://game7draft.com/?creator=1&a=L92&b=L113&seed=20261036"
+    },
+    {
+      "no": 13,
+      "date": "2026-11-06",
+      "group": "East B",
+      "a": "CLE",
+      "b": "PHI",
+      "seed": 20261037,
+      "winner": "PHI",
+      "series": "3-4",
+      "games": "104-102 107-92 91-103 107-101 96-99 102-103 99-100",
+      "pointsA": 706,
+      "pointsB": 700,
+      "creator": "https://game7draft.com/?creator=1&a=L106&b=L117&seed=20261037"
+    },
+    {
+      "no": 14,
+      "date": "2026-11-06",
+      "group": "West A",
+      "a": "DAL",
+      "b": "UTA",
+      "seed": 20261038,
+      "winner": "DAL",
+      "series": "4-1",
+      "games": "100-107 103-101 103-101 108-96 104-101",
+      "pointsA": 518,
+      "pointsB": 506,
+      "creator": "https://game7draft.com/?creator=1&a=L97&b=L103&seed=20261038"
+    },
+    {
+      "no": 15,
+      "date": "2026-11-06",
+      "group": "West B",
+      "a": "MEM",
+      "b": "OKC",
+      "seed": 20261039,
+      "winner": "OKC",
+      "series": "0-4",
+      "games": "92-106 99-102 98-104 90-105",
+      "pointsA": 379,
+      "pointsB": 417,
+      "creator": "https://game7draft.com/?creator=1&a=L91&b=L116&seed=20261039"
+    },
+    {
+      "no": 16,
+      "date": "2026-11-06",
+      "group": "East A",
+      "a": "MIL",
+      "b": "TOR",
+      "seed": 20261040,
+      "winner": "TOR",
+      "series": "1-4",
+      "games": "103-104 103-104 99-100 111-89 91-108",
+      "pointsA": 507,
+      "pointsB": 505,
+      "creator": "https://game7draft.com/?creator=1&a=L110&b=L104&seed=20261040"
+    },
+    {
+      "no": 17,
+      "date": "2026-11-06",
+      "group": "West B",
+      "a": "NOP",
+      "b": "MIN",
+      "seed": 20261041,
+      "winner": "MIN",
+      "series": "0-4",
+      "games": "93-110 88-114 95-110 90-104",
+      "pointsA": 366,
+      "pointsB": 438,
+      "creator": "https://game7draft.com/?creator=1&a=L107&b=L105&seed=20261041"
+    },
+    {
+      "no": 18,
+      "date": "2026-11-06",
+      "group": "West C",
+      "a": "LAL",
+      "b": "POR",
+      "seed": 20261042,
+      "winner": "LAL",
+      "series": "4-0",
+      "games": "117-90 99-94 105-100 104-99",
+      "pointsA": 425,
+      "pointsB": 383,
+      "creator": "https://game7draft.com/?creator=1&a=L120&b=L98&seed=20261042"
+    },
+    {
+      "no": 19,
+      "date": "2026-11-06",
+      "group": "West C",
+      "a": "SAC",
+      "b": "SAS",
+      "seed": 20261043,
+      "winner": "SAS",
+      "series": "1-4",
+      "games": "92-105 101-97 96-105 100-101 94-101",
+      "pointsA": 483,
+      "pointsB": 509,
+      "creator": "https://game7draft.com/?creator=1&a=L94&b=L118&seed=20261043"
+    },
+    {
+      "no": 20,
+      "date": "2026-11-13",
+      "group": "East B",
+      "a": "IND",
+      "b": "NYK",
+      "seed": 20261044,
+      "winner": "NYK",
+      "series": "1-4",
+      "games": "100-95 93-108 96-98 96-100 93-104",
+      "pointsA": 478,
+      "pointsB": 505,
+      "creator": "https://game7draft.com/?creator=1&a=L102&b=L99&seed=20261044"
+    },
+    {
+      "no": 21,
+      "date": "2026-11-13",
+      "group": "East A",
+      "a": "ORL",
+      "b": "MIL",
+      "seed": 20261045,
+      "winner": "ORL",
+      "series": "4-0",
+      "games": "109-90 101-97 105-98 102-98",
+      "pointsA": 417,
+      "pointsB": 383,
+      "creator": "https://game7draft.com/?creator=1&a=L108&b=L110&seed=20261045"
+    },
+    {
+      "no": 22,
+      "date": "2026-11-13",
+      "group": "East B",
+      "a": "MIA",
+      "b": "CLE",
+      "seed": 20261046,
+      "winner": "CLE",
+      "series": "2-4",
+      "games": "101-106 94-104 98-96 104-94 94-106 99-109",
+      "pointsA": 590,
+      "pointsB": 615,
+      "creator": "https://game7draft.com/?creator=1&a=L119&b=L106&seed=20261046"
+    },
+    {
+      "no": 23,
+      "date": "2026-11-13",
+      "group": "East C",
+      "a": "CHI",
+      "b": "ATL",
+      "seed": 20261047,
+      "winner": "ATL",
+      "series": "2-4",
+      "games": "109-96 101-100 102-103 90-104 92-105 94-98",
+      "pointsA": 588,
+      "pointsB": 606,
+      "creator": "https://game7draft.com/?creator=1&a=L112&b=L93&seed=20261047"
+    },
+    {
+      "no": 24,
+      "date": "2026-11-13",
+      "group": "West B",
+      "a": "NOP",
+      "b": "MEM",
+      "seed": 20261048,
+      "winner": "MEM",
+      "series": "3-4",
+      "games": "111-86 99-100 98-102 108-94 104-103 93-104 87-105",
+      "pointsA": 700,
+      "pointsB": 694,
+      "creator": "https://game7draft.com/?creator=1&a=L107&b=L91&seed=20261048"
+    },
+    {
+      "no": 25,
+      "date": "2026-11-13",
+      "group": "West A",
+      "a": "HOU",
+      "b": "UTA",
+      "seed": 20261049,
+      "winner": "HOU",
+      "series": "4-2",
+      "games": "100-94 99-105 110-94 94-115 104-90 107-94",
+      "pointsA": 614,
+      "pointsB": 592,
+      "creator": "https://game7draft.com/?creator=1&a=L114&b=L103&seed=20261049"
+    },
+    {
+      "no": 26,
+      "date": "2026-11-13",
+      "group": "West C",
+      "a": "SAS",
+      "b": "GSW",
+      "seed": 20261050,
+      "winner": "SAS",
+      "series": "4-2",
+      "games": "103-102 105-94 100-102 102-100 103-104 105-100",
+      "pointsA": 618,
+      "pointsB": 602,
+      "creator": "https://game7draft.com/?creator=1&a=L118&b=L111&seed=20261050"
+    },
+    {
+      "no": 27,
+      "date": "2026-11-13",
+      "group": "West C",
+      "a": "SAC",
+      "b": "POR",
+      "seed": 20261051,
+      "winner": "POR",
+      "series": "1-4",
+      "games": "95-100 97-112 101-100 97-107 94-98",
+      "pointsA": 484,
+      "pointsB": 517,
+      "creator": "https://game7draft.com/?creator=1&a=L94&b=L98&seed=20261051"
+    },
+    {
+      "no": 28,
+      "date": "2026-11-13",
+      "group": "West B",
+      "a": "LAC",
+      "b": "OKC",
+      "seed": 20261052,
+      "winner": "OKC",
+      "series": "1-4",
+      "games": "96-97 100-102 84-110 100-98 97-109",
+      "pointsA": 477,
+      "pointsB": 516,
+      "creator": "https://game7draft.com/?creator=1&a=L115&b=L116&seed=20261052"
+    },
+    {
+      "no": 29,
+      "date": "2026-11-20",
+      "group": "East C",
+      "a": "ATL",
+      "b": "CHO",
+      "seed": 20261053,
+      "winner": "ATL",
+      "series": "4-0",
+      "games": "111-84 101-96 106-100 110-96",
+      "pointsA": 428,
+      "pointsB": 376,
+      "creator": "https://game7draft.com/?creator=1&a=L93&b=L92&seed=20261053"
+    },
+    {
+      "no": 30,
+      "date": "2026-11-20",
+      "group": "East A",
+      "a": "BRK",
+      "b": "ORL",
+      "seed": 20261054,
+      "winner": "ORL",
+      "series": "2-4",
+      "games": "99-105 109-100 108-88 102-103 95-106 96-97",
+      "pointsA": 609,
+      "pointsB": 599,
+      "creator": "https://game7draft.com/?creator=1&a=L100&b=L108&seed=20261054"
+    },
+    {
+      "no": 31,
+      "date": "2026-11-20",
+      "group": "East B",
+      "a": "CLE",
+      "b": "IND",
+      "seed": 20261055,
+      "winner": "CLE",
+      "series": "4-2",
+      "games": "96-99 104-103 102-96 97-109 113-88 101-95",
+      "pointsA": 613,
+      "pointsB": 590,
+      "creator": "https://game7draft.com/?creator=1&a=L106&b=L102&seed=20261055"
+    },
+    {
+      "no": 32,
+      "date": "2026-11-20",
+      "group": "East A",
+      "a": "DET",
+      "b": "TOR",
+      "seed": 20261056,
+      "winner": "TOR",
+      "series": "2-4",
+      "games": "108-96 101-100 101-106 98-105 95-102 90-102",
+      "pointsA": 593,
+      "pointsB": 611,
+      "creator": "https://game7draft.com/?creator=1&a=L96&b=L104&seed=20261056"
+    },
+    {
+      "no": 33,
+      "date": "2026-11-20",
+      "group": "East C",
+      "a": "CHI",
+      "b": "WAS",
+      "seed": 20261057,
+      "winner": "CHI",
+      "series": "4-0",
+      "games": "100-95 110-89 109-91 106-94",
+      "pointsA": 425,
+      "pointsB": 369,
+      "creator": "https://game7draft.com/?creator=1&a=L112&b=L95&seed=20261057"
+    },
+    {
+      "no": 34,
+      "date": "2026-11-20",
+      "group": "West B",
+      "a": "OKC",
+      "b": "NOP",
+      "seed": 20261058,
+      "winner": "OKC",
+      "series": "4-1",
+      "games": "108-93 92-103 103-99 100-93 102-101",
+      "pointsA": 505,
+      "pointsB": 489,
+      "creator": "https://game7draft.com/?creator=1&a=L116&b=L107&seed=20261058"
+    },
+    {
+      "no": 35,
+      "date": "2026-11-20",
+      "group": "West A",
+      "a": "UTA",
+      "b": "PHO",
+      "seed": 20261059,
+      "winner": "UTA",
+      "series": "4-1",
+      "games": "105-97 92-102 110-99 105-104 100-96",
+      "pointsA": 512,
+      "pointsB": 498,
+      "creator": "https://game7draft.com/?creator=1&a=L103&b=L109&seed=20261059"
+    },
+    {
+      "no": 36,
+      "date": "2026-11-20",
+      "group": "West A",
+      "a": "DEN",
+      "b": "HOU",
+      "seed": 20261060,
+      "winner": "DEN",
+      "series": "4-0",
+      "games": "104-98 104-88 102-99 104-103",
+      "pointsA": 414,
+      "pointsB": 388,
+      "creator": "https://game7draft.com/?creator=1&a=L101&b=L114&seed=20261060"
+    },
+    {
+      "no": 37,
+      "date": "2026-11-20",
+      "group": "West C",
+      "a": "LAL",
+      "b": "SAC",
+      "seed": 20261061,
+      "winner": "LAL",
+      "series": "4-0",
+      "games": "104-100 101-94 107-94 104-95",
+      "pointsA": 416,
+      "pointsB": 383,
+      "creator": "https://game7draft.com/?creator=1&a=L120&b=L94&seed=20261061"
+    },
+    {
+      "no": 38,
+      "date": "2026-11-24",
+      "group": "East A",
+      "a": "ORL",
+      "b": "DET",
+      "seed": 20261062,
+      "winner": "DET",
+      "series": "1-4",
+      "games": "98-99 98-106 101-92 94-104 93-104",
+      "pointsA": 484,
+      "pointsB": 505,
+      "creator": "https://game7draft.com/?creator=1&a=L108&b=L96&seed=20261062"
+    },
+    {
+      "no": 39,
+      "date": "2026-11-24",
+      "group": "East C",
+      "a": "WAS",
+      "b": "BOS",
+      "seed": 20261063,
+      "winner": "WAS",
+      "series": "4-1",
+      "games": "108-97 107-97 106-102 92-113 104-100",
+      "pointsA": 517,
+      "pointsB": 509,
+      "creator": "https://game7draft.com/?creator=1&a=L95&b=L113&seed=20261063"
+    },
+    {
+      "no": 40,
+      "date": "2026-11-24",
+      "group": "West A",
+      "a": "DEN",
+      "b": "DAL",
+      "seed": 20261064,
+      "winner": "DEN",
+      "series": "4-1",
+      "games": "108-91 101-100 115-86 100-102 113-92",
+      "pointsA": 537,
+      "pointsB": 471,
+      "creator": "https://game7draft.com/?creator=1&a=L101&b=L97&seed=20261064"
+    },
+    {
+      "no": 41,
+      "date": "2026-11-25",
+      "group": "East B",
+      "a": "PHI",
+      "b": "MIA",
+      "seed": 20261065,
+      "winner": "PHI",
+      "series": "4-3",
+      "games": "105-102 95-104 96-103 103-90 98-103 100-97 105-93",
+      "pointsA": 702,
+      "pointsB": 692,
+      "creator": "https://game7draft.com/?creator=1&a=L117&b=L119&seed=20261065"
+    },
+    {
+      "no": 42,
+      "date": "2026-11-25",
+      "group": "East C",
+      "a": "CHO",
+      "b": "CHI",
+      "seed": 20261066,
+      "winner": "CHI",
+      "series": "2-4",
+      "games": "102-91 97-106 105-104 99-101 89-110 98-102",
+      "pointsA": 590,
+      "pointsB": 614,
+      "creator": "https://game7draft.com/?creator=1&a=L92&b=L112&seed=20261066"
+    },
+    {
+      "no": 43,
+      "date": "2026-11-25",
+      "group": "East B",
+      "a": "NYK",
+      "b": "CLE",
+      "seed": 20261067,
+      "winner": "CLE",
+      "series": "1-4",
+      "games": "101-102 96-100 107-98 93-115 91-108",
+      "pointsA": 488,
+      "pointsB": 523,
+      "creator": "https://game7draft.com/?creator=1&a=L99&b=L106&seed=20261067"
+    },
+    {
+      "no": 44,
+      "date": "2026-11-25",
+      "group": "West B",
+      "a": "OKC",
+      "b": "MIN",
+      "seed": 20261068,
+      "winner": "MIN",
+      "series": "1-4",
+      "games": "98-102 101-103 108-95 97-98 94-98",
+      "pointsA": 498,
+      "pointsB": 496,
+      "creator": "https://game7draft.com/?creator=1&a=L116&b=L105&seed=20261068"
+    },
+    {
+      "no": 45,
+      "date": "2026-11-25",
+      "group": "West B",
+      "a": "MEM",
+      "b": "LAC",
+      "seed": 20261069,
+      "winner": "LAC",
+      "series": "2-4",
+      "games": "93-102 102-96 99-102 107-98 99-104 97-107",
+      "pointsA": 597,
+      "pointsB": 609,
+      "creator": "https://game7draft.com/?creator=1&a=L91&b=L115&seed=20261069"
+    },
+    {
+      "no": 46,
+      "date": "2026-11-25",
+      "group": "East A",
+      "a": "MIL",
+      "b": "BRK",
+      "seed": 20261070,
+      "winner": "BRK",
+      "series": "1-4",
+      "games": "93-105 109-93 102-104 92-110 98-101",
+      "pointsA": 494,
+      "pointsB": 513,
+      "creator": "https://game7draft.com/?creator=1&a=L110&b=L100&seed=20261070"
+    },
+    {
+      "no": 47,
+      "date": "2026-11-25",
+      "group": "West A",
+      "a": "HOU",
+      "b": "PHO",
+      "seed": 20261071,
+      "winner": "HOU",
+      "series": "4-0",
+      "games": "102-98 111-97 106-100 104-102",
+      "pointsA": 423,
+      "pointsB": 397,
+      "creator": "https://game7draft.com/?creator=1&a=L114&b=L109&seed=20261071"
+    },
+    {
+      "no": 48,
+      "date": "2026-11-25",
+      "group": "West C",
+      "a": "GSW",
+      "b": "SAC",
+      "seed": 20261072,
+      "winner": "GSW",
+      "series": "4-2",
+      "games": "114-82 107-94 100-108 100-106 108-99 103-100",
+      "pointsA": 632,
+      "pointsB": 589,
+      "creator": "https://game7draft.com/?creator=1&a=L111&b=L94&seed=20261072"
+    },
+    {
+      "no": 49,
+      "date": "2026-11-25",
+      "group": "West C",
+      "a": "POR",
+      "b": "SAS",
+      "seed": 20261073,
+      "winner": "SAS",
+      "series": "2-4",
+      "games": "95-99 106-95 92-106 99-103 104-94 99-102",
+      "pointsA": 595,
+      "pointsB": 599,
+      "creator": "https://game7draft.com/?creator=1&a=L98&b=L118&seed=20261073"
+    },
+    {
+      "no": 50,
+      "date": "2026-11-27",
+      "group": "East B",
+      "a": "NYK",
+      "b": "MIA",
+      "seed": 20261074,
+      "winner": "MIA",
+      "series": "1-4",
+      "games": "95-99 89-107 104-103 101-108 91-108",
+      "pointsA": 480,
+      "pointsB": 525,
+      "creator": "https://game7draft.com/?creator=1&a=L99&b=L119&seed=20261074"
+    },
+    {
+      "no": 51,
+      "date": "2026-11-27",
+      "group": "East A",
+      "a": "DET",
+      "b": "MIL",
+      "seed": 20261075,
+      "winner": "MIL",
+      "series": "2-4",
+      "games": "98-101 102-105 103-100 108-97 99-107 87-107",
+      "pointsA": 597,
+      "pointsB": 617,
+      "creator": "https://game7draft.com/?creator=1&a=L96&b=L110&seed=20261075"
+    },
+    {
+      "no": 52,
+      "date": "2026-11-27",
+      "group": "East B",
+      "a": "IND",
+      "b": "PHI",
+      "seed": 20261076,
+      "winner": "PHI",
+      "series": "2-4",
+      "games": "101-97 96-98 108-92 92-101 95-100 98-109",
+      "pointsA": 590,
+      "pointsB": 597,
+      "creator": "https://game7draft.com/?creator=1&a=L102&b=L117&seed=20261076"
+    },
+    {
+      "no": 53,
+      "date": "2026-11-27",
+      "group": "East A",
+      "a": "TOR",
+      "b": "BRK",
+      "seed": 20261077,
+      "winner": "BRK",
+      "series": "1-4",
+      "games": "107-90 103-106 97-106 95-104 81-112",
+      "pointsA": 483,
+      "pointsB": 518,
+      "creator": "https://game7draft.com/?creator=1&a=L104&b=L100&seed=20261077"
+    },
+    {
+      "no": 54,
+      "date": "2026-11-27",
+      "group": "East C",
+      "a": "BOS",
+      "b": "ATL",
+      "seed": 20261078,
+      "winner": "ATL",
+      "series": "0-4",
+      "games": "97-103 104-105 93-105 95-98",
+      "pointsA": 389,
+      "pointsB": 411,
+      "creator": "https://game7draft.com/?creator=1&a=L113&b=L93&seed=20261078"
+    },
+    {
+      "no": 55,
+      "date": "2026-11-27",
+      "group": "West B",
+      "a": "MIN",
+      "b": "MEM",
+      "seed": 20261079,
+      "winner": "MIN",
+      "series": "4-2",
+      "games": "100-103 98-106 103-96 103-102 104-95 103-97",
+      "pointsA": 611,
+      "pointsB": 599,
+      "creator": "https://game7draft.com/?creator=1&a=L105&b=L91&seed=20261079"
+    },
+    {
+      "no": 56,
+      "date": "2026-11-27",
+      "group": "West A",
+      "a": "PHO",
+      "b": "DAL",
+      "seed": 20261080,
+      "winner": "PHO",
+      "series": "4-0",
+      "games": "116-89 104-92 114-88 105-98",
+      "pointsA": 439,
+      "pointsB": 367,
+      "creator": "https://game7draft.com/?creator=1&a=L109&b=L97&seed=20261080"
+    },
+    {
+      "no": 57,
+      "date": "2026-11-27",
+      "group": "West C",
+      "a": "SAS",
+      "b": "LAL",
+      "seed": 20261081,
+      "winner": "LAL",
+      "series": "3-4",
+      "games": "104-98 100-98 91-104 101-105 100-104 99-98 99-107",
+      "pointsA": 694,
+      "pointsB": 714,
+      "creator": "https://game7draft.com/?creator=1&a=L118&b=L120&seed=20261081"
+    },
+    {
+      "no": 58,
+      "date": "2026-11-27",
+      "group": "West A",
+      "a": "UTA",
+      "b": "DEN",
+      "seed": 20261082,
+      "winner": "UTA",
+      "series": "4-1",
+      "games": "106-93 103-100 95-103 100-99 106-93",
+      "pointsA": 510,
+      "pointsB": 488,
+      "creator": "https://game7draft.com/?creator=1&a=L103&b=L101&seed=20261082"
+    },
+    {
+      "no": 59,
+      "date": "2026-11-27",
+      "group": "West B",
+      "a": "LAC",
+      "b": "NOP",
+      "seed": 20261083,
+      "winner": "NOP",
+      "series": "2-4",
+      "games": "96-103 93-112 97-101 109-94 113-95 97-101",
+      "pointsA": 605,
+      "pointsB": 606,
+      "creator": "https://game7draft.com/?creator=1&a=L115&b=L107&seed=20261083"
+    },
+    {
+      "no": 60,
+      "date": "2026-11-27",
+      "group": "West C",
+      "a": "POR",
+      "b": "GSW",
+      "seed": 20261084,
+      "winner": "POR",
+      "series": "4-2",
+      "games": "98-101 98-110 101-100 105-103 103-92 103-93",
+      "pointsA": 608,
+      "pointsB": 599,
+      "creator": "https://game7draft.com/?creator=1&a=L98&b=L111&seed=20261084"
+    }
+  ],
+  "standings": [
+    {
+      "group": "East A",
+      "conf": "East",
+      "rows": [
+        {
+          "pos": 1,
+          "club": "TOR",
+          "team": "All-time Raptors",
+          "w": 3,
+          "l": 1,
+          "gw": 13,
+          "gl": 8,
+          "pf": 2112,
+          "pa": 2094,
+          "gd": 5,
+          "pd": 18
+        },
+        {
+          "pos": 2,
+          "club": "BRK",
+          "team": "All-time Nets",
+          "w": 2,
+          "l": 2,
+          "gw": 13,
+          "gl": 10,
+          "pf": 2353,
+          "pa": 2293,
+          "gd": 3,
+          "pd": 60
+        },
+        {
+          "pos": 3,
+          "club": "DET",
+          "team": "All-time Pistons",
+          "w": 2,
+          "l": 2,
+          "gw": 12,
+          "gl": 12,
+          "pf": 2412,
+          "pa": 2425,
+          "gd": 0,
+          "pd": -13
+        },
+        {
+          "pos": 4,
+          "club": "ORL",
+          "team": "All-time Magic",
+          "w": 2,
+          "l": 2,
+          "gw": 10,
+          "gl": 10,
+          "pf": 1976,
+          "pa": 2010,
+          "gd": 0,
+          "pd": -34
+        },
+        {
+          "pos": 5,
+          "club": "MIL",
+          "team": "All-time Bucks",
+          "w": 1,
+          "l": 3,
+          "gw": 6,
+          "gl": 14,
+          "pf": 2001,
+          "pa": 2032,
+          "gd": -8,
+          "pd": -31
+        }
+      ]
+    },
+    {
+      "group": "East B",
+      "conf": "East",
+      "rows": [
+        {
+          "pos": 1,
+          "club": "CLE",
+          "team": "All-time Cavaliers",
+          "w": 3,
+          "l": 1,
+          "gw": 15,
+          "gl": 9,
+          "pf": 2457,
+          "pa": 2368,
+          "gd": 6,
+          "pd": 89
+        },
+        {
+          "pos": 2,
+          "club": "PHI",
+          "team": "All-time 76ers",
+          "w": 3,
+          "l": 1,
+          "gw": 15,
+          "gl": 12,
+          "pf": 2707,
+          "pa": 2683,
+          "gd": 3,
+          "pd": 24
+        },
+        {
+          "pos": 3,
+          "club": "MIA",
+          "team": "All-time Heat",
+          "w": 2,
+          "l": 2,
+          "gw": 13,
+          "gl": 11,
+          "pf": 2424,
+          "pa": 2373,
+          "gd": 2,
+          "pd": 51
+        },
+        {
+          "pos": 4,
+          "club": "NYK",
+          "team": "All-time Knicks",
+          "w": 2,
+          "l": 2,
+          "gw": 10,
+          "gl": 12,
+          "pf": 2168,
+          "pa": 2234,
+          "gd": -2,
+          "pd": -66
+        },
+        {
+          "pos": 5,
+          "club": "IND",
+          "team": "All-time Pacers",
+          "w": 0,
+          "l": 4,
+          "gw": 7,
+          "gl": 16,
+          "pf": 2234,
+          "pa": 2332,
+          "gd": -9,
+          "pd": -98
+        }
+      ]
+    },
+    {
+      "group": "East C",
+      "conf": "East",
+      "rows": [
+        {
+          "pos": 1,
+          "club": "ATL",
+          "team": "All-time Hawks",
+          "w": 3,
+          "l": 1,
+          "gw": 15,
+          "gl": 6,
+          "pf": 2149,
+          "pa": 2061,
+          "gd": 9,
+          "pd": 88
+        },
+        {
+          "pos": 2,
+          "club": "CHI",
+          "team": "All-time Bulls",
+          "w": 2,
+          "l": 2,
+          "gw": 12,
+          "gl": 10,
+          "pf": 2216,
+          "pa": 2188,
+          "gd": 2,
+          "pd": 28
+        },
+        {
+          "pos": 3,
+          "club": "WAS",
+          "team": "All-time Wizards",
+          "w": 2,
+          "l": 2,
+          "gw": 11,
+          "gl": 12,
+          "pf": 2284,
+          "pa": 2348,
+          "gd": -1,
+          "pd": -64
+        },
+        {
+          "pos": 4,
+          "club": "BOS",
+          "team": "All-time Celtics",
+          "w": 2,
+          "l": 2,
+          "gw": 9,
+          "gl": 13,
+          "pf": 2232,
+          "pa": 2216,
+          "gd": -4,
+          "pd": 16
+        },
+        {
+          "pos": 5,
+          "club": "CHO",
+          "team": "All-time Hornets",
+          "w": 1,
+          "l": 3,
+          "gw": 9,
+          "gl": 15,
+          "pf": 2375,
+          "pa": 2443,
+          "gd": -6,
+          "pd": -68
+        }
+      ]
+    },
+    {
+      "group": "West A",
+      "conf": "West",
+      "rows": [
+        {
+          "pos": 1,
+          "club": "HOU",
+          "team": "All-time Rockets",
+          "w": 3,
+          "l": 1,
+          "gw": 12,
+          "gl": 9,
+          "pf": 2146,
+          "pa": 2075,
+          "gd": 3,
+          "pd": 71
+        },
+        {
+          "pos": 2,
+          "club": "DEN",
+          "team": "All-time Nuggets",
+          "w": 2,
+          "l": 2,
+          "gw": 11,
+          "gl": 9,
+          "pf": 2035,
+          "pa": 1970,
+          "gd": 2,
+          "pd": 65
+        },
+        {
+          "pos": 3,
+          "club": "UTA",
+          "team": "All-time Jazz",
+          "w": 2,
+          "l": 2,
+          "gw": 11,
+          "gl": 10,
+          "pf": 2120,
+          "pa": 2118,
+          "gd": 1,
+          "pd": 2
+        },
+        {
+          "pos": 4,
+          "club": "PHO",
+          "team": "All-time Suns",
+          "w": 2,
+          "l": 2,
+          "gw": 9,
+          "gl": 10,
+          "pf": 1935,
+          "pa": 1898,
+          "gd": -1,
+          "pd": 37
+        },
+        {
+          "pos": 5,
+          "club": "DAL",
+          "team": "All-time Mavericks",
+          "w": 1,
+          "l": 3,
+          "gw": 8,
+          "gl": 13,
+          "pf": 2028,
+          "pa": 2203,
+          "gd": -5,
+          "pd": -175
+        }
+      ]
+    },
+    {
+      "group": "West B",
+      "conf": "West",
+      "rows": [
+        {
+          "pos": 1,
+          "club": "OKC",
+          "team": "All-time Thunder",
+          "w": 3,
+          "l": 1,
+          "gw": 13,
+          "gl": 6,
+          "pf": 1936,
+          "pa": 1841,
+          "gd": 7,
+          "pd": 95
+        },
+        {
+          "pos": 2,
+          "club": "MIN",
+          "team": "All-time Timberwolves",
+          "w": 3,
+          "l": 1,
+          "gw": 13,
+          "gl": 7,
+          "pf": 2031,
+          "pa": 1978,
+          "gd": 6,
+          "pd": 53
+        },
+        {
+          "pos": 3,
+          "club": "LAC",
+          "team": "All-time Clippers",
+          "w": 2,
+          "l": 2,
+          "gw": 11,
+          "gl": 11,
+          "pf": 2206,
+          "pa": 2205,
+          "gd": 0,
+          "pd": 1
+        },
+        {
+          "pos": 4,
+          "club": "NOP",
+          "team": "All-time Pelicans",
+          "w": 1,
+          "l": 3,
+          "gw": 8,
+          "gl": 14,
+          "pf": 2161,
+          "pa": 2242,
+          "gd": -6,
+          "pd": -81
+        },
+        {
+          "pos": 5,
+          "club": "MEM",
+          "team": "All-time Grizzlies",
+          "w": 1,
+          "l": 3,
+          "gw": 8,
+          "gl": 15,
+          "pf": 2269,
+          "pa": 2337,
+          "gd": -7,
+          "pd": -68
+        }
+      ]
+    },
+    {
+      "group": "West C",
+      "conf": "West",
+      "rows": [
+        {
+          "pos": 1,
+          "club": "LAL",
+          "team": "All-time Lakers",
+          "w": 4,
+          "l": 0,
+          "gw": 16,
+          "gl": 3,
+          "pf": 1965,
+          "pa": 1835,
+          "gd": 13,
+          "pd": 130
+        },
+        {
+          "pos": 2,
+          "club": "SAS",
+          "team": "All-time Spurs",
+          "w": 3,
+          "l": 1,
+          "gw": 15,
+          "gl": 9,
+          "pf": 2420,
+          "pa": 2394,
+          "gd": 6,
+          "pd": 26
+        },
+        {
+          "pos": 3,
+          "club": "POR",
+          "team": "All-time Trail Blazers",
+          "w": 2,
+          "l": 2,
+          "gw": 10,
+          "gl": 11,
+          "pf": 2103,
+          "pa": 2107,
+          "gd": -1,
+          "pd": -4
+        },
+        {
+          "pos": 4,
+          "club": "GSW",
+          "team": "All-time Warriors",
+          "w": 1,
+          "l": 3,
+          "gw": 8,
+          "gl": 14,
+          "pf": 2208,
+          "pa": 2225,
+          "gd": -6,
+          "pd": -17
+        },
+        {
+          "pos": 5,
+          "club": "SAC",
+          "team": "All-time Kings",
+          "w": 0,
+          "l": 4,
+          "gw": 4,
+          "gl": 16,
+          "pf": 1939,
+          "pa": 2074,
+          "gd": -12,
+          "pd": -135
+        }
+      ]
+    }
+  ],
+  "knockouts": {
+    "field": {
+      "East": [
+        {
+          "seed": 1,
+          "club": "ATL",
+          "how": "East C winner"
+        },
+        {
+          "seed": 2,
+          "club": "CLE",
+          "how": "East B winner"
+        },
+        {
+          "seed": 3,
+          "club": "TOR",
+          "how": "East A winner"
+        },
+        {
+          "seed": 4,
+          "club": "PHI",
+          "how": "wildcard (East B runner-up)"
+        }
+      ],
+      "West": [
+        {
+          "seed": 1,
+          "club": "LAL",
+          "how": "West C winner"
+        },
+        {
+          "seed": 2,
+          "club": "OKC",
+          "how": "West B winner"
+        },
+        {
+          "seed": 3,
+          "club": "HOU",
+          "how": "West A winner"
+        },
+        {
+          "seed": 4,
+          "club": "MIN",
+          "how": "wildcard (West B runner-up)"
+        }
+      ]
+    },
+    "games": [
+      {
+        "no": 61,
+        "date": "2026-12-04",
+        "group": "QF East",
+        "a": "ATL",
+        "b": "PHI",
+        "seed": 20261085,
+        "winner": "PHI",
+        "series": "2-4",
+        "games": "100-101 98-103 94-109 99-98 103-91 98-107",
+        "pointsA": 592,
+        "pointsB": 609,
+        "creator": "https://game7draft.com/?creator=1&a=L93&b=L117&seed=20261085",
+        "round": "QF East",
+        "seedA": 1,
+        "seedB": 4
+      },
+      {
+        "no": 62,
+        "date": "2026-12-04",
+        "group": "QF East",
+        "a": "CLE",
+        "b": "TOR",
+        "seed": 20261086,
+        "winner": "TOR",
+        "series": "1-4",
+        "games": "95-99 95-99 105-99 93-104 102-103",
+        "pointsA": 490,
+        "pointsB": 504,
+        "creator": "https://game7draft.com/?creator=1&a=L106&b=L104&seed=20261086",
+        "round": "QF East",
+        "seedA": 2,
+        "seedB": 3
+      },
+      {
+        "no": 63,
+        "date": "2026-12-05",
+        "group": "QF West",
+        "a": "LAL",
+        "b": "MIN",
+        "seed": 20261087,
+        "winner": "MIN",
+        "series": "2-4",
+        "games": "105-93 104-100 101-103 98-99 90-107 97-98",
+        "pointsA": 595,
+        "pointsB": 600,
+        "creator": "https://game7draft.com/?creator=1&a=L120&b=L105&seed=20261087",
+        "round": "QF West",
+        "seedA": 1,
+        "seedB": 4
+      },
+      {
+        "no": 64,
+        "date": "2026-12-05",
+        "group": "QF West",
+        "a": "OKC",
+        "b": "HOU",
+        "seed": 20261088,
+        "winner": "HOU",
+        "series": "1-4",
+        "games": "97-99 95-101 104-92 94-108 95-111",
+        "pointsA": 485,
+        "pointsB": 511,
+        "creator": "https://game7draft.com/?creator=1&a=L116&b=L114&seed=20261088",
+        "round": "QF West",
+        "seedA": 2,
+        "seedB": 3
+      },
+      {
+        "no": 65,
+        "date": "2026-12-08/09",
+        "group": "SF East",
+        "a": "TOR",
+        "b": "PHI",
+        "seed": 20261089,
+        "winner": "TOR",
+        "series": "4-0",
+        "games": "103-91 109-100 105-96 101-93",
+        "pointsA": 418,
+        "pointsB": 380,
+        "creator": "https://game7draft.com/?creator=1&a=L104&b=L117&seed=20261089",
+        "round": "SF East",
+        "seedA": 3,
+        "seedB": 4
+      },
+      {
+        "no": 66,
+        "date": "2026-12-08/09",
+        "group": "SF West",
+        "a": "HOU",
+        "b": "MIN",
+        "seed": 20261090,
+        "winner": "HOU",
+        "series": "4-0",
+        "games": "113-93 100-97 103-89 104-98",
+        "pointsA": 420,
+        "pointsB": 377,
+        "creator": "https://game7draft.com/?creator=1&a=L114&b=L105&seed=20261090",
+        "round": "SF West",
+        "seedA": 3,
+        "seedB": 4
+      },
+      {
+        "no": 67,
+        "date": "2026-12-11",
+        "group": "Final",
+        "a": "TOR",
+        "b": "HOU",
+        "seed": 20261091,
+        "winner": "HOU",
+        "series": "1-4",
+        "games": "91-111 102-104 95-105 104-99 95-111",
+        "pointsA": 487,
+        "pointsB": 530,
+        "creator": "https://game7draft.com/?creator=1&a=L104&b=L114&seed=20261091",
+        "round": "Final",
+        "seedA": 0,
+        "seedB": 0
+      }
+    ],
+    "champion": "HOU"
+  }
+}

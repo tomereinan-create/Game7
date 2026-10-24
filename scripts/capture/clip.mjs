@@ -53,7 +53,7 @@ function urlFor(run) {
   const u = new URL(APP)
   u.searchParams.set('creator', '1')
   u.searchParams.set('auto', '1')
-  for (const k of ['seed', 'a', 'b', 'level', 'team']) if (run[k] !== undefined && run[k] !== null) u.searchParams.set(k, String(run[k]))
+  for (const k of ['seed', 'a', 'b', 'a5', 'b5', 'an', 'bn', 'aab', 'bab', 'level', 'team']) if (run[k] !== undefined && run[k] !== null) u.searchParams.set(k, String(run[k]))
   return u.href
 }
 
@@ -122,6 +122,7 @@ async function record(browser, run) {
 
   // the run's beats, in seconds from the first frame — for the trims and the editor
   const beats = {}
+  let strip = ''
   const now = () => (t0 === null ? 0 : Date.now() / 1000 - t0)
   const deadline = Date.now() + 6 * 60 * 1000
   while (Date.now() < deadline) {
@@ -138,6 +139,8 @@ async function record(browser, run) {
     if (s.g7 && beats.g7 === undefined) beats.g7 = now()
     if (s.done) {
       beats.settled = now()
+      // the series as it ended on screen — the seed log is checked against the footage, not a script
+      strip = await game.evaluate(() => [...document.querySelectorAll('.gt b')].map((b) => b.textContent.replace(/\s/g, '')).join(' '))
       break
     }
     await new Promise((r) => setTimeout(r, 100))
@@ -154,6 +157,8 @@ async function record(browser, run) {
   const fpsIn = unique / Math.max(secs, 0.001)
   console.log(`  ${out}  ${secs.toFixed(1)} s · ${ticks} frames at ${FPS} fps (${fpsIn.toFixed(0)} painted per second)`)
   console.log(`  beats: ${Object.entries(beats).map(([k, v]) => `${k} ${v.toFixed(1)}s`).join(' · ')}`)
+  if (strip) console.log(`  strip: ${strip}`)
+  if (beats.g7 !== undefined && beats.settled !== undefined) console.log(`  game 7 on screen: ${(beats.settled - beats.g7).toFixed(1)} s from its intro to the settled strip`)
   if (ENDING > 0 && beats.settled !== undefined) {
     const to = Math.min(secs, beats.settled + HOLD)
     const from = Math.max(beats.series ?? 0, beats.settled - ENDING)
@@ -161,7 +166,7 @@ async function record(browser, run) {
     await cut(out, from, to, end)
     console.log(`  ${end}  ${from.toFixed(1)}–${to.toFixed(1)} s`)
   }
-  return { out, beats, seconds: secs, painted: fpsIn }
+  return { out, beats, strip, seconds: secs, painted: fpsIn }
 }
 
 const runs = argv.includes('--batch')

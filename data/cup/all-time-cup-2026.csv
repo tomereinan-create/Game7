@@ -1,0 +1,68 @@
+no,date,round,home_a,away_b,seed,winner,series,games,points_a,points_b,creator
+1,2026-10-30,East C,Wizards,Hornets,20261025,Hornets,3-4,97-105 100-99 105-91 97-102 92-106 104-101 95-106,690,710,https://game7draft.com/?creator=1&a=L95&b=L92&seed=20261025
+2,2026-10-30,East C,Celtics,Bulls,20261026,Celtics,4-2,103-104 97-109 106-89 105-102 103-95 109-90,623,589,https://game7draft.com/?creator=1&a=L113&b=L112&seed=20261026
+3,2026-10-30,East A,Nets,Pistons,20261027,Pistons,3-4,104-97 104-101 101-102 99-109 109-99 96-102 100-107,713,717,https://game7draft.com/?creator=1&a=L100&b=L96&seed=20261027
+4,2026-10-30,East B,76ers,Knicks,20261028,Knicks,3-4,97-99 108-89 108-91 93-110 99-106 105-101 98-99,708,695,https://game7draft.com/?creator=1&a=L117&b=L99&seed=20261028
+5,2026-10-30,East A,Raptors,Magic,20261029,Raptors,4-1,100-94 95-97 101-98 106-92 111-95,513,476,https://game7draft.com/?creator=1&a=L104&b=L108&seed=20261029
+6,2026-10-30,East B,Heat,Pacers,20261030,Heat,4-2,105-94 94-106 107-87 101-102 99-96 111-91,617,576,https://game7draft.com/?creator=1&a=L119&b=L102&seed=20261030
+7,2026-10-30,West A,Mavericks,Rockets,20261031,Rockets,3-4,85-112 103-97 102-97 92-105 93-99 102-101 95-110,672,721,https://game7draft.com/?creator=1&a=L97&b=L114&seed=20261031
+8,2026-10-30,West B,Timberwolves,Clippers,20261032,Clippers,1-4,96-105 93-105 97-95 100-102 100-108,486,515,https://game7draft.com/?creator=1&a=L105&b=L115&seed=20261032
+9,2026-10-30,West C,Warriors,Lakers,20261033,Lakers,0-4,96-104 93-101 96-101 90-104,375,410,https://game7draft.com/?creator=1&a=L111&b=L120&seed=20261033
+10,2026-10-30,West A,Suns,Nuggets,20261034,Suns,4-2,102-93 98-97 100-97 97-108 100-102 104-99,601,596,https://game7draft.com/?creator=1&a=L109&b=L101&seed=20261034
+11,2026-11-06,East C,Hawks,Wizards,20261035,Wizards,3-4,93-100 107-98 101-103 111-95 110-95 97-107 85-110,704,708,https://game7draft.com/?creator=1&a=L93&b=L95&seed=20261035
+12,2026-11-06,East C,Hornets,Celtics,20261036,Celtics,3-4,101-96 99-101 99-98 109-100 100-105 103-104 88-107,699,711,https://game7draft.com/?creator=1&a=L92&b=L113&seed=20261036
+13,2026-11-06,East B,Cavaliers,76ers,20261037,76ers,3-4,104-102 107-92 91-103 107-101 96-99 102-103 99-100,706,700,https://game7draft.com/?creator=1&a=L106&b=L117&seed=20261037
+14,2026-11-06,West A,Mavericks,Jazz,20261038,Mavericks,4-1,100-107 103-101 103-101 108-96 104-101,518,506,https://game7draft.com/?creator=1&a=L97&b=L103&seed=20261038
+15,2026-11-06,West B,Grizzlies,Thunder,20261039,Thunder,0-4,92-106 99-102 98-104 90-105,379,417,https://game7draft.com/?creator=1&a=L91&b=L116&seed=20261039
+16,2026-11-06,East A,Bucks,Raptors,20261040,Raptors,1-4,103-104 103-104 99-100 111-89 91-108,507,505,https://game7draft.com/?creator=1&a=L110&b=L104&seed=20261040
+17,2026-11-06,West B,Pelicans,Timberwolves,20261041,Timberwolves,0-4,93-110 88-114 95-110 90-104,366,438,https://game7draft.com/?creator=1&a=L107&b=L105&seed=20261041
+18,2026-11-06,West C,Lakers,Trail Blazers,20261042,Lakers,4-0,117-90 99-94 105-100 104-99,425,383,https://game7draft.com/?creator=1&a=L120&b=L98&seed=20261042
+19,2026-11-06,West C,Kings,Spurs,20261043,Spurs,1-4,92-105 101-97 96-105 100-101 94-101,483,509,https://game7draft.com/?creator=1&a=L94&b=L118&seed=20261043
+20,2026-11-13,East B,Pacers,Knicks,20261044,Knicks,1-4,100-95 93-108 96-98 96-100 93-104,478,505,https://game7draft.com/?creator=1&a=L102&b=L99&seed=20261044
+21,2026-11-13,East A,Magic,Bucks,20261045,Magic,4-0,109-90 101-97 105-98 102-98,417,383,https://game7draft.com/?creator=1&a=L108&b=L110&seed=20261045
+22,2026-11-13,East B,Heat,Cavaliers,20261046,Cavaliers,2-4,101-106 94-104 98-96 104-94 94-106 99-109,590,615,https://game7draft.com/?creator=1&a=L119&b=L106&seed=20261046
+23,2026-11-13,East C,Bulls,Hawks,20261047,Hawks,2-4,109-96 101-100 102-103 90-104 92-105 94-98,588,606,https://game7draft.com/?creator=1&a=L112&b=L93&seed=20261047
+24,2026-11-13,West B,Pelicans,Grizzlies,20261048,Grizzlies,3-4,111-86 99-100 98-102 108-94 104-103 93-104 87-105,700,694,https://game7draft.com/?creator=1&a=L107&b=L91&seed=20261048
+25,2026-11-13,West A,Rockets,Jazz,20261049,Rockets,4-2,100-94 99-105 110-94 94-115 104-90 107-94,614,592,https://game7draft.com/?creator=1&a=L114&b=L103&seed=20261049
+26,2026-11-13,West C,Spurs,Warriors,20261050,Spurs,4-2,103-102 105-94 100-102 102-100 103-104 105-100,618,602,https://game7draft.com/?creator=1&a=L118&b=L111&seed=20261050
+27,2026-11-13,West C,Kings,Trail Blazers,20261051,Trail Blazers,1-4,95-100 97-112 101-100 97-107 94-98,484,517,https://game7draft.com/?creator=1&a=L94&b=L98&seed=20261051
+28,2026-11-13,West B,Clippers,Thunder,20261052,Thunder,1-4,96-97 100-102 84-110 100-98 97-109,477,516,https://game7draft.com/?creator=1&a=L115&b=L116&seed=20261052
+29,2026-11-20,East C,Hawks,Hornets,20261053,Hawks,4-0,111-84 101-96 106-100 110-96,428,376,https://game7draft.com/?creator=1&a=L93&b=L92&seed=20261053
+30,2026-11-20,East A,Nets,Magic,20261054,Magic,2-4,99-105 109-100 108-88 102-103 95-106 96-97,609,599,https://game7draft.com/?creator=1&a=L100&b=L108&seed=20261054
+31,2026-11-20,East B,Cavaliers,Pacers,20261055,Cavaliers,4-2,96-99 104-103 102-96 97-109 113-88 101-95,613,590,https://game7draft.com/?creator=1&a=L106&b=L102&seed=20261055
+32,2026-11-20,East A,Pistons,Raptors,20261056,Raptors,2-4,108-96 101-100 101-106 98-105 95-102 90-102,593,611,https://game7draft.com/?creator=1&a=L96&b=L104&seed=20261056
+33,2026-11-20,East C,Bulls,Wizards,20261057,Bulls,4-0,100-95 110-89 109-91 106-94,425,369,https://game7draft.com/?creator=1&a=L112&b=L95&seed=20261057
+34,2026-11-20,West B,Thunder,Pelicans,20261058,Thunder,4-1,108-93 92-103 103-99 100-93 102-101,505,489,https://game7draft.com/?creator=1&a=L116&b=L107&seed=20261058
+35,2026-11-20,West A,Jazz,Suns,20261059,Jazz,4-1,105-97 92-102 110-99 105-104 100-96,512,498,https://game7draft.com/?creator=1&a=L103&b=L109&seed=20261059
+36,2026-11-20,West A,Nuggets,Rockets,20261060,Nuggets,4-0,104-98 104-88 102-99 104-103,414,388,https://game7draft.com/?creator=1&a=L101&b=L114&seed=20261060
+37,2026-11-20,West C,Lakers,Kings,20261061,Lakers,4-0,104-100 101-94 107-94 104-95,416,383,https://game7draft.com/?creator=1&a=L120&b=L94&seed=20261061
+38,2026-11-24,East A,Magic,Pistons,20261062,Pistons,1-4,98-99 98-106 101-92 94-104 93-104,484,505,https://game7draft.com/?creator=1&a=L108&b=L96&seed=20261062
+39,2026-11-24,East C,Wizards,Celtics,20261063,Wizards,4-1,108-97 107-97 106-102 92-113 104-100,517,509,https://game7draft.com/?creator=1&a=L95&b=L113&seed=20261063
+40,2026-11-24,West A,Nuggets,Mavericks,20261064,Nuggets,4-1,108-91 101-100 115-86 100-102 113-92,537,471,https://game7draft.com/?creator=1&a=L101&b=L97&seed=20261064
+41,2026-11-25,East B,76ers,Heat,20261065,76ers,4-3,105-102 95-104 96-103 103-90 98-103 100-97 105-93,702,692,https://game7draft.com/?creator=1&a=L117&b=L119&seed=20261065
+42,2026-11-25,East C,Hornets,Bulls,20261066,Bulls,2-4,102-91 97-106 105-104 99-101 89-110 98-102,590,614,https://game7draft.com/?creator=1&a=L92&b=L112&seed=20261066
+43,2026-11-25,East B,Knicks,Cavaliers,20261067,Cavaliers,1-4,101-102 96-100 107-98 93-115 91-108,488,523,https://game7draft.com/?creator=1&a=L99&b=L106&seed=20261067
+44,2026-11-25,West B,Thunder,Timberwolves,20261068,Timberwolves,1-4,98-102 101-103 108-95 97-98 94-98,498,496,https://game7draft.com/?creator=1&a=L116&b=L105&seed=20261068
+45,2026-11-25,West B,Grizzlies,Clippers,20261069,Clippers,2-4,93-102 102-96 99-102 107-98 99-104 97-107,597,609,https://game7draft.com/?creator=1&a=L91&b=L115&seed=20261069
+46,2026-11-25,East A,Bucks,Nets,20261070,Nets,1-4,93-105 109-93 102-104 92-110 98-101,494,513,https://game7draft.com/?creator=1&a=L110&b=L100&seed=20261070
+47,2026-11-25,West A,Rockets,Suns,20261071,Rockets,4-0,102-98 111-97 106-100 104-102,423,397,https://game7draft.com/?creator=1&a=L114&b=L109&seed=20261071
+48,2026-11-25,West C,Warriors,Kings,20261072,Warriors,4-2,114-82 107-94 100-108 100-106 108-99 103-100,632,589,https://game7draft.com/?creator=1&a=L111&b=L94&seed=20261072
+49,2026-11-25,West C,Trail Blazers,Spurs,20261073,Spurs,2-4,95-99 106-95 92-106 99-103 104-94 99-102,595,599,https://game7draft.com/?creator=1&a=L98&b=L118&seed=20261073
+50,2026-11-27,East B,Knicks,Heat,20261074,Heat,1-4,95-99 89-107 104-103 101-108 91-108,480,525,https://game7draft.com/?creator=1&a=L99&b=L119&seed=20261074
+51,2026-11-27,East A,Pistons,Bucks,20261075,Bucks,2-4,98-101 102-105 103-100 108-97 99-107 87-107,597,617,https://game7draft.com/?creator=1&a=L96&b=L110&seed=20261075
+52,2026-11-27,East B,Pacers,76ers,20261076,76ers,2-4,101-97 96-98 108-92 92-101 95-100 98-109,590,597,https://game7draft.com/?creator=1&a=L102&b=L117&seed=20261076
+53,2026-11-27,East A,Raptors,Nets,20261077,Nets,1-4,107-90 103-106 97-106 95-104 81-112,483,518,https://game7draft.com/?creator=1&a=L104&b=L100&seed=20261077
+54,2026-11-27,East C,Celtics,Hawks,20261078,Hawks,0-4,97-103 104-105 93-105 95-98,389,411,https://game7draft.com/?creator=1&a=L113&b=L93&seed=20261078
+55,2026-11-27,West B,Timberwolves,Grizzlies,20261079,Timberwolves,4-2,100-103 98-106 103-96 103-102 104-95 103-97,611,599,https://game7draft.com/?creator=1&a=L105&b=L91&seed=20261079
+56,2026-11-27,West A,Suns,Mavericks,20261080,Suns,4-0,116-89 104-92 114-88 105-98,439,367,https://game7draft.com/?creator=1&a=L109&b=L97&seed=20261080
+57,2026-11-27,West C,Spurs,Lakers,20261081,Lakers,3-4,104-98 100-98 91-104 101-105 100-104 99-98 99-107,694,714,https://game7draft.com/?creator=1&a=L118&b=L120&seed=20261081
+58,2026-11-27,West A,Jazz,Nuggets,20261082,Jazz,4-1,106-93 103-100 95-103 100-99 106-93,510,488,https://game7draft.com/?creator=1&a=L103&b=L101&seed=20261082
+59,2026-11-27,West B,Clippers,Pelicans,20261083,Pelicans,2-4,96-103 93-112 97-101 109-94 113-95 97-101,605,606,https://game7draft.com/?creator=1&a=L115&b=L107&seed=20261083
+60,2026-11-27,West C,Trail Blazers,Warriors,20261084,Trail Blazers,4-2,98-101 98-110 101-100 105-103 103-92 103-93,608,599,https://game7draft.com/?creator=1&a=L98&b=L111&seed=20261084
+61,2026-12-04,QF East,Hawks,76ers,20261085,76ers,2-4,100-101 98-103 94-109 99-98 103-91 98-107,592,609,https://game7draft.com/?creator=1&a=L93&b=L117&seed=20261085
+62,2026-12-04,QF East,Cavaliers,Raptors,20261086,Raptors,1-4,95-99 95-99 105-99 93-104 102-103,490,504,https://game7draft.com/?creator=1&a=L106&b=L104&seed=20261086
+63,2026-12-05,QF West,Lakers,Timberwolves,20261087,Timberwolves,2-4,105-93 104-100 101-103 98-99 90-107 97-98,595,600,https://game7draft.com/?creator=1&a=L120&b=L105&seed=20261087
+64,2026-12-05,QF West,Thunder,Rockets,20261088,Rockets,1-4,97-99 95-101 104-92 94-108 95-111,485,511,https://game7draft.com/?creator=1&a=L116&b=L114&seed=20261088
+65,2026-12-08/09,SF East,Raptors,76ers,20261089,Raptors,4-0,103-91 109-100 105-96 101-93,418,380,https://game7draft.com/?creator=1&a=L104&b=L117&seed=20261089
+66,2026-12-08/09,SF West,Rockets,Timberwolves,20261090,Rockets,4-0,113-93 100-97 103-89 104-98,420,377,https://game7draft.com/?creator=1&a=L114&b=L105&seed=20261090
+67,2026-12-11,Final,Raptors,Rockets,20261091,Rockets,1-4,91-111 102-104 95-105 104-99 95-111,487,530,https://game7draft.com/?creator=1&a=L104&b=L114&seed=20261091
