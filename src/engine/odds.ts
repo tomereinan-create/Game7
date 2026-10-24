@@ -77,13 +77,19 @@ export interface Night {
  * death match — the card priced a normal-tempo night (sigma 10) while the sim played the AI's slow
  * answer (sigma 10.8). The card ran 1-2 points over the result through the 60-95% range, and up
  * to 2.4 on a single five. One function now, so the two cannot drift again.
+ *
+ * `edge` is a HOT HAND boost (engine/tree.ts BOOSTS, his ruling of 2026-10-23): points added to our
+ * margin in every game of the series, on top of everything else, through the same `bonus` the plan
+ * rides — so the card's `modifiers` carries it and the sim plays it, from this one call. It goes on
+ * AFTER the AI has read the night (its tempo answer is still read off the base fives), so nothing
+ * else about the night moves.
  */
-export function night(five: Player[], opp: Player[], assignment: Assignment, plan: Tactics | null, mastery = 0): Night {
+export function night(five: Player[], opp: Player[], assignment: Assignment, plan: Tactics | null, mastery = 0, edge = 0): Night {
   const base = compile(five, opp, assignment)
   const theirs = compile(opp, five)
-  if (!plan) return { base, mine: base, theirs, pc: null, sigma: SIGMA }
+  if (!plan) return { base, mine: edge ? applyMod(base, { bonus: edge }) : base, theirs, pc: null, sigma: SIGMA }
   const pc = pace(plan.tempo, aiTempo(opp, five, meanMargin(theirs, base) < 0), five, opp, mastery)
   const tm = tacticsMod(plan, five, opp)
-  const mine = applyMod(base, { ...tm, bonus: (tm.bonus ?? 0) + pc.margin })
+  const mine = applyMod(base, { ...tm, bonus: (tm.bonus ?? 0) + pc.margin + edge })
   return { base, mine, theirs, pc, sigma: SIGMA * pc.sigmaMult }
 }

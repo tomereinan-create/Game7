@@ -3,6 +3,7 @@ import { Ask } from './Ask'
 import { useLayout } from './useLayout'
 import type { Skin } from './LevelMap'
 import { useUserMode } from '../state/viewmode'
+import CAMPAIGNS from '../data/campaigns.json'
 import {
   balance,
   canBuy,
@@ -11,7 +12,9 @@ import {
   NODE,
   NODES,
   owned,
+  price,
   rank,
+  tierOpen,
   treeCost,
   unlocked,
   type Branch,
@@ -26,7 +29,12 @@ const BRANCHES: { key: Branch; blurb: string }[] = [
   { key: 'Coach', blurb: 'Assignments and the night’s noise.' },
   { key: 'Salary', blurb: 'Payroll room. Salary Cap campaign only.' },
   { key: 'Survival', blurb: 'Lives, checkpoints and substitutions. Death match only.' },
+  { key: 'Dynasty', blurb: 'One node a tier: it opens when the ladder reaches it. Campaign and Salary Cap.' },
 ]
+
+/** The tier a level opens, by name — "The Champions" for 31 — for the Dynasty branch's lock line. */
+const TIER_AT = new Map<number, string>()
+;(CAMPAIGNS as unknown as { name: string; levels: unknown[] }[]).reduce((n, t) => (TIER_AT.set(n + 1, t.name), n + t.levels.length), 0)
 
 /** Hex geometry, in the SVG's own units. One cell per node, columns per branch. */
 const CELL_W = 116
@@ -98,8 +106,13 @@ export function Tree({
     return () => document.body.classList.remove('wide', `sk-${skin}`)
   }, [skin])
 
-  const branches = BRANCHES.filter((b) => (b.key === 'Salary' ? salary : b.key === 'Survival' ? death : true))
+  const branches = BRANCHES.filter((b) => (b.key === 'Salary' ? salary : b.key === 'Survival' ? death : b.key === 'Dynasty' ? !death : true))
   const cols = branches.map((b) => NODES.filter((n) => n.branch === b.key).sort((a, c) => a.depth - c.depth))
+  /** What a rank costs HERE: the node's own price, or the death match's flat star (engine/tree.ts `price`). */
+  const cost = (id: NodeId) => price(id, death)
+  const buyable = (id: NodeId) => canBuy(wallet, id, death)
+  /** A Dynasty node whose tier the ladder has not reached yet. */
+  const waiting = (n: Node) => !tierOpen(wallet, n.id)
   const rows = Math.max(...cols.map((c) => c.length))
   const W = PAD_X * 2 + CELL_W * branches.length
   const H = PAD_TOP + CELL_H * rows + 26
@@ -108,7 +121,7 @@ export function Tree({
   const cy = (depth: number) => PAD_TOP + CELL_H * depth + HEX_R + 6
 
   const spentIn = (n: Node) => rank(wallet, n.id)
-  const stateOf = (n: Node) => (maxed(wallet, n.id) ? 'max' : owned(wallet, n.id) ? 'part' : unlocked(wallet, n.id) ? (canBuy(wallet, n.id) ? 'open' : 'shut') : 'locked')
+  const stateOf = (n: Node) => (maxed(wallet, n.id) ? 'max' : owned(wallet, n.id) ? 'part' : unlocked(wallet, n.id) ? (buyable(n.id) ? 'open' : 'shut') : 'locked')
 
   const node = open ? NODE[open] : null
 
@@ -143,7 +156,7 @@ export function Tree({
           </div>
           <div className="map-side">
             <div className="map-kicker">
-              {wallet.spent} spent of {treeCost()}
+              {wallet.spent} spent of {treeCost(branches.map((b) => b.key), death)}
             </div>
             {refund > 0 ? (
               <button className="map-link danger" onClick={() => setAskRespec(true)}>
@@ -154,8 +167,12 @@ export function Tree({
         </div>
       </div>
       <div className="lede tree-lede">
-        Stars come from the map — three for a sweep, two for a shorter win, one for going the distance. No skill is a one-time skill: every node holds
-        several ranks, one star each, and every rank widens it further.
+        {/* HIS RULING, 2026-10-23 ("Yes, the milder pricing"): a rank costs its row in the branch.
+            The death match pays the same (his ruling: "No, same prices as the other modes"); its Survival
+            branch stays one star a rank — see engine/tree.ts `price`. */}
+        {death
+          ? 'Stars come from the map — three for a sweep, two for a shorter win, one for going the distance. No skill is a one-time skill: every node holds several ranks and every rank widens it further; a rank costs its row in the branch — one star on the top row, two on the next, and so on. Survival ranks are one star each.'
+          : 'Stars come from the map — three for a sweep, two for a shorter win, one for going the distance. Every node holds ranks and every rank widens it further; a rank costs its row in the branch — one star on the top row, two on the next, and so on. The Dynasty branch opens a node at each new tier of the ladder.'}
       </div>
 
       <div className="treewrap">
@@ -197,11 +214,15 @@ export function Tree({
                   role="button"
                   tabIndex={0}
                   onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setOpen(n.id)}
-                  aria-label={`${n.name}, ${r} of ${n.ranks} ranks`}
+                  aria-label={`${n.name}, ${r} of ${n.ranks} ${n.ranks === 1 ? 'rank' : 'ranks'}, ${cost(n.id)} ${cost(n.id) === 1 ? 'star' : 'stars'} a rank${waiting(n) ? `, opens at level ${n.opensAt}` : ''}`}
                 >
                   <polygon className="hex-shadow" points={hexPath(x, y + 3, HEX_R)} />
                   <polygon className="hex" points={hexPath(x, y, HEX_R)} />
                   <polygon className="hex-in" points={hexPath(x, y, HEX_R - 7)} />
+                  {/* WHAT A RANK COSTS, on the node itself (his ruling, 2026-10-23: the prices differ now) */}
+                  <text className="hex-price" x={x} y={y - 19} textAnchor="middle">
+                    ★{cost(n.id)}
+                  </text>
                   <text className="hex-name" x={x} y={y - 4} textAnchor="middle">
                     {n.name.split(' ')[0]}
                   </text>
@@ -209,8 +230,9 @@ export function Tree({
                     {n.name.split(' ').slice(1).join(' ')}
                   </text>
                   <rect className="hex-pill" x={x - 20} y={y + HEX_R - 15} width={40} height={19} rx={5} />
+                  {/* a Dynasty node still waiting for its tier says WHERE it opens instead of 0/N */}
                   <text className="hex-rank" x={x} y={y + HEX_R - 1} textAnchor="middle">
-                    {r}/{n.ranks}
+                    {waiting(n) && !r ? `L${n.opensAt}` : `${r}/${n.ranks}`}
                   </text>
                 </g>
               )
@@ -230,11 +252,18 @@ export function Tree({
             <div className="card-head">
               <span className="label">{node.name}</span>
               <span className="cap">
-                {node.branch} · {rank(wallet, node.id)}/{node.ranks} ranks
+                {node.branch} · {rank(wallet, node.id)}/{node.ranks} {node.ranks === 1 ? 'rank' : 'ranks'} · ★{cost(node.id)} a rank
               </span>
             </div>
             <div className="lede tight">{node.blurb}</div>
-            {!unlocked(wallet, node.id) ? <div className="ranklock">Needs {NODE[node.requires!].name} first.</div> : null}
+            {waiting(node) ? (
+              <div className="ranklock">
+                Opens at level {node.opensAt}
+                {TIER_AT.get(node.opensAt!) ? ` — when the ladder reaches ${TIER_AT.get(node.opensAt!)}` : ''}.
+              </div>
+            ) : !unlocked(wallet, node.id) ? (
+              <div className="ranklock">Needs {NODE[node.requires!].name} first.</div>
+            ) : null}
             <ol className="ranklist">
               {node.rankBlurbs.map((t, i) => {
                 const have = rank(wallet, node.id) > i
@@ -249,11 +278,21 @@ export function Tree({
             </ol>
             <div className="rankfoot">
               <button
-                className={`sortb buy ${canBuy(wallet, node.id) ? 'on' : 'no'}`}
-                disabled={!canBuy(wallet, node.id)}
+                className={`sortb buy ${buyable(node.id) ? 'on' : 'no'}`}
+                disabled={!buyable(node.id)}
                 onClick={() => onBuy(node.id)}
               >
-                {maxed(wallet, node.id) ? 'MAXED' : !unlocked(wallet, node.id) ? 'LOCKED' : bal < 1 ? 'NO STARS' : `★ 1 — buy rank ${rank(wallet, node.id) + 1}`}
+                {maxed(wallet, node.id)
+                  ? 'MAXED'
+                  : waiting(node)
+                    ? `OPENS AT LEVEL ${node.opensAt}`
+                    : !unlocked(wallet, node.id)
+                      ? 'LOCKED'
+                      : bal < 1
+                        ? 'NO STARS'
+                        : bal < cost(node.id)
+                          ? `NEEDS ★ ${cost(node.id)}`
+                          : `★ ${cost(node.id)} — buy rank ${rank(wallet, node.id) + 1}`}
               </button>
               <button className="sortb" onClick={() => setOpen(null)}>
                 Close
@@ -268,7 +307,7 @@ export function Tree({
           text={
             respecKeeps > 0
               ? `${refund} of your ${wallet.spent} stars come back and every node is unlearned, except ${respecKeeps === 1 ? 'the Extra life you already used — it stays bought' : `the ${respecKeeps} Extra lives you already used — they stay bought`}. Reset your staff?`
-              : `All ${wallet.spent} stars come back and every node is unlearned. Reset your staff?`
+              : `All ${wallet.spent} stars come back and every node is unlearned${(wallet.boosted ?? 0) > 0 ? ` (the ${wallet.boosted} spent on boosts were used up, and stay spent)` : ''}. Reset your staff?`
           }
           yes="Reset spending"
           danger

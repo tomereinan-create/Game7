@@ -1,6 +1,6 @@
 import { ROUNDS } from '../config'
 import { DEFAULT_TACTICS, gateTactics, reconcileTactics, type Tactics } from '../engine/tactics'
-import { checkpointLevel, livesBought, migrate, playbookRank, price, rank, respec, type NodeId } from '../engine/tree'
+import { checkpointLevel, livesBought, migrate, playbookRank, price, PRICING, rank, respec, type NodeId } from '../engine/tree'
 import type { CoachId } from '../engine/types'
 import type { Kit } from '../ui/teamColors'
 import { teamCode } from '../engine/names'
@@ -145,6 +145,10 @@ export interface Progress {
   ladder?: number
   /** Stars won on an older ladder whose levels are gone. Spendable, but not cleared levels. */
   credit?: number
+  /** Stars spent on single-use boosts — gone with the attempt, never refunded (engine/tree.ts `Wallet.boosted`). */
+  boosted?: number
+  /** The price list `spent` was paid at (engine/tree.ts `Wallet.pricing`, `migrate`). */
+  pricing?: number
 }
 
 /**
@@ -185,6 +189,8 @@ export const wornOut = (wear: Record<string, number>, five: string[], dur: (name
  */
 export const saveKey = (m: CampaignMode) => (isTutorial() ? `game7.tut.${m}.v2` : `game7.${m}.v2`)
 const key = saveKey
+/** The ladder's drafts in progress (state/draftsave.ts), kept beside its save and namespaced with it. */
+export const draftKey = (m: CampaignMode) => `${saveKey(m)}.draft`
 
 /**
  * ONE CLUB, ALL THREE LADDERS (his ruling, 2026-09-11: "Change it so there will be one team name,
@@ -253,6 +259,7 @@ const legacyKey = (m: CampaignMode) => (m === 'campaign' && !isTutorial() ? 'gam
 export function resetTutorialSaves() {
   try {
     for (const m of MODES) localStorage.removeItem(`game7.tut.${m}.v2`)
+    for (const m of MODES) localStorage.removeItem(`game7.tut.${m}.v2.draft`)
     localStorage.removeItem('game7.tut.team.v1')
   } catch {
     /* private mode — there was nothing saved to forget */
@@ -279,6 +286,8 @@ const fresh = (): Progress => ({
   record: { w: 0, l: 0 },
   ladder: LADDER,
   credit: 0,
+  boosted: 0,
+  pricing: PRICING,
 })
 
 /**
@@ -313,7 +322,7 @@ export function die(p: Progress): Progress {
     ...reset,
     stars: p.stars.map((s, i) => (i < at - 1 ? s : 0)),
     nodes: { surv_save: save },
-    spent: save * price('surv_save'),
+    spent: save * price('surv_save', true),
     checkpoint: at,
     record: p.record ?? reset.record,
   }
@@ -334,7 +343,7 @@ export function afterBuy(before: Progress, after: Progress): Progress {
 export const usedLives = (p: Progress) => Math.max(0, livesBought(p) - p.lives)
 
 /** Stars a death-match respec cannot hand back: the Extra life ranks whose life is already used. */
-export const respecKeeps = (p: Progress) => usedLives(p) * price('surv_life')
+export const respecKeeps = (p: Progress) => usedLives(p) * price('surv_life', true)
 
 /**
  * A RESPEC IN THE DEATH MATCH. Two rules keep it from being a way to buy lives for nothing:
@@ -437,6 +446,9 @@ export function loadProgress(m: CampaignMode): Progress {
             })(),
       ladder: LADDER,
       credit,
+      boosted: typeof p.boosted === 'number' && p.boosted > 0 ? p.boosted : 0,
+      // absent on a save from before the per-node prices: `migrate` re-derives its spend at one star
+      pricing: typeof p.pricing === 'number' ? p.pricing : undefined,
     })
   } catch {
     return fresh()
@@ -454,8 +466,9 @@ export function saveProgress(m: CampaignMode, p: Progress) {
 /**
  * A LADDER THAT HAS NEVER BEEN SAVED IS SAVED THE MOMENT ITS FIRST DRAFT OPENS (the live check,
  * 2026-10-22). Its seed — which deals the wheel — was only written at the first result, so a reload
- * mid-draft on a first visit drew a brand-new seed and a different wheel: a free re-roll past the rule
- * that walking out with men on the board spends the attempt. Written once; never over a real save.
+ * mid-draft on a first visit drew a brand-new seed and a different wheel: a free re-roll. (The draft
+ * itself is kept beside it since 2026-10-23 — see state/draftsave.ts — and its attempt is checked
+ * against this seed.) Written once; never over a real save.
  */
 export function saveIfNew(m: CampaignMode, p: Progress) {
   try {
@@ -499,6 +512,12 @@ export function starsFromUrl(all: Record<CampaignMode, Progress>): boolean {
 export function resetProgress(m: CampaignMode): Progress {
   const p = fresh()
   saveProgress(m, p)
+  // and any draft left open on the old ladder (it would not match the new seed anyway)
+  try {
+    localStorage.removeItem(draftKey(m))
+  } catch {
+    /* private mode — there was nothing kept to forget */
+  }
   return p
 }
 

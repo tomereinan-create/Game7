@@ -9822,6 +9822,37 @@ body:has(.fd-modes .fd-help) .coach-fab { display: none; }
   .draft.set.has-plan:not(.solo) > .col.c { grid-area: c; }
   .draft.set.has-plan:not(.solo) > .col.d { grid-area: d; }
 }
+/* THE OPPONENT IN SIGHT ON A LAPTOP (his report, 2026-10-23: "On a laptop you can't see the
+   opponent while you draft"). The two columns above put the opponent UNDER your five — measured at
+   1,440 x 900 it began at y 863, behind the dock — and the only way to it scrolled the roster being
+   picked from out of view. From 1,280, while the five is still being drafted, the draft is the
+   desk's three columns again: the opponent, the wheel, your five, all standing in the window; the
+   board measures itself to the dock (Draft.tsx `sheet`) and the floors take what the rows leave.
+   What made three columns unreadable here was the WORDS, so the two team columns give up the
+   season-line numbers — PTS · REB · AST and their caption — and the names take that width (still
+   one tap away: the row's chevron opens the season line, the name opens the card). Under 1,280 and
+   once the five is in, nothing changes. */
+@media (min-width: 1280px) and (max-width: 1799px) {
+  .draft:not(.set) {
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.3fr) minmax(0, 0.85fr);
+    grid-template-areas: "a b c";
+    align-items: stretch;
+  }
+  .draft:not(.set) .court-line { flex: 1 1 0; }
+  .draft:not(.set) .court-line > .court { max-width: 100%; }
+  .draft:not(.set) .col.a .rowhead.dr,
+  .draft:not(.set) .col.a .row.dr,
+  .draft:not(.set) .col.c .rowhead.dr,
+  .draft:not(.set) .col.c .row.dr { grid-template-columns: minmax(0, 1fr) 28px; }
+  .draft:not(.set) .col.a .mini,
+  .draft:not(.set) .col.c .mini,
+  .draft:not(.set) .col.a .rowhead.dr > :nth-child(2),
+  .draft:not(.set) .col.c .rowhead.dr > :nth-child(2),
+  .draft:not(.set) .col.a .card-head > .cap { display: none; }
+  /* the wheel's roster is the narrower middle now (514px at 1,280 against the desk's 900+), so its
+     names come down from the desk's 26px with the window instead of printing "Shawn Ke..." */
+  .draft:not(.set) .col.b .pname b { font-size: clamp(17px, 1.45vw, 26px); }
+}
 /* and under 1,150 two columns are still two narrow ones (1,024: "Mitch Richmond '...", "Draft a
    man he..."), so the draft is ONE column there, at the width a column reads at: the wheel, then
    your five, then the opponent - the order you use them in, top to bottom. */
@@ -11121,3 +11152,37 @@ body.creator .shr-open { display: none; }
 /* LIVE CHECK #10 — the star / sub notes hang UP from their anchor, which LevelMap now measures off
    the ticket as drawn (the rule at the head of the map block said so; this later one had said 0). */
 .node-notes { transform: translate(-50%, -100%); }
+
+/* THE STAR ECONOMY (his rulings, 2026-10-23: "B, optionally combined with A's milder version. Also,
+   we can add in game extra boosts single use for harder stages").
+   The staff tree prints what a rank costs on every hex, over the name — the prices differ now. */
+.hex-price { font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.06em; fill: var(--faint); }
+.treenode.open .hex-price { fill: var(--them); }
+.treenode.part .hex-price { fill: var(--you); }
+.treenode.max .hex-price { fill: var(--you-ink); opacity: 0.7; }
+.treenode.locked .hex-price { opacity: 0.42; }
+/* THE DRAFT'S IDLE CARD carries the Dynasty spins' word and the boosts. One small mono line, the
+   furniture the widen caption already is, so nothing on the card grows a new look. */
+.dyn-note { font-family: var(--mono); font-size: 9px; letter-spacing: 0.04em; line-height: 1.5; color: var(--muted); padding: 6px 0 0; }
+.dyn-note.warn { color: var(--danger); padding: 2px 0 4px; }
+.spin-sub.film-next { opacity: 0.8; }
+.chip-btn.on { background: var(--you); color: var(--you-ink); }
+/* the boosts' chips are buttons, not sorts: no sort glyph on the one that is in */
+.poschips.boosts .sortb.on::after { content: none; }
+/* Scout's pick: thirty-nine franchises wrap in a box of their own rather than run the card long */
+.poschips.widen.picklist { max-height: 210px; overflow-y: auto; align-content: flex-start; }
+.hot-note { color: var(--you); }
+@media (min-width: 900px) {
+  .draft:not(.set) .wheel-idle .dyn-note { color: var(--st-ink-2); text-align: center; }
+  .draft:not(.set) .wheel-idle .dyn-note.warn { color: var(--danger); }
+  .draft:not(.set) .wheel-idle .chip-btn { border-color: var(--st-accent); color: var(--st-accent); }
+  .draft:not(.set) .wheel-idle .chip-btn.on { background: var(--st-accent); color: var(--st-accent-ink); }
+  .draft:not(.set) .wheel-card .dyn-note { color: var(--st-ink-2); text-align: center; }
+  .draft:not(.set) .wheel-idle .dyn-row { justify-content: center; }
+}
+/* the two Dynasty chips stand in a row of their own under the landing */
+.dyn-row { display: flex; flex-wrap: wrap; gap: 8px; padding: 8px 0 0; }
+.dyn-row .chip-btn { margin-left: 0; }
+@media (max-width: 899px) {
+  .dyn-row .chip-btn { padding: 5px 11px; font-size: 10px; }
+}

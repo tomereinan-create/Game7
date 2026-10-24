@@ -1,7 +1,7 @@
 import { SIGMA } from '../config'
 import { odds } from '../engine/odds'
 import { defenseVs, MKNOBS, readsOf, teamOffense, transitionBonus, type Assignment, type DefenseVs, type Offense } from '../engine/offense'
-import { compile } from '../engine/resolver'
+import { applyMod, compile } from '../engine/resolver'
 import type { Player } from '../engine/types'
 
 const f1 = (v: number) => v.toFixed(1)
@@ -31,6 +31,7 @@ export function Analysis({
   theirName,
   assignment = 'optimal',
   sigma: sigmaIn,
+  edge = 0,
   onClose,
 }: {
   mine: Player[]
@@ -41,6 +42,12 @@ export function Analysis({
   sigma?: number
   /** Our defensive assignment — what the sim actually scored. The opponent is always optimal. */
   assignment?: Assignment
+  /**
+   * A HOT HAND boost's points on our margin (engine/tree.ts BOOSTS) — his word, 2026-10-23,
+   * "Calculate it": the analysis reads the same night the win-chance card and the sim read, so the
+   * boost lands in the modifiers term.
+   */
+  edge?: number
   onClose: () => void
 }) {
   /**
@@ -54,7 +61,7 @@ export function Analysis({
   const B: Side = { label: theirName, five: theirs, off: teamOffense(theirs), transition: transitionBonus(theirs), d: defenseVs(theirs, mine), steals: 0, tone: 'them' }
   A.steals = A.d.steals
   B.steals = B.d.steals
-  const L = compile(mine, theirs, assignment)
+  const L = edge ? applyMod(compile(mine, theirs, assignment), { bonus: edge }) : compile(mine, theirs, assignment)
   const R = compile(theirs, mine)
   const o = mine.length && theirs.length ? odds(L, R, sigma) : null
   const readsB = theirs.length ? readsOf(theirs) : null

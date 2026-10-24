@@ -1,11 +1,65 @@
 import { useRef, useState, type PointerEvent } from 'react'
-import { defenseVs, pairingTable, PAIR_SCALE, solveBoard } from '../engine/offense'
-import { K_MATCH } from '../config'
+import { defenseVs, naiveAssignment, pairingTable, PAIR_SCALE, solveBoard, type Assignment } from '../engine/offense'
+import { DRAFT_SIZE, K_MATCH } from '../config'
 import { useUserMode } from '../state/viewmode'
 import { archetype } from '../engine/pool'
 import type { Player } from '../engine/types'
 
 const short = (n: string) => n.replace(/ '\d\d( \([a-z]\))?$/, '')
+
+/** A real board: every one of their n men has exactly one of ours on him. */
+const isBoard = (map: readonly number[], n: number) =>
+  map.length === n && new Set(map).size === n && map.every((j) => Number.isInteger(j) && j >= 0 && j < n)
+
+/** Two boards are one board: every defender on the same man. */
+export const sameBoard = (a: readonly number[] | null | undefined, b: readonly number[] | null | undefined) =>
+  !!a && !!b && a.length === b.length && a.every((j, i) => j === b[i])
+
+/** Move defender i onto their man j: the defender already on j takes i's old man. Nobody else moves. */
+export function moveDefender(map: readonly number[], i: number, j: number): number[] {
+  const next = [...map]
+  const k = next.indexOf(j)
+  const old = next[i]
+  next[i] = j
+  if (k >= 0 && k !== i) next[k] = old
+  return next
+}
+
+/**
+ * THE ONE BOARD (his report, 2026-10-23: "The Matchup board can only make your defense worse, and
+ * the app gives three different answers to who guards whom").
+ *
+ * The draft read the night's matchups three ways: the sim and the cards were handed the word
+ * 'optimal', the jumbotron's ticker resolved that word to the solved board (4ec350d), and the board
+ * sheet and the coaching tips fell back to the NAIVE board — so the sheet opened on matchups nobody
+ * was going to play, and the first touch replaced the staff's whole board with the naive one plus
+ * that touch. This is the one place the active board is decided, and every reader takes `map`:
+ *
+ *   · `assignment` is what the sim and every card are handed. The staff's own board stays the WORD
+ *     ('optimal' with Matchup coaching, 'naive' without), so it is scored exactly as an untouched
+ *     night always was. A hand-set board that is the staff's own board — left alone, solved, or
+ *     put back after a change — IS that word, so it costs exactly nothing; only a board that
+ *     differs is handed over as a map.
+ *   · `map` is the same board as five pairings, for whatever names them: the sheet opens on it, the
+ *     ticker prints it, the tips read it. 'optimal' is shown as `solveBoard`, the best of the 120
+ *     real boards — what the ticker has shown since 4ec350d and what Solve fills in.
+ *   · `staff` is the staff's own board whatever is being played, so a change that puts the board
+ *     back can be kept as NO board of his own — and a five that changes later is then guarded the
+ *     way the staff guards the new five, not by a copy of the old five's solution.
+ *
+ * Null `map` and `staff` until both fives are five: there is no board to name before then.
+ */
+export function activeBoard(
+  mine: Player[],
+  theirs: Player[],
+  o: { optimal: boolean; manual: boolean; board: readonly number[] | null },
+): { assignment: Assignment; map: number[] | null; staff: number[] | null } {
+  const word: Assignment = o.optimal ? 'optimal' : 'naive'
+  if (mine.length !== DRAFT_SIZE || !theirs.length) return { assignment: word, map: null, staff: null }
+  const staff = o.optimal ? solveBoard(mine, theirs) : naiveAssignment(mine, theirs)
+  const own = o.manual && o.board && isBoard(o.board, theirs.length) && theirs.length === mine.length && !sameBoard(o.board, staff) ? [...o.board] : null
+  return own ? { assignment: own, map: own, staff } : { assignment: word, map: staff, staff }
+}
 
 /**
  * The matchup board: your five defenders against their five. Drag a defender
@@ -16,6 +70,7 @@ export function Matchups({
   mine,
   theirs,
   map,
+  playing,
   onChange,
   onBack,
   canSolve = false,
@@ -27,6 +82,12 @@ export function Matchups({
   theirs: Player[]
   /** map[i] = index in `theirs` guarded by mine[i]. */
   map: number[]
+  /**
+   * What the night plays off this board — `activeBoard`'s `assignment`. The staff's own board is
+   * played as the word 'optimal', so the sheet scores it as that and not as the map it is drawn as;
+   * without it the sheet scores the map.
+   */
+  playing?: Assignment
   onChange: (map: number[]) => void
   onBack: () => void
   /** Matchup board rank 2: the engine will fill the board for you to tweak. */
@@ -37,7 +98,7 @@ export function Matchups({
   const [drag, setDrag] = useState<{ i: number; x: number; y: number; over: number | null } | null>(null)
   const ref = useRef<{ i: number; x0: number; y0: number; moved: boolean } | null>(null)
 
-  const cur = defenseVs(mine, theirs, map)
+  const cur = defenseVs(mine, theirs, playing ?? map)
   const opt = defenseVs(mine, theirs, 'optimal')
   const guardOf = (j: number) => map.indexOf(j)
   // EVERY PAIRING GENERATES EDGE (recal_60): each row prices what THIS defender on THIS attacker is
@@ -52,14 +113,7 @@ export function Matchups({
   }
 
   /** Move defender i onto opponent j: the man already there takes i's old assignment. */
-  const put = (i: number, j: number) => {
-    const next = [...map]
-    const k = guardOf(j)
-    const old = next[i]
-    next[i] = j
-    if (k >= 0 && k !== i) next[k] = old
-    onChange(next)
-  }
+  const put = (i: number, j: number) => onChange(moveDefender(map, i, j))
 
   const rowAt = (x: number, y: number): number | null => {
     const el = document.elementFromPoint(x, y)?.closest<HTMLElement>('[data-opp]')

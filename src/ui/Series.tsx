@@ -256,6 +256,7 @@ export function Series({
   result,
   seed,
   assignment = 'optimal',
+  edge = 0,
   exhibition = false,
   boxCtx = null,
   sigma,
@@ -287,6 +288,8 @@ export function Series({
   result: SeriesResult
   seed: number
   assignment?: Assignment
+  /** A Hot hand boost's points on our margin — Full analysis reads them (App.tsx `Pending.edge`). */
+  edge?: number
   /** A one-off (custom matchup): no level line, no stars, no map. */
   exhibition?: boolean
   /** recal_61: the tactical state the box consumes — the death match passes it, others none. */
@@ -1046,7 +1049,7 @@ export function Series({
           )
         })()
       ) : null}
-      {analysis ? <Analysis mine={five} theirs={opponent.players} assignment={assignment} sigma={sigma} myName={teamName} theirName={opponent.team} onClose={() => setAnalysis(false)} /> : null}
+      {analysis ? <Analysis mine={five} theirs={opponent.players} assignment={assignment} sigma={sigma} edge={edge} myName={teamName} theirName={opponent.team} onClose={() => setAnalysis(false)} /> : null}
 
       {/* The three-door dock used to bolt an empty 64px div under the page, because the page's
           bottom padding was written for a ONE-ROW dock and this one is two. It does not any more:

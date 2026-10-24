@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { CAP_LIMIT, ROUNDS } from './config'
 import { achCheckMeta, achResetCampaign, achSettleSeries, onUnlocked, type AchDef } from './state/achievements'
 import { Achievements } from './ui/Achievements'
@@ -8,7 +8,7 @@ import type { Tactics } from './engine/tactics'
 import CAMPAIGNS from './data/campaigns.json'
 import { canBetter, simSeries, starsFor } from './engine/resolver'
 import { boxContext, reconcileTactics } from './engine/tactics'
-import { balance, benchHeal, buy, capBonus, duraBoost, earned, paceMastery, playbookRank, rank, respec, subsPerRound, type Branch } from './engine/tree'
+import { balance, benchHeal, buy, buyBoost, capBonus, duraBoost, earned, paceMastery, playbookRank, rank, respec, subsPerRound, type Branch } from './engine/tree'
 import { teach, teachOnce, tutorialLock, useLesson, useTutor } from './state/tutorial'
 import { Coach } from './ui/Coach'
 import { auctionLesson, customLesson, eraLesson, ladderLesson, lifeLesson, mapLesson, myTeamLesson, runOverLesson, spendLesson, staffLesson, teamLesson, trophyLesson, unlockLesson, versusLesson } from './ui/lessons'
@@ -43,6 +43,7 @@ import {
   type Progress,
   type Team,
 } from './state/campaign'
+import { afterLeave, clearDraft, draftAttempt, keepsDraft, leaveLoses, loadDraft, saveDraft } from './state/draftsave'
 import { isTutorial, useTutorial, useUserMode } from './state/viewmode'
 import { requestTeam, useTeamRequest } from './state/openteam'
 import { Draft } from './ui/Draft'
@@ -88,8 +89,9 @@ const firstRun = (p: Progress) => p.plays === 0 && p.stars.every((s) => s === 0)
  * A RELOAD MID-DRAFT COMES BACK TO THE DRAFT (the live check, 2026-10-22: it dropped the player on
  * the front door, and iOS reloads a tab it evicted from the background the same way). The open
  * level is kept in this TAB's session storage while a draft is on the screen and read once on load.
- * The picks are not kept — the wheel is one seeded stream — but the seed is (`saveIfNew`), so the
- * same wheel deals again and nothing is re-rolled.
+ * The seed is kept (`saveIfNew`), and since his report of 2026-10-23 so is the draft itself — the
+ * picks, the landing and how far the wheel has been drawn (state/draftsave.ts) — so the reload opens
+ * on the same board, and the coming landings cannot be seen by reloading and spinning them again.
  */
 const RESUME = 'game7.resume'
 const resumeAt: { mode: CampaignMode; level: number } | null = (() => {
@@ -141,6 +143,8 @@ interface Pending {
   sigma: number
   plan: Tactics | null
   pc: { ours: number; theirs: number; margin: number } | null
+  /** A Hot hand boost's points on our margin, for Full analysis (his word, 2026-10-23: "Calculate it"). */
+  edge: number
   /**
    * THE LEVEL THE RESULT SCREEN MAY ADVANCE TO, or null. His ruling: "Add a rematch button, and
    * advance(If you win your latest stage(not if you go back to a stage you already won))."
@@ -480,6 +484,18 @@ function Game() {
     if (screen === 'draft' && cm && prog && !auto) saveIfNew(cm, prog)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [screen, cm, level])
+  /**
+   * THIS LEVEL'S DRAFT IN PROGRESS, when one is kept (his report, 2026-10-23 — state/draftsave.ts).
+   * Read as the draft screen opens, and the Draft takes it once. A kept draft brings its own attempt —
+   * its seed and the play count it was dealt at — so a series simmed at another level in between does
+   * not re-deal it.
+   */
+  const resume = useMemo(
+    () => (screen === 'draft' && cm && level && prog ? loadDraft(cm, level, prog) : null),
+    // the ladder's seed and play count are all of the save it reads
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [screen, cm, level, prog?.seed, prog?.plays],
+  )
   const bal = prog ? balance(prog) : 0
   /* THE COACH'S LESSONS, ONE PER ROOM (tutorial mode). Each is told the first time its room is on
      the screen, built off what App knows about it then. The draft and the result hook their own
@@ -492,9 +508,14 @@ function Game() {
     mapLesson({ mode: cm!, level: currentLevel(prog!), opp: (() => { const l = currentLevel(prog!); return l ? opponents[l - 1] : null })(), eras: ERAS, bal, lives: prog!.lives }),
   )
   useLesson(`mode.${cm ?? 'campaign'}`, screen === 'map' && cm !== 'campaign', () => ladderLesson(cm!, prog!.lives)!)
-  useLesson('spend', screen === 'map' && bal >= 1, () => spendLesson(bal))
+  useLesson('spend', screen === 'map' && bal >= 1, () => spendLesson(bal, death))
   useLesson('staff', screen === 'staff', () =>
-    staffLesson({ bal, earned: earned(prog!), branches: ['Scout', 'Front office', 'Coach', ...(capped ? (['Salary'] as Branch[]) : []), ...(death ? (['Survival'] as Branch[]) : [])] }),
+    staffLesson({
+      bal,
+      earned: earned(prog!),
+      branches: ['Scout', 'Front office', 'Coach', ...(capped ? (['Salary'] as Branch[]) : []), ...(death ? (['Survival'] as Branch[]) : (['Dynasty'] as Branch[]))],
+      death,
+    }),
   )
   useLesson('myteam', screen === 'myteam', () =>
     myTeamLesson({
@@ -517,7 +538,7 @@ function Game() {
     })
   }, [tutorial, screen, prog])
 
-  const sim = (five: Player[], assignment: Assignment, toWin: number) => {
+  const sim = (five: Player[], assignment: Assignment, toWin: number, edge = 0) => {
     if (!opponent || !prog || !cm || !level) return
     // Our defense is whatever the board assigned; the AI always plays optimal. On top of it comes
     // the PLAN, priced in points of spread like every other modifier — in ALL THREE MODES now (his
@@ -527,8 +548,9 @@ function Game() {
     const plan = planFor(cm, prog, five.map((p) => p.name))
     // PACE (recal_57): both teams pick a tempo — the AI reads the surpluses and answers — and the
     // night gets a relative volume-surplus term plus a variance shift, replacing the flat sigma map.
-    // Built by odds.ts `night`, the same call the draft card makes, so the card prices this night.
-    const { mine, theirs, pc, sigma: sig } = night(five, opponent.players, assignment, plan, paceMastery(prog))
+    // Built by odds.ts `night`, the same call the draft card makes, so the card prices this night —
+    // a Hot hand boost's points (`edge`) included, handed over by the draft that priced them.
+    const { mine, theirs, pc, sigma: sig } = night(five, opponent.players, assignment, plan, paceMastery(prog), death ? 0 : edge)
     // creator mode: the series is a function of the run's seed and the attempt, so a filmed run replays
     const seed = CREATOR ? (levelSeed(prog, level) ^ 0x5bd1e995) >>> 0 || 1 : randomSeed()
     // Every mode sims the series entirely — the death match included (his ruling). Its wear is
@@ -564,6 +586,8 @@ function Game() {
     // the toasts and the coach wait for the landing (see `hold`)
     hold.current = true
     held.current = { toasts: [], lesson: null }
+    // the night is banked, so its draft is over: the next attempt here deals a new wheel
+    clearDraft(cm, level)
     commit(cm, settled)
     achSettleSeries({
       mode: cm,
@@ -601,6 +625,7 @@ function Game() {
       sigma: sig,
       plan,
       pc: pc ? { ours: pc.ours, theirs: pc.theirs, margin: pc.margin } : null,
+      edge: death ? 0 : edge,
       // read off the save as it stood BEFORE this series settled — see `advanceTo`
       next: advanceTo(prog, level, result.won),
       runEnded: death && !result.won && prog.lives === 0,
@@ -784,22 +809,36 @@ function Game() {
   }
 
   /**
+   * WALKING OUT OF A DRAFT, by Home or by the map. What it costs is one rule in state/draftsave.ts,
+   * `LEAVE_SPENDS_ATTEMPT` — his call (his report, 2026-10-23: walking out after one pick "counts as
+   * an attempt with no loss and no star cost, and gives a completely new wheel"). As shipped, the
+   * campaign and the cap keep the draft as it stands and do not count it, and opening the level again
+   * carries on with it; the death match spends the attempt as it always has. A wheel that ran dry
+   * ends its attempt whatever the rule.
+   */
+  const walkOut = (started: boolean, ended = false) => {
+    if (!cm || !prog || !level) return
+    const out = afterLeave(cm, prog, started, ended)
+    if (!out.keep) clearDraft(cm, level)
+    if (out.progress !== prog) commit(cm, out.progress)
+  }
+  /**
    * HOME DOES NOT THROW A DRAFT AWAY ON ONE TAP (the live check, 2026-10-22: a toast's close button
    * sat under this button, and one stray tap took a first-time visitor home and lost his picks).
-   * With men on the board the first tap only asks — "Tap again to leave" — and the second leaves,
-   * spending the attempt exactly as walking out through the map does (the wheel reseeds). Three
-   * seconds, then it forgets. No popup: window.confirm never renders on his phone.
+   * Where walking out loses the men on the board (the death match, or the rule above flipped), the
+   * first tap only asks — "Tap again to leave" — and the second leaves. Three seconds, then it
+   * forgets. No popup: window.confirm never renders on his phone. Where the draft is kept, there is
+   * nothing to lose and one tap goes home.
    */
   const homeTap = () => {
-    if (screen === 'draft' && draftPicks.current > 0) {
-      if (!homeArmed) {
-        setHomeArmed(true)
-        window.clearTimeout(armTimer.current)
-        armTimer.current = window.setTimeout(() => setHomeArmed(false), 3000)
-        return
-      }
-      if (cm && prog) commit(cm, { ...prog, plays: prog.plays + 1 })
+    const started = screen === 'draft' && draftPicks.current > 0
+    if (started && cm && leaveLoses(cm) && !homeArmed) {
+      setHomeArmed(true)
+      window.clearTimeout(armTimer.current)
+      armTimer.current = window.setTimeout(() => setHomeArmed(false), 3000)
+      return
     }
+    if (screen === 'draft') walkOut(started)
     setHomeArmed(false)
     draftPicks.current = 0
     leave()
@@ -943,7 +982,8 @@ function Game() {
           death={death}
           skin={skin}
           onBuy={(id) => {
-            const next = buy(prog, id)
+            // the death match keeps one star a rank (engine/tree.ts `price`)
+            const next = buy(prog, id, death)
             if (!next) return
             // Survival nodes take effect the moment they are bought: a life bought is a life in hand
             // (and a life already lost stays lost), and a checkpoint bought is ground you can no
@@ -1044,6 +1084,7 @@ function Game() {
           seed={pending.seed}
           skin={skin}
           assignment={pending.assignment}
+          edge={pending.edge}
           onAdvance={finish}
           onSettled={() => {
             release()
@@ -1071,14 +1112,31 @@ function Game() {
     )
   }
 
+  /* the attempt this draft belongs to: a kept draft's own, or the one a draft opened now is dealt in */
+  const attempt = resume ?? draftAttempt(prog, level)
   return (
     <>
       {sheet}
       {homeFab}
       <Draft
-        key={`${cm}-${level}-${prog.plays}`}
+        key={`${cm}-${level}-${attempt.plays}`}
         opponent={opponent}
-        seed={levelSeed(prog, level)}
+        seed={attempt.seed}
+        resume={resume}
+        onSave={keepsDraft(cm) ? (s) => saveDraft(cm, { level, base: attempt.base, plays: attempt.plays, seed: attempt.seed, ...s }) : undefined}
+        /* THE BOOSTS (his ruling, 2026-10-23): paid out of the save's stars into `boosted`, which no
+           respec hands back; the draft holds the boost itself, kept beside it, until the sim. The
+           campaign and the cap only — the ladders that keep a draft — and never in creator mode. */
+        onBoost={
+          keepsDraft(cm) && !CREATOR
+            ? (id, held) => {
+                const next = buyBoost(prog, id, held)
+                if (!next) return false
+                commit(cm, next)
+                return true
+              }
+            : undefined
+        }
         teamName={teamName}
         teamAb={clubCode(team)}
         salary={capped}
@@ -1101,12 +1159,12 @@ function Game() {
            door here, so nothing about that mode moves. */
         onTactics={death ? undefined : (t) => commit(cm, { ...prog, tactics: t })}
         onSim={sim}
-        onBack={(started) => {
-          // The staff tree lives on the map only. Walking out of a draft with picks on the
-          // board is allowed, but it spends the attempt: the wheel reseeds, so there is no
-          // peeking at a roster, buying a node, and coming back to the same spin. No popup —
-          // window.confirm never renders on his phone, which froze the Map button (his report).
-          if (started) commit(cm, { ...prog, plays: prog.plays + 1 })
+        onBack={(started, ended) => {
+          // The staff tree lives on the map only. What walking out costs is `walkOut`'s one rule
+          // (above): the campaign and the cap keep the draft and carry on with it on the way back
+          // in, the death match spends the attempt. No popup — window.confirm never renders on his
+          // phone, which froze the Map button (his report).
+          walkOut(started, ended)
           setLevel(null)
         }}
         onRoster={() => setRoster(true)}

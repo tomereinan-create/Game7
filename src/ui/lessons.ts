@@ -203,12 +203,18 @@ export function ladderLesson(mode: CampaignMode, lives: number): Lesson | null {
   return null
 }
 
+/** What a rank costs, said once for every lesson that says it (engine/tree.ts `price`, his ruling of 2026-10-23). */
+const PRICE_LINE = (death: boolean) =>
+  death
+    ? 'a rank costs its row in the branch — one star on the top row, two on the next, and so on; Survival ranks are one star each'
+    : 'a rank costs its row in the branch — one star on the top row, two on the next, and so on'
+
 /**
  * STAFF, TOLD AFTER THE FIRST SERIES IS WON (his ruling, 2026-09-30: "Move Staff ... after you win
  * a series"). It fires the first time the map is on the screen with a star to spend, which is
  * exactly then — the door is explained when there is something to spend at it.
  */
-export function spendLesson(bal: number): Lesson {
+export function spendLesson(bal: number, death = false): Lesson {
   return {
     id: 'spend',
     kicker: 'Tutorial · Staff',
@@ -217,7 +223,7 @@ export function spendLesson(bal: number): Lesson {
       {
         at: '.um-staff',
         body: [
-          `Stars buy staff. You have ${plural(bal, 'star')} to spend. The Staff door opens the tree: every rank costs one star, and every rank widens what you can do — more spins, more reads, a playbook. None adds a point of rating.`,
+          `Stars buy staff. You have ${plural(bal, 'star')} to spend. The Staff door opens the tree: ${PRICE_LINE(death)}, and every rank widens what you can do — more spins, more reads, a playbook. None adds a point of rating.`,
           'Every rank you buy is explained the moment you buy it. Nothing is lost by waiting — stars keep — but a rank bought now works from the next draft on.',
         ],
       },
@@ -482,14 +488,16 @@ export function mapDoorLesson(stars: number): Lesson {
 }
 
 /* ---------------------------------------------------------------- the staff tree */
-export function staffLesson(ctx: { bal: number; earned: number; branches: Branch[] }): Lesson {
+export function staffLesson(ctx: { bal: number; earned: number; branches: Branch[]; death?: boolean }): Lesson {
   const names: Record<Branch, string> = {
     Scout: 'Scout — know more before you draft',
     'Front office': 'Front office — more chances on the wheel',
     Coach: 'Coach — assignments, pace and the playbook',
     Salary: 'Salary — payroll room',
     Survival: 'Survival — lives, checkpoints and substitutions',
+    Dynasty: 'Dynasty — one node a tier, opened as the ladder reaches it',
   }
+  const line = PRICE_LINE(!!ctx.death)
   return {
     id: 'staff',
     kicker: 'Tutorial · The staff tree',
@@ -497,7 +505,7 @@ export function staffLesson(ctx: { bal: number; earned: number; branches: Branch
     steps: [
       {
         at: '.map-total',
-        body: [`${ctx.bal} to spend of ${ctx.earned} earned. Every rank costs one star. No node adds a point of rating — each widens what you can do.`],
+        body: [`${ctx.bal} to spend of ${ctx.earned} earned. ${line.charAt(0).toUpperCase()}${line.slice(1)}. No node adds a point of rating — each widens what you can do.`],
       },
       {
         at: '.treesvg',
@@ -530,20 +538,23 @@ const WHERE: Record<NodeId, (r: number) => string[]> = {
     r === 1 ? "On the draft, under the wheel: a Decade toggle opens every man who wore the shirt in that landing's decade." : 'The Decade toggle now reaches the decade either side as well — thirty years of the franchise.',
   ],
   fo_division: (r) => [r === 1 ? "On the draft, under the wheel: a Division toggle opens that season's whole division." : "The toggle now opens that season's entire conference."],
+  /* THE TWO COACH READOUTS SHOW IN EVERY MODE (his report, 2026-10-23: "In User mode two staff ranks
+     cost a star and show nothing"). The assignment's price and the pace read are what those ranks
+     buy, so they print here the way Exact ratings does — the tutorial included. */
   coach_optimal: (r) => [
     r === 1
-      ? 'On every night from here: your defensive assignments go from naive to optimal — the anchor hides on their worst shooter, the rest sort themselves. Nothing to press; it is how your five defends now.'
-      : 'Rank 2 prices the assignment on the draft, in points of margin.',
-    ...(r === 2 ? [`That price is a number, and ${BLIND.charAt(0).toLowerCase()}${BLIND.slice(1)}`] : []),
+      ? 'On every night from here: your defensive assignments go from naive to optimal — instead of position on position, every defender goes on the man he gives up least to, the best of the 120 boards. Nothing to press; it is how your five defends now.'
+      : 'Rank 2 prices the assignment on the draft, once the five is in: what it is worth against the naive board, in points of margin.',
+    ...(r === 2 ? ['That price is what the rank buys, so it shows in every mode — the tutorial included.'] : []),
   ],
   coach_manual: (r) => [
     r === 1
-      ? 'On the draft, once the five is in: a Matchup board door. Drag a defender onto each of their men; the board you set is the board the night plays.'
-      : 'On the board: a Solve button fills the whole thing the way the engine would, for you to tweak.',
+      ? 'On the draft, once the five is in: a Matchup board door. It opens on the matchups your staff is playing; drag a defender onto one of their men to change one, and the board you set is the board the night plays. Left alone, or put back, it costs nothing.'
+      : 'On the board: a Solve button puts the engine’s best board back after you have changed it.',
   ],
   coach_sigma: (r) => [
-    ['On the draft, a pace readout: both surpluses, so the tempo call reads the matchup.', 'A trained bench wastes less: the tempo deviation tax is halved, every night.', 'Your call carries the night: 85% of the pace is yours, however they answer.'][r - 1],
-    ...(r === 1 ? [`The readout is numbers, and ${BLIND.charAt(0).toLowerCase()}${BLIND.slice(1)}`] : []),
+    ['On the draft, once the five is in, a pace readout: both surpluses, so the tempo call reads the matchup.', 'A trained bench wastes less: the tempo deviation tax is halved, every night.', 'Your call carries the night: 85% of the pace is yours, however they answer.'][r - 1],
+    ...(r === 1 ? ['The readout is what the rank buys, so it shows in every mode — the tutorial included.'] : []),
   ],
   coach_tactics: (r) => [
     `On the draft, once the five is in: a Playbook door${r === 1 ? ' — new with this rank' : ''}. In the Death match the same calls are made in My team. ${['Name your main scorer and main playmaker, and set the tempo.', 'The shot diet — a style — and crashing the glass.', 'The defensive scheme, and hunting the mismatch.'][r - 1]}`,
@@ -559,6 +570,13 @@ const WHERE: Record<NodeId, (r: number) => string[]> = {
       ? 'The Death match: a sixth roster spot in My team. He does not play, so he takes no wear — and he recovers 3 durability every settled series, never past his own card. Rest a floor man there for free.'
       : 'The bench man recovers 6 a series now — a real rotation, one man at a time.',
   ],
+  dyn_same: (r) => [
+    `On the draft, between spins: a Same roster again chip on the wheel card's head, offered while the team-season you just drafted from still has a man your five can take. One press is the spin. ${plural(r, 'use')} a draft.`,
+  ],
+  dyn_spin: (r) => [`On the draft: ${plural(r, 'more respin')} a draft on the Respin team chip, on top of Extra spin's.`],
+  dyn_pick: () => [
+    "On the draft, between spins: a Scout's pick chip on the wheel card's head opens every franchise. Pick one and the year spins inside it. Once a draft — and a franchise with no season left for your open spots does not spend it.",
+  ],
 }
 
 export function unlockLesson(id: NodeId, r: number): Lesson {
@@ -567,7 +585,7 @@ export function unlockLesson(id: NodeId, r: number): Lesson {
     { body: [n.blurb, `Rank ${r}: ${n.rankBlurbs[r - 1]}`] },
     { title: 'Where it shows up', body: WHERE[id](r) },
   ]
-  if (r < n.ranks) steps.push({ title: `Rank ${r + 1}`, body: [`One more star would add: ${n.rankBlurbs[r]}`] })
+  if (r < n.ranks) steps.push({ title: `Rank ${r + 1}`, body: [`The next rank would add: ${n.rankBlurbs[r]}`] })
   else steps.push({ body: [`${n.name} is maxed.`] })
   return { id: `unlock.${id}.${r}`, kicker: `Unlocked · ${n.branch}`, title: `${n.name} · rank ${r} of ${n.ranks}`, steps }
 }
