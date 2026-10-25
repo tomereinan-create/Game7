@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Game 7 has moved to game7draft.com</title>
+    <meta name="description" content="Spin the wheel, draft five real players from any season since 1980, and survive a best-of-seven. Free, in your browser." />
+    <meta name="robots" content="noindex" />
+    <link rel="canonical" href="https://game7draft.com/" />
+    <!-- A link to the old address pasted anywhere still previews as the game at its new one: a preview
+         crawler reads these and never runs the script below. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Game 7" />
+    <meta property="og:title" content="Game 7: spin the wheel, draft five, win the series" />
+    <meta property="og:description" content="Spin the wheel, draft five real players from any season since 1980, and survive a best-of-seven. Free, in your browser." />
+    <meta property="og:url" content="https://game7draft.com/" />
+    <meta property="og:image" content="https://game7draft.com/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="A slot-machine wheel landing on a team-season above a basketball score bug reading Game 7." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Game 7: spin the wheel, draft five, win the series" />
+    <meta name="twitter:description" content="Spin the wheel, draft five real players from any season since 1980, and survive a best-of-seven. Free, in your browser." />
+    <meta name="twitter:image" content="https://game7draft.com/og-image.png" />
+    <noscript><meta http-equiv="refresh" content="0;url=https://game7draft.com/" /></noscript>
+    <style>
+      :root { color-scheme: dark; }
+      body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #0b0a09; color: #f2ece0; font: 16px/1.5 system-ui, -apple-system, 'Segoe UI', sans-serif; text-align: center; }
+      main { padding: 24px 16px; max-width: 520px; }
+      h1 { font-size: 26px; margin: 0 0 8px; }
+      a { color: #f0b323; }
+      .muted { color: #a59d90; font-size: 13px; margin-top: 32px; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Game 7 has moved</h1>
+      <p>Taking you and your progress to <a id="go" href="https://game7draft.com/">game7draft.com</a>…</p>
+      <p class="muted">Not affiliated with or endorsed by the NBA, NBPA, NBRPA, any team or player. Stats via Basketball-Reference.com and NBA.com.</p>
+    </main>
+    <script>
+      "use strict";(()=>{var p="game7.",h=new Set(["game7.analytics","game7.staff"]);function i(t=localStorage){var r;let e={};for(let o=0;o<t.length;o++){let a=t.key(o);a&&a.startsWith(p)&&!h.has(a)&&(e[a]=(r=t.getItem(a))!=null?r:"")}return e}function u(t=localStorage){var r,o;let e=i(t);for(let[a,s]of Object.entries(e)){if(a==="game7.team.v1"||a==="game7.tut.team.v1")return!0;if(/^game7\.(tut\.)?(campaign|salary|death)\.v2$|^game7\.c2026\.v2$/.test(a))try{let n=JSON.parse(s);if(((r=n.plays)!=null?r:0)>0||((o=n.stars)!=null?o:[]).some(c=>c>0))return!0}catch{return!0}}return!1}var l=t=>{let e="";for(let r=0;r<t.length;r+=32768)e+=String.fromCharCode(...t.subarray(r,r+32768));return btoa(e).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")};async function d(t,e){let r=await new Response(new Blob([t]).stream().pipeThrough(e)).arrayBuffer();return new Uint8Array(r)}async function g(t){let e=new TextEncoder().encode(JSON.stringify(t));if(typeof CompressionStream=="function")try{return`1.${l(await d(e,new CompressionStream("deflate-raw")))}`}catch{}return`0.${l(e)}`}async function y(){var n,c;let t=new URL("https://game7draft.com/"),e=new URL(location.href);for(let m of["s","utm_source","utm_medium","utm_campaign","utm_content"]){let f=e.searchParams.get(m);f&&t.searchParams.set(m,f)}t.searchParams.set("ref",e.searchParams.get("ref")||"mover");let r=(c=(n=/(?:^#|&)c=([^&]+)/.exec(e.hash))==null?void 0:n[1])!=null?c:e.searchParams.get("c"),o=r?[`c=${r}`]:[];try{u()&&o.push(`import=${await g(i())}`)}catch{}let a=t.href+(o.length?`#${o.join("&")}`:""),s=document.getElementById("go");s&&s.setAttribute("href",a),location.replace(a)}y();})();
+
+    </script>
+  </body>
+</html>
